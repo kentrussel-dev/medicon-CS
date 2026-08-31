@@ -29,6 +29,71 @@ Medicon consolidates these workflows into a single HIPAA-conscious platform:
 
 ---
 
+## Application Showcase & UI Walkthrough
+
+### 1. Hospital Landing Gateway & Instant Telehealth Launcher
+*Public medical portal featuring specialist directory search, clinical leadership profiles, institutional news, inquiries contact form, and instant 3-part code telehealth launcher.*
+
+![Medicon Hospital Landing Gateway](docs/screenshots/01_landing_page.png)
+
+---
+
+### 2. Clinical Authentication & Fast Role Switcher
+*Institutional identity portal featuring 256-bit encryption at rest, secure session tokens, and 1-click credential auto-fill for testing Patient, Doctor, and Administrator roles.*
+
+![Medicon Identity Authentication](docs/screenshots/02_login_authentication.png)
+
+---
+
+### 3. Patient Electronic Health Record & Dashboard
+*Centralized health workspace featuring upcoming consultation schedules, active electronic prescriptions, past clinical encounter summaries, and 1-click video visit access.*
+
+![Patient Health Record Workspace](docs/screenshots/03_patient_dashboard.png)
+
+---
+
+### 4. Pre-Consultation Green Room Waiting Lobby
+*Google Meet-style pre-join lobby allowing patients and doctors to test camera/mic settings, verify audio meters, view case summaries, and check active participants before entering.*
+
+![Pre-Consultation Green Room](docs/screenshots/04_green_room.png)
+
+---
+
+### 5. 1080p Encrypted WebRTC Telehealth Consultation Stage
+*HD peer-to-peer clinical consultation stage featuring strict 16:9 widescreen video grids, in-call encrypted chat, SOAP charting, vital signs telemetry, and instant data purge upon room closure.*
+
+![Telehealth WebRTC Consultation Stage](docs/screenshots/05_telehealth_consultation.png)
+
+---
+
+### 6. Clinical AI Assistant & Patient Health Navigator
+*24/7 conversational clinical co-pilot capable of answering health inquiries, looking up upcoming appointments, explaining prescriptions, and assisting guests and authenticated patients.*
+
+![Clinical AI Navigator](docs/screenshots/06_clinical_ai_assistant.png)
+
+---
+
+### 7. In-Call Encrypted Messaging & Multi-Specialist Chat
+*Real-time peer-to-peer encrypted messaging drawer inside the consultation room for sharing clinical notes, diagnostic updates, and specialist coordination.*
+
+![In-Call Encrypted Chat](docs/screenshots/07_telehealth_chat_drawer.png)
+
+---
+
+### 8. Encrypted Clinical Records & ICD-10 Diagnostic Summaries
+*HIPAA-compliant patient medical chart displaying documented diagnoses (ICD-10), vital signs matrices (BP, HR, SpO2), attending clinician notes, and AES-256 encryption at rest.*
+
+![Clinical Encounters and Notes](docs/screenshots/08_clinical_records_ehr.png)
+
+---
+
+### 9. Authorized Electronic Prescriptions (e-Rx) Management
+*Structured multi-drug medication orders with exact dosage, route, frequency, refills tracking, and direct consultation linkage.*
+
+![Authorized Prescriptions](docs/screenshots/09_authorized_prescriptions.png)
+
+---
+
 ## System Architecture Diagram
 
 > [!TIP]
@@ -530,6 +595,7 @@ medicon/
 │   └── train.py              # ML Training & Evaluation Pipeline
 │
 ├── docs/                     # Architecture & Technical Specifications
+│   └── screenshots/          # Application UI & Clinical Workflow Previews
 ├── docker/                   # Hardened Nginx & PHP Container Configs
 ├── .gitignore                # Strict Git Exclusion Policy
 └── docker-compose.yml        # Multi-Container Development Orchestration
