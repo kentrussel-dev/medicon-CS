@@ -30,13 +30,13 @@ class PaymentGatewayTest extends TestCase
         $doctorUser = User::factory()->create(['role' => UserRole::DOCTOR]);
         $doctor = Doctor::factory()->create([
             'user_id' => $doctorUser->id,
-            'consultation_fee_cents' => 12000, // ₱120.00
+            'consultation_fee_cents' => 50000, // ₱500.00
         ]);
 
         $appointment = Appointment::factory()->create([
             'patient_id' => $patient->id,
             'doctor_id' => $doctor->id,
-            'consultation_fee_cents' => 12000,
+            'consultation_fee_cents' => 50000,
             'status' => AppointmentStatus::PENDING,
             'payment_status' => 'unpaid',
         ]);
@@ -50,8 +50,8 @@ class PaymentGatewayTest extends TestCase
             ->assertJson([
                 'success' => true,
                 'data' => [
-                    'amount_cents' => 12000,
-                    'amount_pesos' => '120.00',
+                    'amount_cents' => 50000,
+                    'amount_pesos' => '500.00',
                     'currency' => 'PHP',
                     'gateway' => 'paymongo',
                 ],
@@ -59,7 +59,7 @@ class PaymentGatewayTest extends TestCase
 
         $this->assertDatabaseHas('payments', [
             'appointment_id' => $appointment->id,
-            'amount_cents' => 12000,
+            'amount_cents' => 50000,
             'currency' => 'PHP',
             'gateway' => 'paymongo',
             'payment_method' => 'gcash',
@@ -82,7 +82,7 @@ class PaymentGatewayTest extends TestCase
         $payment = Payment::create([
             'appointment_id' => $appointment->id,
             'user_id' => $patientUser->id,
-            'amount_cents' => 12000,
+            'amount_cents' => 50000,
             'currency' => 'PHP',
             'gateway' => 'paymongo',
             'payment_method' => 'gcash',
@@ -97,7 +97,7 @@ class PaymentGatewayTest extends TestCase
                     'data' => [
                         'id' => 'pay_pm_test_99812',
                         'attributes' => [
-                            'amount' => 12000,
+                            'amount' => 50000,
                             'status' => 'paid',
                         ],
                     ],
@@ -128,7 +128,7 @@ class PaymentGatewayTest extends TestCase
         $payment = Payment::create([
             'appointment_id' => $appointment->id,
             'user_id' => $patientUser->id,
-            'amount_cents' => 12000,
+            'amount_cents' => 50000,
             'currency' => 'PHP',
             'gateway' => 'paymongo',
             'payment_method' => 'gcash',
@@ -162,29 +162,29 @@ class PaymentGatewayTest extends TestCase
         $paymentService = app(PaymentService::class);
 
         $appointment = new Appointment([
-            'consultation_fee_cents' => 12000, // ₱120.00
+            'consultation_fee_cents' => 50000, // ₱500.00
             'scheduled_start' => Carbon::now()->addHours(48), // 48 hours in advance
         ]);
 
         // Tier 1: > 24 hours (100% refund)
         $tier1 = $paymentService->calculateCancellationRefund($appointment, Carbon::now());
         $this->assertEquals(1.0, $tier1['refund_rate']);
-        $this->assertEquals(12000, $tier1['refund_amount_cents']);
+        $this->assertEquals(50000, $tier1['refund_amount_cents']);
         $this->assertEquals(0, $tier1['cancellation_fee_cents']);
 
         // Tier 2: 12 to 24 hours (50% refund)
         $appointment->scheduled_start = Carbon::now()->addHours(18);
         $tier2 = $paymentService->calculateCancellationRefund($appointment, Carbon::now());
         $this->assertEquals(0.5, $tier2['refund_rate']);
-        $this->assertEquals(6000, $tier2['refund_amount_cents']);
-        $this->assertEquals(6000, $tier2['cancellation_fee_cents']);
+        $this->assertEquals(25000, $tier2['refund_amount_cents']);
+        $this->assertEquals(25000, $tier2['cancellation_fee_cents']);
 
         // Tier 3: < 12 hours (0% refund)
         $appointment->scheduled_start = Carbon::now()->addHours(4);
         $tier3 = $paymentService->calculateCancellationRefund($appointment, Carbon::now());
         $this->assertEquals(0.0, $tier3['refund_rate']);
         $this->assertEquals(0, $tier3['refund_amount_cents']);
-        $this->assertEquals(12000, $tier3['cancellation_fee_cents']);
+        $this->assertEquals(50000, $tier3['cancellation_fee_cents']);
     }
 
     public function test_card_payment_transparent_fallback_to_stripe_when_paymongo_fails(): void
@@ -205,7 +205,7 @@ class PaymentGatewayTest extends TestCase
                 'gateway_payment_id' => 'pi_stripe_fallback_123',
                 'client_secret' => 'pi_stripe_fallback_123_secret',
                 'status' => 'requires_payment_method',
-                'amount_cents' => 12000,
+                'amount_cents' => 50000,
                 'currency' => 'PHP',
                 'checkout_url' => null,
             ]);
@@ -219,7 +219,7 @@ class PaymentGatewayTest extends TestCase
         $appointment = Appointment::factory()->create([
             'patient_id' => $patient->id,
             'doctor_id' => $doctor->id,
-            'consultation_fee_cents' => 12000,
+            'consultation_fee_cents' => 50000,
         ]);
 
         $result = $service->initiatePayment($appointment, $patientUser, 'card');

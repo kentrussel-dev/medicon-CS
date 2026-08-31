@@ -37,7 +37,7 @@ class Doctor extends Model
 
     public function getConsultationFeePesosAttribute(): string
     {
-        $cents = $this->consultation_fee_cents ?? ($this->consultation_fee ? (int)round($this->consultation_fee * 100) : 12000);
+        $cents = $this->consultation_fee_cents ?? ($this->consultation_fee ? (int)round($this->consultation_fee * 100) : 50000);
         return number_format($cents / 100, 2);
     }
 

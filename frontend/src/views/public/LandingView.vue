@@ -98,28 +98,28 @@
     <nav class="bg-slate-900 text-white border-b-2 border-brand-600 sticky top-0 z-40 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between overflow-x-auto scrollbar-none">
         <div class="flex items-center text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
-          <a href="#specialties" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+          <a href="#specialties" @click="scrollToAnchor('#specialties', $event)" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white cursor-pointer">
             Health Specialties
           </a>
-          <a href="#doctors" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+          <a href="#doctors" @click="scrollToAnchor('#doctors', $event)" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white cursor-pointer">
             Our Doctors
           </a>
-          <a href="#telehealth-join" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white text-amber-300">
+          <a href="#telehealth-join" @click="scrollToAnchor('#telehealth-join', $event)" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white text-amber-300 cursor-pointer">
             Telehealth Room
           </a>
-          <a href="#about" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+          <a href="#about" @click="scrollToAnchor('#about', $event)" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white cursor-pointer">
             About Us
           </a>
-          <a href="#leadership" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+          <a href="#leadership" @click="scrollToAnchor('#leadership', $event)" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white cursor-pointer">
             Clinical Leadership
           </a>
-          <a href="#articles" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+          <a href="#articles" @click="scrollToAnchor('#articles', $event)" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white cursor-pointer">
             Health Library
           </a>
-          <a href="#news" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+          <a href="#news" @click="scrollToAnchor('#news', $event)" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white cursor-pointer">
             News & Events
           </a>
-          <a href="#contact" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+          <a href="#contact" @click="scrollToAnchor('#contact', $event)" class="px-3.5 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white cursor-pointer">
             Contact Us
           </a>
         </div>
@@ -241,7 +241,8 @@
               </button>
               <a
                 href="#about"
-                class="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider border border-slate-950 transition-colors"
+                @click="scrollToAnchor('#about', $event)"
+                class="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider border border-slate-950 transition-colors cursor-pointer"
               >
                 About Our Center
               </a>
@@ -918,12 +919,37 @@ const openBookingForDoctor = (doctor) => {
   showBookingModal.value = true
 }
 
+const scrollToAnchor = (targetId, e) => {
+  if (e) e.preventDefault()
+  const cleanId = targetId.replace(/^#/, '')
+  const el = document.getElementById(cleanId)
+  if (el) {
+    const navOffset = 60
+    const targetPosition = el.getBoundingClientRect().top + window.pageYOffset - navOffset
+    const startPosition = window.pageYOffset
+    const distance = targetPosition - startPosition
+    const duration = 300
+    let startTime = null
+
+    function animation(currentTime) {
+      if (startTime === null) startTime = currentTime
+      const timeElapsed = currentTime - startTime
+      const progress = Math.min(timeElapsed / duration, 1)
+      // fast easeOutCubic
+      const ease = 1 - Math.pow(1 - progress, 3)
+      window.scrollTo(0, startPosition + distance * ease)
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation)
+      }
+    }
+
+    requestAnimationFrame(animation)
+  }
+}
+
 const selectSpecialtyAndFilter = (specialtyName) => {
   selectedSpecialty.value = specialtyName
-  const doctorsEl = document.getElementById('doctors')
-  if (doctorsEl) {
-    doctorsEl.scrollIntoView({ behavior: 'smooth' })
-  }
+  scrollToAnchor('#doctors')
 }
 
 // Hero Carousel Slides

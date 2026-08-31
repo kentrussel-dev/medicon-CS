@@ -1,45 +1,45 @@
 <template>
   <div class="max-w-4xl mx-auto space-y-6">
     <!-- Header -->
-    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between">
+    <div class="bg-white p-6 border border-slate-300 shadow-xs flex items-center justify-between">
       <div>
-        <h2 class="text-xl font-black text-slate-900 dark:text-white">Account & Security Settings</h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage your profile information, two-factor authentication, and data compliance</p>
+        <h2 class="text-xl font-bold uppercase tracking-tight text-slate-950">Account & Security Settings</h2>
+        <p class="text-xs font-mono text-slate-500 mt-0.5">Manage your profile credentials, two-factor authentication, and data compliance</p>
       </div>
       <Badge :variant="auth.role">{{ auth.role }}</Badge>
     </div>
 
     <!-- Edit Profile Form -->
-    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 shadow-sm space-y-6">
-      <h3 class="font-bold text-base text-slate-900 dark:text-white">Personal Information</h3>
+    <div class="bg-white p-6 border border-slate-300 shadow-xs space-y-5">
+      <h3 class="font-bold text-sm uppercase tracking-wider text-slate-900 font-mono">Personal Information</h3>
       <form @submit.prevent="handleUpdateProfile" class="space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
+            <label class="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Full Name</label>
             <input
               type="text"
               v-model="profileForm.name"
               required
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-brand-500 dark:bg-slate-750 dark:text-white"
+              class="w-full px-3 py-2 border border-slate-300 text-xs text-slate-900 focus:border-slate-800 focus:outline-none bg-white rounded-none font-sans"
             />
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
+            <label class="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Email Address</label>
             <input
               type="email"
               v-model="profileForm.email"
               required
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-brand-500 dark:bg-slate-750 dark:text-white"
+              class="w-full px-3 py-2 border border-slate-300 text-xs text-slate-900 focus:border-slate-800 focus:outline-none bg-white rounded-none font-sans"
             />
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Phone Number</label>
+          <label class="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Phone Number</label>
           <input
             type="text"
             v-model="profileForm.phone"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-brand-500 dark:bg-slate-750 dark:text-white"
+            class="w-full px-3 py-2 border border-slate-300 text-xs text-slate-900 focus:border-slate-800 focus:outline-none bg-white rounded-none font-sans"
           />
         </div>
 
@@ -47,29 +47,29 @@
           <button
             type="submit"
             :disabled="savingProfile"
-            class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-xs disabled:opacity-50"
+            class="px-5 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-mono font-bold uppercase tracking-wider border border-brand-800 transition-colors shadow-xs disabled:opacity-50"
           >
             <span v-if="savingProfile">Saving...</span>
-            <span v-else>Save Changes</span>
+            <span v-else>Save Profile</span>
           </button>
         </div>
       </form>
     </div>
 
     <!-- Two-Factor Authentication (2FA) Section -->
-    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 shadow-sm space-y-6">
+    <div class="bg-white p-6 border border-slate-300 shadow-xs space-y-5">
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="font-bold text-base text-slate-900 dark:text-white flex items-center space-x-2">
+          <h3 class="font-bold text-sm uppercase tracking-wider text-slate-900 font-mono flex items-center space-x-2">
             <span>Two-Factor Authentication (2FA)</span>
-            <span v-if="is2FaEnabled" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+            <span v-if="is2FaEnabled" class="px-2 py-0.5 text-[9px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 uppercase">
               Active
             </span>
-            <span v-else class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400">
+            <span v-else class="px-2 py-0.5 text-[9px] font-mono font-bold bg-slate-100 text-slate-600 border border-slate-300 uppercase">
               Disabled
             </span>
           </h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p class="text-xs text-slate-500 font-mono mt-0.5">
             Add an extra layer of security using standard Time-based One-Time Password (TOTP) authenticator apps.
           </p>
         </div>
@@ -78,7 +78,7 @@
           v-if="!is2FaEnabled && !show2FaSetup"
           type="button"
           @click="start2FaSetup"
-          class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs"
+          class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold uppercase border border-slate-950 transition-colors"
         >
           Enable 2FA
         </button>
@@ -87,41 +87,39 @@
           v-else-if="is2FaEnabled"
           type="button"
           @click="disable2Fa"
-          class="px-4 py-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950/40 text-xs font-bold transition-all"
+          class="px-4 py-2 border border-red-300 text-red-700 hover:bg-red-50 text-xs font-mono font-bold uppercase transition-colors"
         >
           Disable 2FA
         </button>
       </div>
 
       <!-- 2FA Setup Flow Drawer -->
-      <div v-if="show2FaSetup" class="p-6 bg-slate-50 dark:bg-slate-750 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-5 animate-in fade-in duration-200">
-        <h4 class="text-sm font-bold text-slate-900 dark:text-white">Step 1: Scan Authenticator QR Code</h4>
-        <p class="text-xs text-slate-600 dark:text-slate-400">
+      <div v-if="show2FaSetup" class="p-5 bg-slate-50 border border-slate-300 space-y-4 animate-in fade-in duration-150">
+        <h4 class="text-xs font-mono font-bold uppercase text-slate-900">Step 1: Scan Authenticator QR Code</h4>
+        <p class="text-xs text-slate-600">
           Open Google Authenticator, Authy, or 1Password and scan this QR code, or manually enter the secret key below:
         </p>
 
         <!-- Simulated QR Visual Box -->
-        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
-          <div class="w-32 h-32 bg-slate-900 rounded-lg p-2 flex items-center justify-center text-white text-center font-mono text-[10px] shadow-md">
-            <div>
-              <div class="w-24 h-24 border-2 border-white/40 border-dashed rounded flex items-center justify-center">
-                [TOTP QR CODE]
-              </div>
+        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 bg-white p-4 border border-slate-300">
+          <div class="w-28 h-28 bg-slate-900 p-2 flex items-center justify-center text-white text-center font-mono text-[9px]">
+            <div class="w-24 h-24 border border-white/40 border-dashed flex items-center justify-center">
+              [TOTP QR CODE]
             </div>
           </div>
-          <div class="space-y-2 flex-1">
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Secret Key</label>
+          <div class="space-y-2 flex-1 w-full">
+            <label class="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-600">Secret Key</label>
             <div class="flex items-center space-x-2">
               <input
                 type="text"
                 readonly
                 :value="twoFaSecret"
-                class="font-mono text-sm px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 w-full text-slate-900 dark:text-white"
+                class="font-mono text-xs px-3 py-1.5 bg-slate-50 border border-slate-300 w-full text-slate-900 select-all"
               />
               <button
                 type="button"
                 @click="copySecret"
-                class="px-3 py-1.5 text-xs font-semibold bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 rounded-lg text-slate-800 dark:text-slate-200"
+                class="px-3 py-1.5 text-xs font-mono font-bold uppercase bg-slate-200 hover:bg-slate-300 border border-slate-300 text-slate-800"
               >
                 Copy
               </button>
@@ -131,11 +129,11 @@
 
         <!-- Recovery Codes -->
         <div class="space-y-2">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          <label class="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700">
             Emergency Recovery Codes (Save these securely)
           </label>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 font-mono text-xs font-bold text-slate-800 dark:text-slate-200">
-            <div v-for="code in recoveryCodes" :key="code" class="p-1 bg-slate-100 dark:bg-slate-700 rounded text-center">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-white p-3 border border-slate-300 font-mono text-xs font-bold text-slate-900">
+            <div v-for="code in recoveryCodes" :key="code" class="p-1.5 bg-slate-100 border border-slate-200 text-center">
               {{ code }}
             </div>
           </div>
@@ -143,7 +141,7 @@
 
         <!-- Step 2: Verification Code -->
         <div class="space-y-3 pt-2">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          <label class="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700">
             Step 2: Enter 6-Digit Authenticator Code
           </label>
           <div class="flex space-x-3">
@@ -152,20 +150,20 @@
               maxlength="6"
               v-model="totpVerificationCode"
               placeholder="123456"
-              class="w-44 px-4 py-2 font-mono text-center tracking-widest text-lg font-bold rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500"
+              class="w-36 px-3 py-1.5 font-mono text-center tracking-widest text-base font-bold border border-slate-300 bg-white focus:border-slate-800 focus:outline-none"
             />
             <button
               type="button"
               @click="confirm2Fa"
               :disabled="totpVerificationCode.length !== 6"
-              class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold disabled:opacity-50"
+              class="px-4 py-1.5 bg-brand-700 hover:bg-brand-800 text-white font-mono text-xs font-bold uppercase border border-brand-800 disabled:opacity-50"
             >
               Verify & Enable
             </button>
             <button
               type="button"
               @click="show2FaSetup = false"
-              class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200 dark:text-slate-400"
+              class="px-3 py-1.5 font-mono text-xs font-bold uppercase text-slate-600 hover:bg-slate-200 border border-slate-300"
             >
               Cancel
             </button>
@@ -175,56 +173,56 @@
     </div>
 
     <!-- Data Privacy & HIPAA Compliance Rights -->
-    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 shadow-sm space-y-6">
+    <div class="bg-white p-6 border border-slate-300 shadow-xs space-y-5">
       <div>
-        <h3 class="font-bold text-base text-slate-900 dark:text-white">Data Compliance & Privacy Rights</h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+        <h3 class="font-bold text-sm uppercase tracking-wider text-slate-900 font-mono">Data Compliance & Privacy Rights</h3>
+        <p class="text-xs text-slate-500 font-mono mt-0.5">
           In compliance with the Data Privacy Act (DPA), GDPR, and HIPAA standards, you have full control over your clinical data.
         </p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <!-- Export Data Card -->
-        <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-750 flex flex-col justify-between space-y-3">
+        <div class="p-4 border border-slate-300 bg-slate-50 flex flex-col justify-between space-y-3">
           <div>
-            <h4 class="font-bold text-sm text-slate-900 dark:text-white flex items-center space-x-2">
-              <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h4 class="font-bold text-xs uppercase font-mono text-slate-900 flex items-center space-x-2">
+              <svg class="w-4 h-4 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               <span>Download Health Data Export</span>
             </h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Download all your personal profile details, clinical encounter summaries, active prescriptions, and payment receipts in a portable JSON format.
+            <p class="text-xs text-slate-600 font-sans mt-1 leading-relaxed">
+              Download your profile details, clinical encounter summaries, active prescriptions, and payment receipts in portable JSON.
             </p>
           </div>
           <button
             type="button"
             @click="downloadDataExport"
             :disabled="exportingData"
-            class="w-full py-2.5 px-4 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-200 font-bold text-xs shadow-xs transition flex items-center justify-center space-x-2"
+            class="w-full py-2 px-3 bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-mono font-bold text-xs uppercase transition flex items-center justify-center space-x-2"
           >
             <span v-if="exportingData">Generating Export...</span>
-            <span v-else>Download Complete Health Export (JSON)</span>
+            <span v-else>Download Export (JSON)</span>
           </button>
         </div>
 
         <!-- Account Deletion Card -->
-        <div class="p-5 rounded-2xl border border-red-100 dark:border-red-950/60 bg-red-50/50 dark:bg-red-950/20 flex flex-col justify-between space-y-3">
+        <div class="p-4 border border-red-200 bg-red-50/40 flex flex-col justify-between space-y-3">
           <div>
-            <h4 class="font-bold text-sm text-red-900 dark:text-red-300 flex items-center space-x-2">
-              <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h4 class="font-bold text-xs uppercase font-mono text-red-900 flex items-center space-x-2">
+              <svg class="w-4 h-4 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
-              <span>Right to be Forgotten & Deletion</span>
+              <span>Right to be Forgotten</span>
             </h4>
-            <p class="text-xs text-red-700/80 dark:text-red-400/80 mt-1">
-              Permanently anonymizes your personal information (name, email, phone, credentials) while preserving legally mandated non-identifying clinical audit records.
+            <p class="text-xs text-red-700 font-sans mt-1 leading-relaxed">
+              Permanently anonymizes your personal information while preserving legally mandated non-identifying forensic audit records.
             </p>
           </div>
           <button
             type="button"
             @click="showDeleteModal = true"
-            class="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xs transition"
+            class="w-full py-2 px-3 bg-red-700 hover:bg-red-800 text-white font-mono font-bold text-xs uppercase transition border border-red-800"
           >
             Request Account Deletion
           </button>
@@ -233,36 +231,36 @@
     </div>
 
     <!-- Password Change Section -->
-    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 shadow-sm space-y-6">
-      <h3 class="font-bold text-base text-slate-900 dark:text-white">Change Password</h3>
+    <div class="bg-white p-6 border border-slate-300 shadow-xs space-y-5">
+      <h3 class="font-bold text-sm uppercase tracking-wider text-slate-900 font-mono">Change Password</h3>
       <form @submit.prevent="handleChangePassword" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Current Password</label>
+          <label class="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Current Password</label>
           <input
             type="password"
             v-model="passwordForm.current_password"
             required
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-brand-500 dark:bg-slate-750 dark:text-white"
+            class="w-full px-3 py-2 border border-slate-300 text-xs text-slate-900 focus:border-slate-800 focus:outline-none bg-white rounded-none font-sans"
           />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">New Password</label>
+            <label class="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">New Password</label>
             <input
               type="password"
               v-model="passwordForm.password"
               required
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-brand-500 dark:bg-slate-750 dark:text-white"
+              class="w-full px-3 py-2 border border-slate-300 text-xs text-slate-900 focus:border-slate-800 focus:outline-none bg-white rounded-none font-sans"
             />
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">Confirm New Password</label>
+            <label class="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Confirm New Password</label>
             <input
               type="password"
               v-model="passwordForm.password_confirmation"
               required
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-brand-500 dark:bg-slate-750 dark:text-white"
+              class="w-full px-3 py-2 border border-slate-300 text-xs text-slate-900 focus:border-slate-800 focus:outline-none bg-white rounded-none font-sans"
             />
           </div>
         </div>
@@ -271,7 +269,7 @@
           <button
             type="submit"
             :disabled="savingPassword"
-            class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs disabled:opacity-50"
+            class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold uppercase tracking-wider border border-slate-950 transition-colors disabled:opacity-50"
           >
             <span v-if="savingPassword">Updating...</span>
             <span v-else>Update Password</span>
@@ -281,30 +279,30 @@
     </div>
 
     <!-- Account Deletion Confirmation Modal -->
-    <div v-if="showDeleteModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-red-200 dark:border-red-900">
-        <h3 class="text-lg font-bold text-red-600 dark:text-red-400">Confirm Account Deletion</h3>
-        <p class="text-xs text-slate-600 dark:text-slate-300">
+    <div v-if="showDeleteModal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-white rounded-none shadow-2xl max-w-md w-full p-6 space-y-4 border-2 border-red-700">
+        <h3 class="text-sm font-mono font-bold uppercase text-red-700">Confirm Account Deletion</h3>
+        <p class="text-xs text-slate-600 font-sans leading-relaxed">
           This action is permanent. All identifying credentials will be wiped and your account will be immediately closed.
         </p>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Confirm Password</label>
+            <label class="block text-[10px] font-mono font-bold uppercase text-slate-700 mb-1">Confirm Password</label>
             <input
               type="password"
               v-model="deleteConfirmPassword"
               placeholder="Enter your password..."
-              class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-sm dark:bg-slate-750 dark:text-white"
+              class="w-full px-3 py-2 border border-slate-300 text-xs text-slate-900 rounded-none font-sans"
             />
           </div>
           <div v-if="is2FaEnabled">
-            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">2FA Authenticator Code</label>
+            <label class="block text-[10px] font-mono font-bold uppercase text-slate-700 mb-1">2FA Authenticator Code</label>
             <input
               type="text"
               v-model="delete2FaCode"
               placeholder="6-digit TOTP or recovery code"
-              class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-sm dark:bg-slate-750 dark:text-white"
+              class="w-full px-3 py-2 border border-slate-300 text-xs text-slate-900 rounded-none font-mono"
             />
           </div>
         </div>
@@ -313,7 +311,7 @@
           <button
             type="button"
             @click="showDeleteModal = false"
-            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+            class="px-4 py-2 border border-slate-300 bg-white hover:bg-slate-100 text-xs font-mono font-bold uppercase text-slate-700"
           >
             Cancel
           </button>
@@ -321,7 +319,7 @@
             type="button"
             @click="executeAccountDeletion"
             :disabled="!deleteConfirmPassword"
-            class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold disabled:opacity-50"
+            class="px-5 py-2 bg-red-700 hover:bg-red-800 text-white text-xs font-mono font-bold uppercase border border-red-800 disabled:opacity-50"
           >
             Permanently Anonymize & Delete
           </button>

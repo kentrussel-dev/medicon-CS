@@ -1,10 +1,10 @@
 <template>
-  <header class="bg-white dark:bg-slate-800 border-b-2 border-slate-300 dark:border-slate-700 px-4 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-30">
+  <header class="bg-white border-b-2 border-slate-300 px-4 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-30">
     <!-- Left: Brand / Sidebar toggle -->
     <div class="flex items-center space-x-3">
       <button
         @click="$emit('toggle-sidebar')"
-        class="lg:hidden p-1.5 border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-colors"
+        class="lg:hidden p-1.5 border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-200 transition-colors"
       >
         <Menu class="w-4 h-4" />
       </button>
@@ -13,10 +13,10 @@
           M
         </div>
         <div class="flex flex-col">
-          <span class="font-black text-xs uppercase tracking-wider text-slate-900 dark:text-white leading-none">
+          <span class="font-black text-xs uppercase tracking-wider text-slate-900 leading-none">
             Medicon Clinical Systems
           </span>
-          <span class="text-[9px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none mt-0.5">
+          <span class="text-[9px] font-mono text-slate-500 uppercase tracking-widest leading-none mt-0.5">
             {{ auth.role?.toUpperCase() }} WORKSPACE
           </span>
         </div>
@@ -26,19 +26,19 @@
     <!-- Center: Scoped Full-Text Search Bar -->
     <div class="hidden md:block relative max-w-md w-full mx-4" ref="searchContainerRef">
       <div class="relative">
-        <Search class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+        <Search class="w-4 h-4 text-slate-400 absolute left-3 top-2" />
         <input
           type="text"
           v-model="searchQuery"
           @input="handleSearch"
           @focus="showSearchResults = true"
           placeholder="Search doctors, clinical records, prescriptions..."
-          class="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 dark:bg-slate-750 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 font-sans"
+          class="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-300 text-slate-900 focus:bg-white focus:outline-none focus:border-slate-800 font-sans"
         />
         <button
           v-if="searchQuery"
           @click="clearSearch"
-          class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold"
+          class="absolute right-2.5 top-1.5 text-slate-400 hover:text-slate-600 text-xs font-bold"
         >
           ✕
         </button>
@@ -47,11 +47,11 @@
       <!-- Live Search Results Dropdown -->
       <div
         v-if="showSearchResults && searchQuery && (searchResults.doctors.length || searchResults.records.length || searchResults.prescriptions.length)"
-        class="absolute left-0 right-0 mt-1.5 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl shadow-2xl overflow-hidden z-50 max-h-96 overflow-y-auto text-xs animate-in fade-in zoom-in-95 duration-150"
+        class="absolute left-0 right-0 mt-1 bg-white border-2 border-slate-700 shadow-2xl overflow-hidden z-50 max-h-96 overflow-y-auto text-xs animate-in fade-in zoom-in-95 duration-150"
       >
         <!-- Doctors Matches -->
-        <div v-if="searchResults.doctors.length" class="p-2 border-b border-slate-100 dark:border-slate-700">
-          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 px-2 py-1">
+        <div v-if="searchResults.doctors.length" class="p-2 border-b border-slate-200">
+          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-700 px-2 py-1">
             Doctors & Specialists ({{ searchResults.doctors.length }})
           </div>
           <router-link
@@ -59,21 +59,21 @@
             :key="doc.id"
             :to="`/patient/doctors`"
             @click="showSearchResults = false"
-            class="flex items-center space-x-2.5 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/60 transition"
+            class="flex items-center space-x-2.5 p-2 hover:bg-slate-100 transition"
           >
-            <div class="w-6 h-6 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-[10px]">
-              Dr
+            <div class="w-6 h-6 bg-brand-100 text-brand-800 border border-brand-300 flex items-center justify-center font-bold text-[10px] font-mono">
+              MD
             </div>
             <div class="flex-1 min-w-0">
-              <p class="font-bold text-slate-900 dark:text-white truncate">{{ doc.name }}</p>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ doc.specialty }} • ₱{{ (doc.consultation_fee_cents ? doc.consultation_fee_cents / 100 : (doc.consultation_fee || 120)).toFixed(2) }}</p>
+              <p class="font-bold text-slate-900 truncate uppercase">{{ doc.name }}</p>
+              <p class="text-[11px] font-mono text-slate-500 truncate">{{ doc.specialty }} • ₱{{ (doc.consultation_fee_cents ? doc.consultation_fee_cents / 100 : (doc.consultation_fee || 500)).toFixed(2) }}</p>
             </div>
           </router-link>
         </div>
 
         <!-- Medical Records Matches -->
-        <div v-if="searchResults.records.length" class="p-2 border-b border-slate-100 dark:border-slate-700">
-          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 px-2 py-1">
+        <div v-if="searchResults.records.length" class="p-2 border-b border-slate-200">
+          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700 px-2 py-1">
             Your Medical Records ({{ searchResults.records.length }})
           </div>
           <router-link
@@ -81,21 +81,21 @@
             :key="rec.id"
             :to="`/patient/records`"
             @click="showSearchResults = false"
-            class="flex items-center space-x-2.5 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/60 transition"
+            class="flex items-center space-x-2.5 p-2 hover:bg-slate-100 transition"
           >
-            <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px]">
+            <div class="w-6 h-6 bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center justify-center font-bold text-[10px] font-mono">
               EHR
             </div>
             <div class="flex-1 min-w-0">
-              <p class="font-bold text-slate-900 dark:text-white truncate">{{ rec.diagnosis }}</p>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ rec.record_date || 'Encounter Note' }} • {{ rec.doctor_name || 'Clinician' }}</p>
+              <p class="font-bold text-slate-900 truncate uppercase">{{ rec.diagnosis }}</p>
+              <p class="text-[11px] font-mono text-slate-500 truncate">{{ rec.record_date || 'Encounter Note' }} • {{ rec.doctor_name || 'Clinician' }}</p>
             </div>
           </router-link>
         </div>
 
         <!-- Prescriptions Matches -->
         <div v-if="searchResults.prescriptions.length" class="p-2">
-          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 px-2 py-1">
+          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-700 px-2 py-1">
             Your Prescriptions ({{ searchResults.prescriptions.length }})
           </div>
           <router-link
@@ -103,14 +103,14 @@
             :key="rx.id"
             :to="`/patient/prescriptions`"
             @click="showSearchResults = false"
-            class="flex items-center space-x-2.5 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/60 transition"
+            class="flex items-center space-x-2.5 p-2 hover:bg-slate-100 transition"
           >
-            <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[10px]">
+            <div class="w-6 h-6 bg-indigo-100 text-indigo-800 border border-indigo-300 flex items-center justify-center font-bold text-[10px] font-mono">
               Rx
             </div>
             <div class="flex-1 min-w-0">
-              <p class="font-bold text-slate-900 dark:text-white truncate">{{ rx.items?.[0]?.medication_name || rx.notes || 'Medication Order' }}</p>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ rx.doctor_name || 'Prescribing Doctor' }}</p>
+              <p class="font-bold text-slate-900 truncate uppercase">{{ rx.items?.[0]?.medication_name || rx.notes || 'Medication Order' }}</p>
+              <p class="text-[11px] font-mono text-slate-500 truncate">{{ rx.doctor_name || 'Prescribing Doctor' }}</p>
             </div>
           </router-link>
         </div>
@@ -121,7 +121,7 @@
     <div class="flex items-center space-x-3">
       <router-link
         to="/"
-        class="hidden sm:inline-flex text-[11px] font-mono font-bold uppercase text-slate-600 hover:text-brand-600 px-2 py-1 border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-slate-200 transition-colors"
+        class="hidden sm:inline-flex text-[11px] font-mono font-bold uppercase text-slate-700 hover:text-brand-700 px-2 py-1 border border-slate-300 bg-slate-50 transition-colors"
       >
         Public Portal
       </router-link>
@@ -134,14 +134,14 @@
       <div class="relative" ref="dropdownRef">
         <button
           @click="isMenuOpen = !isMenuOpen"
-          class="flex items-center space-x-2 p-1 border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 transition-colors focus:outline-none"
+          class="flex items-center space-x-2 p-1 border border-slate-300 bg-slate-50 hover:bg-slate-100 transition-colors focus:outline-none"
         >
           <img
             :src="auth.user?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'"
             alt="Avatar"
             class="w-6 h-6 object-cover border border-slate-300"
           />
-          <span class="hidden md:block text-xs font-mono font-bold text-slate-800 dark:text-slate-200 max-w-[120px] truncate">
+          <span class="hidden md:block text-xs font-mono font-bold text-slate-800 max-w-[120px] truncate">
             {{ auth.user?.name || 'User' }}
           </span>
           <ChevronDown class="w-3.5 h-3.5 text-slate-500" />
@@ -150,17 +150,17 @@
         <!-- Dropdown Popover -->
         <div
           v-if="isMenuOpen"
-          class="absolute right-0 mt-1 w-56 bg-white dark:bg-slate-800 border-2 border-slate-700 dark:border-slate-600 shadow-xl py-1 z-50 text-xs"
+          class="absolute right-0 mt-1 w-56 bg-white border-2 border-slate-700 shadow-xl py-1 z-50 text-xs"
         >
-          <div class="px-3 py-2 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-750">
-            <p class="font-bold text-slate-900 dark:text-white truncate uppercase">{{ auth.user?.name }}</p>
-            <p class="text-[11px] font-mono text-slate-500 dark:text-slate-400 truncate">{{ auth.user?.email }}</p>
+          <div class="px-3 py-2 border-b border-slate-200 bg-slate-50">
+            <p class="font-bold text-slate-900 truncate uppercase">{{ auth.user?.name }}</p>
+            <p class="text-[11px] font-mono text-slate-500 truncate">{{ auth.user?.email }}</p>
           </div>
 
           <router-link
             to="/profile"
             @click="isMenuOpen = false"
-            class="flex items-center px-3 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-brand-600 transition-colors font-mono font-bold uppercase"
+            class="flex items-center px-3 py-2 text-slate-700 hover:bg-slate-100 hover:text-brand-600 transition-colors font-mono font-bold uppercase"
           >
             <User class="w-3.5 h-3.5 mr-2 text-slate-500" />
             Account & 2FA Settings
@@ -168,7 +168,7 @@
 
           <button
             @click="handleLogout"
-            class="w-full flex items-center px-3 py-2 text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors text-left font-mono font-bold uppercase border-t border-slate-100 dark:border-slate-700"
+            class="w-full flex items-center px-3 py-2 text-rose-700 hover:bg-rose-50 transition-colors text-left font-mono font-bold uppercase border-t border-slate-100"
           >
             <LogOut class="w-3.5 h-3.5 mr-2 text-rose-600" />
             Sign Out

@@ -82,8 +82,8 @@ const handleMockRoute = (config) => {
           id: 1,
           specialty: 'Cardiology',
           license_number: 'MD-CAR-88210',
-          consultation_fee: 120,
-          consultation_fee_cents: 12000,
+          consultation_fee: 1500,
+          consultation_fee_cents: 150000,
           rating: 4.96,
           years_of_experience: 14,
         },
@@ -99,8 +99,8 @@ const handleMockRoute = (config) => {
           id: 2,
           specialty: 'Neurology',
           license_number: 'MD-NEU-41903',
-          consultation_fee: 115,
-          consultation_fee_cents: 11500,
+          consultation_fee: 1200,
+          consultation_fee_cents: 120000,
           rating: 4.91,
           years_of_experience: 10,
         },
@@ -239,7 +239,7 @@ const handleMockRoute = (config) => {
 
     const methodType = body.payment_method || 'gcash'
     const isCard = methodType === 'card'
-    const amountCents = body.amount_cents || (appt?.consultation_fee_cents || 12000)
+    const amountCents = body.amount_cents || (appt?.consultation_fee_cents || 50000)
     const gateway = isCard ? (Math.random() > 0.1 ? 'paymongo' : 'stripe') : 'paymongo'
 
     const newPayment = {

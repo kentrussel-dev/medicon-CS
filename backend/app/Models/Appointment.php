@@ -88,7 +88,7 @@ class Appointment extends Model
 
     public function getConsultationFeePesosAttribute(): string
     {
-        $cents = $this->consultation_fee_cents ?? 12000;
+        $cents = $this->consultation_fee_cents ?? 50000;
         return number_format($cents / 100, 2);
     }
 

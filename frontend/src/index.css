@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-slate-100 text-slate-900 font-sans min-h-screen text-[14px] leading-normal antialiased;
   }

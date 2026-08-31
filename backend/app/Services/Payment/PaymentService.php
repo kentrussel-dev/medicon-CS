@@ -26,7 +26,7 @@ class PaymentService
         string $paymentMethod = 'gcash',
         ?int $overrideAmountCents = null
     ): array {
-        $amountCents = $overrideAmountCents ?? $appointment->consultation_fee_cents ?? 12000;
+        $amountCents = $overrideAmountCents ?? $appointment->consultation_fee_cents ?? 50000;
         $currency = 'PHP';
 
         $metadata = [
@@ -184,7 +184,7 @@ class PaymentService
         $start = $appointment->scheduled_start;
 
         $payment = $appointment->payment;
-        $totalPaidCents = $payment ? $payment->amount_cents : ($appointment->consultation_fee_cents ?? 12000);
+        $totalPaidCents = $payment ? $payment->amount_cents : ($appointment->consultation_fee_cents ?? 50000);
 
         if (!$start || $now->gte($start)) {
             // Already started or in the past

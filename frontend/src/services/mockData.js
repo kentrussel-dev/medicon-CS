@@ -1,11 +1,11 @@
 // Mock database & state management for standalone frontend operation
-const STORAGE_KEY_USERS = 'medicon_mock_users_v2'
-const STORAGE_KEY_APPTS = 'medicon_mock_appointments_v2'
-const STORAGE_KEY_RECORDS = 'medicon_mock_records_v2'
-const STORAGE_KEY_RX = 'medicon_mock_prescriptions_v2'
-const STORAGE_KEY_LOGS = 'medicon_mock_audit_logs_v2'
-const STORAGE_KEY_PAYMENTS = 'medicon_mock_payments_v2'
-const STORAGE_KEY_2FA = 'medicon_mock_2fa_v2'
+const STORAGE_KEY_USERS = 'medicon_mock_users_v3'
+const STORAGE_KEY_APPTS = 'medicon_mock_appointments_v3'
+const STORAGE_KEY_RECORDS = 'medicon_mock_records_v3'
+const STORAGE_KEY_RX = 'medicon_mock_prescriptions_v3'
+const STORAGE_KEY_LOGS = 'medicon_mock_audit_logs_v3'
+const STORAGE_KEY_PAYMENTS = 'medicon_mock_payments_v3'
+const STORAGE_KEY_2FA = 'medicon_mock_2fa_v3'
 
 export const defaultDoctors = [
   {
@@ -14,8 +14,8 @@ export const defaultDoctors = [
     email: 'sarah.jenkins@medicon.health',
     specialty: 'Cardiology',
     license_number: 'MD-CAR-88210',
-    consultation_fee: 120,
-    consultation_fee_cents: 12000,
+    consultation_fee: 1500,
+    consultation_fee_cents: 150000,
     rating: 4.96,
     experience: 14,
     bio: 'Harvard Medical School alumna specializing in preventative cardiology, cardiac arrhythmias, echocardiography, and remote vital monitoring.',
@@ -28,8 +28,8 @@ export const defaultDoctors = [
     email: 'marcus.chen@medicon.health',
     specialty: 'Neurology',
     license_number: 'MD-NEU-41903',
-    consultation_fee: 115,
-    consultation_fee_cents: 11500,
+    consultation_fee: 1200,
+    consultation_fee_cents: 120000,
     rating: 4.91,
     experience: 10,
     bio: 'Board-certified Neurologist focusing on chronic migraine management, cognitive assessment, neuromuscular disorders, and tele-stroke triage.',
@@ -42,8 +42,8 @@ export const defaultDoctors = [
     email: 'elena.rostova@medicon.health',
     specialty: 'Dermatology',
     license_number: 'MD-DER-33918',
-    consultation_fee: 95,
-    consultation_fee_cents: 9500,
+    consultation_fee: 800,
+    consultation_fee_cents: 80000,
     rating: 4.93,
     experience: 8,
     bio: 'Clinical dermatologist dedicated to teledermatology, eczema and psoriasis protocols, autoimmune skin conditions, and early skin lesion assessment.',
@@ -56,8 +56,8 @@ export const defaultDoctors = [
     email: 'james.wilson@medicon.health',
     specialty: 'General Practice',
     license_number: 'MD-GEN-77401',
-    consultation_fee: 75,
-    consultation_fee_cents: 7500,
+    consultation_fee: 500,
+    consultation_fee_cents: 50000,
     rating: 4.89,
     experience: 16,
     bio: 'Primary care physician providing comprehensive family health, chronic disease management, metabolic screenings, and routine clinical checkups.',
@@ -70,8 +70,8 @@ export const defaultDoctors = [
     email: 'aisha.patel@medicon.health',
     specialty: 'Psychiatry',
     license_number: 'MD-PSY-92014',
-    consultation_fee: 135,
-    consultation_fee_cents: 13500,
+    consultation_fee: 1800,
+    consultation_fee_cents: 180000,
     rating: 4.98,
     experience: 11,
     bio: 'Adult psychiatrist providing compassionate behavioral health, depression and anxiety management, psychopharmacology, and stress mitigation therapy.',
@@ -84,8 +84,8 @@ export const defaultDoctors = [
     email: 'robert.taylor@medicon.health',
     specialty: 'Orthopedics',
     license_number: 'MD-ORT-50119',
-    consultation_fee: 125,
-    consultation_fee_cents: 12500,
+    consultation_fee: 1250,
+    consultation_fee_cents: 125000,
     rating: 4.92,
     experience: 13,
     bio: 'Orthopedic surgeon and musculoskeletal specialist focusing on sports injuries, joint rehabilitation, osteoarthritis, and pre-op evaluation.',
@@ -116,7 +116,7 @@ export const defaultAppointments = [
     scheduled_end: new Date(Date.now() + 86400000 * 2 + 1800000).toISOString(),
     status: 'CONFIRMED',
     payment_status: 'paid',
-    consultation_fee_cents: 12000,
+    consultation_fee_cents: 150000,
     type: 'TELEHEALTH',
     reason: 'Hypertension Follow-Up & Holter Review',
     meeting_link: 'https://meet.medicon.health/room/th-7821',
@@ -136,7 +136,7 @@ export const defaultAppointments = [
     scheduled_end: new Date(Date.now() + 86400000 * 5 + 1800000).toISOString(),
     status: 'CONFIRMED',
     payment_status: 'paid',
-    consultation_fee_cents: 9500,
+    consultation_fee_cents: 80000,
     type: 'IN_PERSON',
     reason: 'Annual Full-Body Skin Screening',
     meeting_link: null,
@@ -155,7 +155,7 @@ export const defaultAppointments = [
     scheduled_end: new Date(Date.now() - 86400000 * 14 + 1800000).toISOString(),
     status: 'COMPLETED',
     payment_status: 'paid',
-    consultation_fee_cents: 7500,
+    consultation_fee_cents: 50000,
     type: 'IN_PERSON',
     reason: 'Comprehensive Annual Wellness Physical',
     meeting_link: null,
@@ -251,8 +251,8 @@ export const defaultPayments = [
     id: 1,
     appointment_id: 1,
     user_id: 1,
-    amount_cents: 12000,
-    amount_pesos: '120.00',
+    amount_cents: 150000,
+    amount_pesos: '1,500.00',
     currency: 'PHP',
     gateway: 'paymongo',
     payment_method: 'gcash',
@@ -267,8 +267,8 @@ export const defaultPayments = [
     id: 2,
     appointment_id: 2,
     user_id: 1,
-    amount_cents: 9500,
-    amount_pesos: '95.00',
+    amount_cents: 80000,
+    amount_pesos: '800.00',
     currency: 'PHP',
     gateway: 'paymongo',
     payment_method: 'card',
