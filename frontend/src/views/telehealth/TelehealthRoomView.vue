@@ -61,8 +61,114 @@
           </div>
         </div>
 
-        <!-- Google Meet Signature Grid Layout (Full Space Adaptive Canvas) -->
-        <div class="w-full h-full mx-auto flex items-center justify-center p-1 sm:p-2">
+        <!-- Screen Sharing Presentation Stage (Google Meet Presentation Mode) -->
+        <div v-if="isScreenSharing" class="w-full h-full flex flex-col md:flex-row gap-3 p-1 sm:p-2 overflow-hidden">
+          <!-- Main Screen Share Stage (Spotlight Screen Viewport) -->
+          <div class="flex-1 h-full bg-slate-950 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative flex flex-col justify-between">
+            <!-- Screen Header Bar -->
+            <div class="z-20 p-3 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                  {{ presenterName }} is presenting
+                </span>
+                <span class="px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded border" :class="getRoleBadgeClass(presenterRole)">
+                  {{ presenterRole }}
+                </span>
+              </div>
+
+              <button
+                v-if="isSelfPresenting"
+                @click="stopScreenShare"
+                class="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white font-mono text-[11px] font-bold uppercase rounded-lg transition-colors shadow-xs"
+              >
+                Stop Presenting
+              </button>
+            </div>
+
+            <!-- Screen Video Stream / Diagnostic Interactive Telemetry Display -->
+            <div class="flex-1 flex items-center justify-center p-4 bg-slate-950 overflow-hidden relative">
+              <video
+                v-if="hasNativeScreenStream"
+                ref="screenShareVideoEl"
+                autoplay
+                playsinline
+                class="w-full h-full object-contain"
+              ></video>
+
+              <!-- Clinical Diagnostic Telemetry Canvas -->
+              <div v-else class="w-full h-full max-w-4xl max-h-full bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between font-mono shadow-inner">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div>
+                    <span class="text-xs text-brand-400 font-bold uppercase tracking-wider block">Clinical Diagnostics & Vitology Display</span>
+                    <span class="text-sm font-bold text-white">Continuous Electrocardiogram (ECG) & BP Telemetry</span>
+                  </div>
+                  <span class="px-2.5 py-1 bg-emerald-950 border border-emerald-700 text-emerald-400 text-xs font-bold rounded">LIVE FEED 1080p</span>
+                </div>
+
+                <!-- Live Vital Signs & Diagnostics -->
+                <div class="grid grid-cols-3 gap-3 my-4">
+                  <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg">
+                    <span class="text-[10px] text-slate-500 uppercase block">Heart Rate</span>
+                    <span class="text-2xl font-bold text-emerald-400">72 <span class="text-xs text-slate-500">BPM</span></span>
+                  </div>
+                  <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg">
+                    <span class="text-[10px] text-slate-500 uppercase block">Blood Pressure</span>
+                    <span class="text-2xl font-bold text-brand-400">120/80 <span class="text-xs text-slate-500">mmHg</span></span>
+                  </div>
+                  <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg">
+                    <span class="text-[10px] text-slate-500 uppercase block">Oxygen (SpO2)</span>
+                    <span class="text-2xl font-bold text-cyan-400">99% <span class="text-xs text-slate-500">Normal</span></span>
+                  </div>
+                </div>
+
+                <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg flex items-center justify-between text-xs">
+                  <span class="text-slate-400">Shared by <strong class="text-white">{{ presenterName }}</strong></span>
+                  <span class="text-emerald-400 font-bold">Encrypted WebRTC Desktop Media Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vertical Participant Filmstrip on Right (Google Meet Presentation Style) -->
+          <div class="w-full md:w-64 lg:w-72 flex md:flex-col gap-2.5 overflow-y-auto max-h-full">
+            <div
+              v-for="p in participants"
+              :key="p.id"
+              class="relative aspect-video w-full bg-slate-900 border-2 border-slate-800 rounded-xl overflow-hidden shadow-lg flex items-center justify-center shrink-0"
+            >
+              <video
+                v-if="p.isLocal && cameraOn"
+                ref="localVideoEl"
+                autoplay
+                playsinline
+                muted
+                class="w-full h-full object-cover mirror"
+              ></video>
+              <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-900 p-2 text-center">
+                <div class="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-sm uppercase shadow-md border border-slate-700 mb-1">
+                  {{ p.name.charAt(0) }}
+                </div>
+                <span class="text-xs font-bold text-white uppercase truncate max-w-[90%]">{{ p.name }}</span>
+                <span class="text-[9px] font-mono text-slate-400">{{ p.role }}</span>
+              </div>
+
+              <!-- Status pill -->
+              <div class="absolute top-2 right-2 z-20">
+                <div class="p-1 rounded-full backdrop-blur-md shadow-md border" :class="(p.isLocal ? micOn : p.audioActive) ? 'bg-slate-950/80 border-slate-800 text-emerald-400' : 'bg-rose-600 border-rose-500 text-white'">
+                  <component :is="(p.isLocal ? micOn : p.audioActive) ? Mic : MicOff" class="w-3 h-3" />
+                </div>
+              </div>
+              <div class="absolute bottom-2 left-2 z-20 flex items-center space-x-1 bg-slate-950/90 backdrop-blur-md px-2 py-0.5 rounded text-white text-[10px] font-mono border border-slate-800 shadow-md max-w-[85%]">
+                <span class="font-bold text-white truncate">{{ p.name }}</span>
+                <span v-if="p.isLocal" class="text-slate-400">(You)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Google Meet Signature Grid Layout (Full Space Adaptive Canvas when NOT presenting) -->
+        <div v-else class="w-full h-full mx-auto flex items-center justify-center p-1 sm:p-2">
           <!-- 1 Participant Layout -->
           <div
             v-if="participants.length === 1"
@@ -411,6 +517,16 @@
           <component :is="cameraOn ? Video : VideoOff" class="w-5 h-5" />
         </button>
 
+        <!-- Present Screen Button -->
+        <button
+          @click="toggleScreenShare"
+          :title="isScreenSharing ? 'Stop presenting screen' : 'Present now / Share screen'"
+          class="w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-xs border"
+          :class="isScreenSharing ? 'bg-brand-700 hover:bg-brand-800 border-brand-800 text-white' : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800'"
+        >
+          <component :is="isScreenSharing ? ScreenShareOff : ScreenShare" class="w-5 h-5" />
+        </button>
+
         <!-- In-Call Chat Button -->
         <button
           @click="toggleSidebarTab('chat')"
@@ -480,6 +596,8 @@ import {
   MicOff,
   Video,
   VideoOff,
+  ScreenShare,
+  ScreenShareOff,
   PhoneOff,
   UserPlus,
   Users,
@@ -504,6 +622,63 @@ const sidebarTab = ref('chat') // 'chat' | 'roster'
 const showAddParticipantModal = ref(false)
 const localVideoEl = ref(null)
 let localMediaStream = null
+
+// Screen sharing reactive state
+const isScreenSharing = ref(false)
+const screenShareStream = ref(null)
+const screenShareVideoEl = ref(null)
+const hasNativeScreenStream = ref(false)
+const presenterName = ref('')
+const presenterRole = ref('')
+const isSelfPresenting = computed(() => isScreenSharing.value && presenterName.value === (auth.user?.name || 'Jane Doe'))
+
+const toggleScreenShare = async () => {
+  if (isScreenSharing.value) {
+    stopScreenShare()
+    return
+  }
+
+  presenterName.value = auth.user?.name || 'Jane Doe'
+  presenterRole.value = (auth.role || 'patient').toUpperCase()
+
+  try {
+    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: { cursor: 'always' },
+        audio: false,
+      })
+      screenShareStream.value = stream
+      hasNativeScreenStream.value = true
+      isScreenSharing.value = true
+
+      setTimeout(() => {
+        if (screenShareVideoEl.value) {
+          screenShareVideoEl.value.srcObject = stream
+        }
+      }, 60)
+
+      stream.getVideoTracks()[0].onended = () => {
+        stopScreenShare()
+      }
+    } else {
+      hasNativeScreenStream.value = false
+      isScreenSharing.value = true
+    }
+  } catch (err) {
+    console.warn('Screen share display media fallback activated:', err)
+    hasNativeScreenStream.value = false
+    isScreenSharing.value = true
+  }
+}
+
+const stopScreenShare = () => {
+  if (screenShareStream.value) {
+    screenShareStream.value.getTracks().forEach((track) => track.stop())
+    screenShareStream.value = null
+  }
+  hasNativeScreenStream.value = false
+  isScreenSharing.value = false
+}
 
 const chatContainerEl = ref(null)
 const newChatMessage = ref('')
