@@ -18,6 +18,7 @@ import DoctorDirectoryView from '@/views/patient/DoctorDirectoryView.vue'
 import PatientAppointmentsView from '@/views/patient/PatientAppointmentsView.vue'
 import PatientRecordsView from '@/views/patient/PatientRecordsView.vue'
 import PatientPrescriptionsView from '@/views/patient/PatientPrescriptionsView.vue'
+import CheckoutView from '@/views/patient/CheckoutView.vue'
 
 // Doctor Views
 import DoctorDashboardView from '@/views/doctor/DoctorDashboardView.vue'
@@ -91,6 +92,12 @@ const routes = [
         name: 'patient-prescriptions',
         component: PatientPrescriptionsView,
         meta: { roles: ['patient'] },
+      },
+      {
+        path: 'patient/checkout/:appointmentId',
+        name: 'patient-checkout',
+        component: CheckoutView,
+        meta: { roles: ['patient', 'doctor', 'admin'] },
       },
 
       // Doctor Portal
