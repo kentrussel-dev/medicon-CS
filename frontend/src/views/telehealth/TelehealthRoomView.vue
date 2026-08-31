@@ -43,16 +43,16 @@
       </div>
     </header>
 
-    <!-- Main Workspace (Video Grid + Optional Side Info Panel) -->
+    <!-- Main Workspace (Google Meet Widescreen Stage) -->
     <div class="flex-1 flex overflow-hidden relative">
       <!-- Video Grid Area -->
-      <main class="flex-1 p-3 sm:p-5 flex items-center justify-center overflow-y-auto bg-slate-100/70">
+      <main class="flex-1 p-4 sm:p-6 lg:p-8 flex items-center justify-center overflow-y-auto bg-slate-100/80">
         <!-- Reconnection Overlay -->
         <div
           v-if="connectionState === 'reconnecting'"
           class="absolute inset-0 z-40 bg-white/80 backdrop-blur-xs flex flex-col items-center justify-center p-6 text-center"
         >
-          <div class="bg-white border-2 border-amber-500 p-6 max-w-md w-full space-y-3 font-mono shadow-xl">
+          <div class="bg-white border-2 border-amber-500 p-6 max-w-md w-full space-y-3 font-mono shadow-xl rounded-xl">
             <RefreshCw class="w-8 h-8 text-amber-600 animate-spin mx-auto" />
             <h3 class="font-bold text-sm text-slate-950 uppercase">Reconnecting to Consultation Room</h3>
             <p class="text-xs text-slate-600 font-sans">
@@ -61,22 +61,24 @@
           </div>
         </div>
 
-        <!-- Dynamic Multi-Participant Grid -->
+        <!-- Google Meet Style Widescreen Multi-Participant Grid -->
         <div
-          class="w-full h-full max-w-7xl grid gap-3 sm:gap-4 transition-all"
+          class="w-full max-w-6xl mx-auto grid gap-4 transition-all my-auto"
           :class="{
-            'grid-cols-1 max-w-2xl': participants.length <= 1,
-            'grid-cols-1 md:grid-cols-2': participants.length === 2,
-            'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3': participants.length >= 3,
+            'grid-cols-1 max-w-3xl': participants.length === 1,
+            'grid-cols-1 md:grid-cols-2 max-w-5xl': participants.length === 2,
+            'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl': participants.length === 3,
+            'grid-cols-1 sm:grid-cols-2 max-w-5xl': participants.length === 4,
+            'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl': participants.length > 4,
           }"
         >
           <div
             v-for="p in participants"
             :key="p.id"
-            class="relative bg-white border-2 border-slate-300 flex flex-col justify-between overflow-hidden shadow-sm aspect-video sm:aspect-auto sm:min-h-[260px]"
+            class="relative w-full aspect-video bg-slate-200 border border-slate-300 rounded-xl overflow-hidden shadow-md flex items-center justify-center group"
           >
-            <!-- Participant Video Canvas / Stream -->
-            <div class="absolute inset-0 flex items-center justify-center bg-slate-100">
+            <!-- Participant Video Canvas / Camera Stream -->
+            <div class="absolute inset-0 flex items-center justify-center bg-slate-200">
               <video
                 v-if="p.isLocal && cameraOn"
                 ref="localVideoEl"
@@ -86,44 +88,42 @@
                 class="w-full h-full object-cover mirror"
               ></video>
 
+              <!-- Center Avatar (Google Meet Style) -->
               <div
                 v-else
-                class="w-full h-full flex flex-col items-center justify-center bg-slate-100 p-4 text-center"
+                class="w-full h-full flex flex-col items-center justify-center bg-slate-100/90 p-4 text-center"
               >
-                <div class="w-16 h-16 bg-white border-2 border-slate-300 flex items-center justify-center font-bold text-xl uppercase text-slate-800 mb-2 shadow-xs">
+                <div class="w-20 h-20 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-2xl uppercase shadow-md border-2 border-white mb-2">
                   {{ p.name.charAt(0) }}
                 </div>
-                <span class="text-xs font-bold text-slate-900 uppercase">{{ p.name }}</span>
-                <span class="text-[10px] font-mono text-slate-500 mt-0.5">Camera Off</span>
+                <span class="text-sm font-bold text-slate-800 uppercase tracking-tight">{{ p.name }}</span>
+                <span class="text-[11px] font-mono text-slate-500 mt-0.5">{{ p.role }} &bull; Camera Muted</span>
               </div>
             </div>
 
-            <!-- Top Tile Tag -->
-            <div class="relative z-10 p-2.5 flex items-center justify-between bg-white/90 backdrop-blur-xs border-b border-slate-200">
-              <div class="flex items-center space-x-1.5">
-                <span
-                  class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider border"
-                  :class="getRoleBadgeClass(p.role)"
-                >
-                  {{ p.role }}
-                </span>
-                <span v-if="p.isLocal" class="text-[10px] font-mono text-slate-500 uppercase font-bold">(You)</span>
-              </div>
-
-              <!-- Audio Status Icon -->
-              <div class="flex items-center space-x-1 bg-white px-2 py-0.5 border border-slate-300 shadow-2xs">
+            <!-- Top-Right Status Floating Pill (Audio State) -->
+            <div class="absolute top-3 right-3 z-20 flex items-center space-x-1.5">
+              <div
+                class="p-2 rounded-full backdrop-blur-md shadow-sm border"
+                :class="(p.isLocal ? micOn : p.audioActive) ? 'bg-slate-900/70 border-slate-700/60 text-emerald-400' : 'bg-rose-600/90 border-rose-500 text-white'"
+              >
                 <component
                   :is="(p.isLocal ? micOn : p.audioActive) ? Mic : MicOff"
-                  class="w-3 h-3"
-                  :class="(p.isLocal ? micOn : p.audioActive) ? 'text-emerald-600' : 'text-rose-600'"
+                  class="w-3.5 h-3.5"
                 />
               </div>
             </div>
 
-            <!-- Bottom Tile Participant Name -->
-            <div class="relative z-10 p-2.5 bg-white/90 backdrop-blur-xs border-t border-slate-200 flex items-center justify-between text-xs font-mono">
-              <span class="font-bold text-slate-950 uppercase truncate">{{ p.name }}</span>
-              <span class="text-[10px] text-slate-500 font-mono font-bold">HD 1080p</span>
+            <!-- Bottom-Left Name & Role Floating Pill (Google Meet Style) -->
+            <div class="absolute bottom-3 left-3 z-20 flex items-center space-x-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-mono border border-slate-800/60 shadow-md max-w-[85%]">
+              <span
+                class="px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase tracking-wider rounded"
+                :class="getRoleBadgeClass(p.role)"
+              >
+                {{ p.role }}
+              </span>
+              <span class="font-bold text-white truncate">{{ p.name }}</span>
+              <span v-if="p.isLocal" class="text-slate-400 font-normal">(You)</span>
             </div>
           </div>
         </div>
@@ -181,57 +181,57 @@
       </aside>
     </div>
 
-    <!-- Bottom Control Console -->
-    <footer class="bg-white border-t-2 border-slate-200 px-4 py-3 flex items-center justify-between z-30 shadow-xs">
+    <!-- Bottom Control Console (Google Meet Style) -->
+    <footer class="bg-white border-t border-slate-200 px-6 py-3.5 flex items-center justify-between z-30 shadow-sm">
       <div class="hidden sm:flex items-center space-x-2 text-xs font-mono text-slate-500">
         <ShieldCheck class="w-4 h-4 text-emerald-600" />
         <span class="font-bold">HIPAA AES-256 ENCRYPTED MEDIA STREAM</span>
       </div>
 
-      <!-- Centered Media Control Buttons -->
+      <!-- Centered Google Meet Control Buttons -->
       <div class="flex items-center space-x-3 mx-auto sm:mx-0">
         <!-- Mic Toggle -->
         <button
           @click="toggleMic"
-          class="px-3.5 py-2.5 border font-bold text-xs uppercase flex items-center space-x-2 transition-colors"
-          :class="micOn ? 'bg-white hover:bg-slate-50 border-slate-300 text-slate-800' : 'bg-rose-50 border-rose-300 text-rose-800'"
+          :title="micOn ? 'Mute microphone' : 'Unmute microphone'"
+          class="w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-xs border"
+          :class="micOn ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800' : 'bg-rose-600 hover:bg-rose-700 border-rose-600 text-white'"
         >
-          <component :is="micOn ? Mic : MicOff" class="w-4 h-4" />
-          <span class="hidden md:inline">{{ micOn ? 'Mute Mic' : 'Unmute Mic' }}</span>
+          <component :is="micOn ? Mic : MicOff" class="w-5 h-5" />
         </button>
 
         <!-- Camera Toggle -->
         <button
           @click="toggleCamera"
-          class="px-3.5 py-2.5 border font-bold text-xs uppercase flex items-center space-x-2 transition-colors"
-          :class="cameraOn ? 'bg-white hover:bg-slate-50 border-slate-300 text-slate-800' : 'bg-rose-50 border-rose-300 text-rose-800'"
+          :title="cameraOn ? 'Turn off camera' : 'Turn on camera'"
+          class="w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-xs border"
+          :class="cameraOn ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800' : 'bg-rose-600 hover:bg-rose-700 border-rose-600 text-white'"
         >
-          <component :is="cameraOn ? Video : VideoOff" class="w-4 h-4" />
-          <span class="hidden md:inline">{{ cameraOn ? 'Stop Camera' : 'Start Camera' }}</span>
+          <component :is="cameraOn ? Video : VideoOff" class="w-5 h-5" />
         </button>
 
         <!-- Add Participant Button (Doctor / Admin) -->
         <button
           v-if="canAddParticipants"
           @click="showAddParticipantModal = true"
-          class="px-3.5 py-2.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold text-xs uppercase flex items-center space-x-2 transition-colors"
+          title="Invite specialist or translator"
+          class="w-11 h-11 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 flex items-center justify-center transition-all shadow-xs"
         >
-          <UserPlus class="w-4 h-4 text-brand-700" />
-          <span class="hidden md:inline">Add Participant</span>
+          <UserPlus class="w-5 h-5 text-brand-700" />
         </button>
 
         <!-- Leave Call Button -->
         <button
           @click="leaveCall"
-          class="px-5 py-2.5 bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs uppercase tracking-wider border border-rose-800 flex items-center space-x-2 transition-colors shadow-xs"
+          class="px-5 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs uppercase tracking-wider flex items-center space-x-2 transition-all shadow-md active:scale-95"
         >
           <PhoneOff class="w-4 h-4" />
-          <span>Leave Room</span>
+          <span>Leave Call</span>
         </button>
       </div>
 
       <div class="hidden lg:flex items-center space-x-2 font-mono text-xs text-slate-500">
-        <span>Session ID: LK-{{ appointmentId }}-SEC</span>
+        <span>Room: LK-{{ appointmentId }}-SEC</span>
       </div>
     </footer>
 
