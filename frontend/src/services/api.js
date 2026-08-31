@@ -244,15 +244,17 @@ const handleMockRoute = (config) => {
     }
     const user = JSON.parse(localStorage.getItem('medicon_user') || 'null')
     const role = (user?.role || 'patient').toUpperCase()
+    const roomCode = 'sdf-sdyy-125'
 
     return {
       status: 200,
       data: {
         success: true,
-        appointment: appt,
+        room_code: roomCode,
+        appointment: { ...appt, room_code: roomCode },
         session: {
           token: `lk_mock_jwt_token_${id}_${Date.now()}`,
-          room_name: `medicon_room_appt_${id}`,
+          room_name: `medicon_room_${roomCode}`,
           livekit_url: 'ws://localhost:7880',
           identity: `user_${user?.id || 1}_${role.toLowerCase()}`,
           participant_name: user?.name || 'Jane Doe',
@@ -260,6 +262,52 @@ const handleMockRoute = (config) => {
           is_host: role === 'DOCTOR' || role === 'ADMIN',
           expires_at: new Date(Date.now() + 7200000).toISOString(),
         },
+      },
+    }
+  }
+
+  if (url.match(/^\/appointments\/\d+\/telehealth\/close$/) && method === 'post') {
+    const id = Number(url.split('/')[2])
+    localStorage.removeItem(`medicon_chat_room_${id}`)
+    localStorage.removeItem(`medicon_chat_room_sdf-sdyy-125`)
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: 'Consultation room closed and in-call messages purged.',
+        new_room_code: 'med-' + Math.random().toString(36).substring(2, 6) + '-' + Math.floor(100 + Math.random() * 900),
+      },
+    }
+  }
+
+  if (url.match(/^\/telehealth\/rooms\/[^/]+\/close$/) && method === 'post') {
+    const code = url.split('/')[3]
+    localStorage.removeItem(`medicon_chat_room_${code}`)
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: 'Room closed and all in-call data purged.',
+      },
+    }
+  }
+
+  if (url === '/telehealth/rooms/create' && method === 'post') {
+    const part1 = Math.random().toString(36).substring(2, 5)
+    const part2 = Math.random().toString(36).substring(2, 6)
+    const part3 = Math.floor(100 + Math.random() * 900)
+    const code = `${part1}-${part2}-${part3}`
+    return {
+      status: 201,
+      data: {
+        success: true,
+        room: {
+          id: Date.now(),
+          room_code: code,
+          title: body.title || 'Instant Clinical Consultation',
+          status: 'ACTIVE',
+        },
+        join_url: `${window.location.origin}/telehealth/room/${code}`,
       },
     }
   }

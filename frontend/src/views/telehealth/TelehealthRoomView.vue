@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans select-none">
+  <div v-if="!isRoomClosed" class="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans select-none">
     <!-- Top Telehealth Clinical Header -->
     <header class="bg-white border-b-2 border-slate-200 px-4 py-3 flex items-center justify-between z-30 shadow-xs">
       <div class="flex items-center space-x-3">
@@ -10,7 +10,16 @@
           <div class="flex items-center space-x-2 text-[11px] font-mono">
             <span class="text-brand-800 font-bold uppercase">Medicon Telehealth</span>
             <span class="text-slate-300">/</span>
-            <span class="text-slate-600 font-bold uppercase">Room #{{ appointmentId }}</span>
+            <!-- Unique Room Code Badge with 1-Click Copy -->
+            <button
+              @click="copyRoomLink"
+              title="Click to copy consultation link"
+              class="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded text-slate-800 font-mono font-bold flex items-center space-x-1 transition-colors"
+            >
+              <span class="text-brand-700 font-bold">#{{ roomCode }}</span>
+              <Copy class="w-3 h-3 text-slate-500" />
+              <span v-if="copiedLink" class="text-[9px] text-emerald-600 font-bold ml-1">COPIED!</span>
+            </button>
             <span class="px-1.5 py-0.2 bg-emerald-50 text-emerald-800 border border-emerald-300 text-[9px] uppercase font-bold">
               ENCRYPTED WEBRTC HD
             </span>
@@ -571,9 +580,59 @@
       </div>
 
       <div class="hidden lg:flex items-center space-x-2 font-mono text-xs text-slate-500">
-        <span>Room: LK-{{ appointmentId }}-SEC</span>
+        <span class="px-2 py-0.5 bg-slate-100 rounded border border-slate-300 text-slate-700 font-bold">Code: {{ roomCode }}</span>
       </div>
     </footer>
+
+    <!-- Leave / End Call Confirmation Modal -->
+    <div
+      v-if="showLeaveModal"
+      class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+    >
+      <div class="bg-white border-2 border-slate-300 max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4">
+        <div class="flex items-center space-x-3 text-slate-900 border-b border-slate-200 pb-3">
+          <div class="w-10 h-10 rounded-full bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center">
+            <PhoneOff class="w-5 h-5" />
+          </div>
+          <div>
+            <h3 class="font-bold text-sm uppercase">Leave Consultation Room</h3>
+            <span class="text-xs text-slate-500 font-mono">Room Code: #{{ roomCode }}</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-600 font-sans leading-relaxed">
+          Are you sure you want to exit this telehealth session?
+        </p>
+
+        <div class="space-y-2 pt-2">
+          <!-- Option 1: Doctor/Admin Close & Purge All Data -->
+          <button
+            v-if="auth.isDoctor || auth.isAdmin"
+            @click="closeAndPurgeRoom"
+            class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-mono text-xs font-bold uppercase rounded-lg transition-colors flex items-center justify-center space-x-2 shadow-xs"
+          >
+            <ShieldAlert class="w-4 h-4" />
+            <span>End Call for Everyone & Purge Data</span>
+          </button>
+
+          <!-- Option 2: Just Leave Call -->
+          <button
+            @click="executeLeave"
+            class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-mono text-xs font-bold uppercase rounded-lg transition-colors"
+          >
+            Leave Call (Room Stays Open)
+          </button>
+
+          <!-- Cancel -->
+          <button
+            @click="showLeaveModal = false"
+            class="w-full py-2 text-slate-500 hover:text-slate-900 font-mono text-xs uppercase"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Add Participant Modal -->
     <AddParticipantModal
@@ -582,6 +641,41 @@
       @close="showAddParticipantModal = false"
       @participant-added="handleParticipantAdded"
     />
+  </div>
+
+  <!-- Room Closed & Data Purged Full Screen State -->
+  <div v-else class="min-h-screen bg-slate-50 flex items-center justify-center p-6 select-none font-sans">
+    <div class="max-w-md w-full bg-white border-2 border-slate-300 p-8 rounded-2xl shadow-xl text-center space-y-4">
+      <div class="w-16 h-16 bg-emerald-50 border-2 border-emerald-300 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-xs">
+        <ShieldCheck class="w-8 h-8" />
+      </div>
+
+      <div>
+        <span class="px-2 py-0.5 bg-slate-100 border border-slate-300 rounded font-mono text-xs font-bold text-slate-600 uppercase">
+          Room #{{ roomCode }} Closed
+        </span>
+        <h2 class="text-lg font-bold text-slate-900 uppercase mt-2">Consultation Ended & Data Purged</h2>
+      </div>
+
+      <p class="text-xs text-slate-600 font-sans leading-relaxed">
+        This consultation session has ended. All in-call encrypted messages and media tokens for room <code class="px-1.5 py-0.5 bg-slate-100 border rounded font-mono font-bold text-brand-700">{{ roomCode }}</code> have been securely wiped from the server.
+      </p>
+
+      <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-2">
+        <button
+          @click="createNewRoom"
+          class="flex-1 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-mono text-xs font-bold uppercase rounded-lg transition-colors shadow-xs"
+        >
+          Start New Room
+        </button>
+        <button
+          @click="goToDashboard"
+          class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-mono text-xs font-bold uppercase rounded-lg transition-colors"
+        >
+          Dashboard
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -603,6 +697,8 @@ import {
   Users,
   MessageSquare,
   Send,
+  Copy,
+  ShieldAlert,
   X,
   RefreshCw,
   ShieldCheck,
@@ -612,7 +708,9 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-const appointmentId = computed(() => route.params.id || 1)
+// Unique Room Code (e.g. sdf-sdyy-125)
+const roomCode = ref(route.params.code || route.params.id || 'sdf-sdyy-125')
+const appointmentId = computed(() => (isNumeric(roomCode.value) ? Number(roomCode.value) : 1))
 const appointment = ref(null)
 const connectionState = ref('connected') // connected, reconnecting, disconnected
 const micOn = ref(true)
@@ -620,8 +718,31 @@ const cameraOn = ref(true)
 const showSidebar = ref(false)
 const sidebarTab = ref('chat') // 'chat' | 'roster'
 const showAddParticipantModal = ref(false)
+const showLeaveModal = ref(false)
+const isRoomClosed = ref(false)
+const copiedLink = ref(false)
 const localVideoEl = ref(null)
 let localMediaStream = null
+
+function isNumeric(str) {
+  return /^\d+$/.test(String(str))
+}
+
+const copyRoomLink = async () => {
+  try {
+    const url = `${window.location.origin}/telehealth/room/${roomCode.value}`
+    await navigator.clipboard.writeText(url)
+    copiedLink.value = true
+    setTimeout(() => {
+      copiedLink.value = false
+    }, 2500)
+  } catch (e) {
+    copiedLink.value = true
+    setTimeout(() => {
+      copiedLink.value = false
+    }, 2500)
+  }
+}
 
 // Screen sharing reactive state
 const isScreenSharing = ref(false)
@@ -816,6 +937,10 @@ const stopLocalMedia = () => {
     localMediaStream.getTracks().forEach((t) => t.stop())
     localMediaStream = null
   }
+  if (screenShareStream.value) {
+    screenShareStream.value.getTracks().forEach((t) => t.stop())
+    screenShareStream.value = null
+  }
 }
 
 const toggleMic = () => {
@@ -846,7 +971,12 @@ const handleParticipantAdded = (newParticipant) => {
   })
 }
 
-const leaveCall = async () => {
+const leaveCall = () => {
+  showLeaveModal.value = true
+}
+
+const executeLeave = async () => {
+  showLeaveModal.value = false
   try {
     await api.post(`/appointments/${appointmentId.value}/telehealth/events`, {
       event: 'LEAVE',
@@ -856,13 +986,47 @@ const leaveCall = async () => {
     // Handled
   } finally {
     stopLocalMedia()
-    if (auth.isDoctor) {
-      router.push('/doctor/appointments')
-    } else if (auth.isAdmin) {
-      router.push('/admin/dashboard')
-    } else {
-      router.push('/patient/appointments')
-    }
+    goToDashboard()
+  }
+}
+
+const closeAndPurgeRoom = async () => {
+  showLeaveModal.value = false
+  try {
+    await api.post(`/appointments/${appointmentId.value}/telehealth/close`)
+    // Purge local storage messages for this room
+    localStorage.removeItem(`medicon_chat_room_${appointmentId.value}`)
+    localStorage.removeItem(`medicon_chat_room_${roomCode.value}`)
+  } catch (e) {
+    // Handled
+  } finally {
+    stopLocalMedia()
+    chatMessages.value = []
+    isRoomClosed.value = true
+  }
+}
+
+const createNewRoom = () => {
+  // Generate fresh unique room code (e.g. med-7x3q-992)
+  const part1 = Math.random().toString(36).substring(2, 5)
+  const part2 = Math.random().toString(36).substring(2, 6)
+  const part3 = Math.floor(100 + Math.random() * 900)
+  const newCode = `${part1}-${part2}-${part3}`
+  
+  roomCode.value = newCode
+  chatMessages.value = []
+  isRoomClosed.value = false
+  router.push(`/telehealth/room/${newCode}`)
+  startLocalMedia()
+}
+
+const goToDashboard = () => {
+  if (auth.isDoctor) {
+    router.push('/doctor/appointments')
+  } else if (auth.isAdmin) {
+    router.push('/admin/dashboard')
+  } else {
+    router.push('/patient/appointments')
   }
 }
 
@@ -871,6 +1035,9 @@ const loadSession = async () => {
     const res = await api.get(`/appointments/${appointmentId.value}/telehealth/token`)
     if (res.data?.appointment) {
       appointment.value = res.data.appointment
+      if (res.data.appointment.room_code) {
+        roomCode.value = res.data.appointment.room_code
+      }
     }
   } catch (err) {
     // Handled via mock adapter

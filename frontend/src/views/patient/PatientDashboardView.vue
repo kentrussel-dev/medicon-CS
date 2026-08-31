@@ -29,6 +29,45 @@
       </div>
     </div>
 
+    <!-- Quick Join / Instant Telehealth Consultation Banner -->
+    <div class="bg-white border border-slate-300 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-brand-50 border border-brand-200 text-brand-700 rounded-lg flex items-center justify-center shrink-0">
+          <Video class="w-5 h-5" />
+        </div>
+        <div>
+          <h4 class="font-bold text-sm text-slate-900 uppercase">Instant Telehealth Consultation</h4>
+          <p class="text-xs text-slate-600 font-sans">Start an instant room or enter a unique code (e.g. <code class="font-mono text-brand-700 font-bold">sdf-sdyy-125</code>) to join immediately.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <div class="flex items-center border border-slate-300 rounded-lg bg-slate-50 overflow-hidden">
+          <input
+            type="text"
+            v-model="joinRoomCode"
+            placeholder="e.g. sdf-sdyy-125"
+            class="px-3 py-2 text-xs font-mono bg-transparent focus:outline-none w-36 sm:w-44 text-slate-900"
+            @keyup.enter="joinByCode"
+          />
+          <button
+            @click="joinByCode"
+            :disabled="!joinRoomCode.trim()"
+            class="px-3.5 py-2 bg-brand-700 hover:bg-brand-800 text-white font-mono text-xs font-bold uppercase transition-colors disabled:opacity-40"
+          >
+            Join
+          </button>
+        </div>
+
+        <button
+          @click="createInstantMeeting"
+          class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono text-xs font-bold uppercase border border-slate-300 rounded-lg transition-colors whitespace-nowrap"
+        >
+          New Room
+        </button>
+      </div>
+    </div>
+
     <!-- Key Metrics (Crisp Clean Stats) -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
       <div class="bg-white border border-slate-300 p-4">
@@ -163,6 +202,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useAppointmentStore } from '@/stores/appointments'
 import { useRecordStore } from '@/stores/records'
@@ -177,6 +217,7 @@ import {
   Video,
 } from 'lucide-vue-next'
 
+const router = useRouter()
 const auth = useAuthStore()
 const appointmentStore = useAppointmentStore()
 const recordStore = useRecordStore()
@@ -186,6 +227,21 @@ const showBookModal = ref(false)
 const showRescheduleModal = ref(false)
 const selectedAppointment = ref(null)
 const loading = ref(false)
+const joinRoomCode = ref('')
+
+const joinByCode = () => {
+  if (!joinRoomCode.value.trim()) return
+  const clean = joinRoomCode.value.trim().replace(/^#/, '')
+  router.push(`/telehealth/room/${clean}`)
+}
+
+const createInstantMeeting = () => {
+  const part1 = Math.random().toString(36).substring(2, 5)
+  const part2 = Math.random().toString(36).substring(2, 6)
+  const part3 = Math.floor(100 + Math.random() * 900)
+  const code = `${part1}-${part2}-${part3}`
+  router.push(`/telehealth/room/${code}`)
+}
 
 const appointments = computed(() => appointmentStore.appointments)
 const upcomingAppointments = computed(() =>

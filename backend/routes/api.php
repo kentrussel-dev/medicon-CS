@@ -81,6 +81,14 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::post('/{id}/telehealth/events', [TelehealthRoomController::class, 'logEvent']);
         Route::get('/{id}/telehealth/messages', [TelehealthRoomController::class, 'getMessages']);
         Route::post('/{id}/telehealth/messages', [TelehealthRoomController::class, 'sendMessage']);
+        Route::post('/{id}/telehealth/close', [TelehealthRoomController::class, 'closeRoom']);
+    });
+
+    // Standalone / Ad-hoc Telehealth Rooms
+    Route::prefix('telehealth')->group(function () {
+        Route::post('/rooms/create', [TelehealthRoomController::class, 'createInstantRoom']);
+        Route::get('/rooms/{code}/token', [TelehealthRoomController::class, 'getToken']);
+        Route::post('/rooms/{code}/close', [TelehealthRoomController::class, 'closeRoom']);
     });
 
     // Medical Records (Encrypted Clinical Data)

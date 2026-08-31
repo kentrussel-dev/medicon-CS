@@ -6,6 +6,8 @@ use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\AppointmentParticipant;
+use App\Models\TelehealthMessage;
+use App\Models\TelehealthRoom;
 use App\Services\AuditLoggerService;
 use App\Services\LiveKitTokenService;
 use Illuminate\Http\JsonResponse;
@@ -19,13 +21,78 @@ class TelehealthRoomController extends Controller
     ) {}
 
     /**
-     * Issue a short-lived LiveKit Access Token for an authorized user.
+     * Create an instant ad-hoc consultation room with a unique code like `sdf-sdyy-125`.
      */
-    public function getToken(Request $request, int $id): JsonResponse
+    public function createInstantRoom(Request $request): JsonResponse
     {
-        $appointment = Appointment::with(['patient.user', 'doctor.user'])->findOrFail($id);
+        $user = $request->user();
+        $code = TelehealthRoom::generateUniqueCode();
+
+        $room = TelehealthRoom::create([
+            'room_code' => $code,
+            'created_by' => $user->id,
+            'title' => $request->input('title', 'Instant Clinical Consultation'),
+            'status' => 'ACTIVE',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'room' => $room,
+            'join_url' => url("/telehealth/room/{$code}"),
+        ], 201);
+    }
+
+    /**
+     * Issue a short-lived LiveKit Access Token for an authorized user (by appointment ID or room code).
+     */
+    public function getToken(Request $request, string $identifier): JsonResponse
+    {
+        if (is_numeric($identifier)) {
+            $appointment = Appointment::with(['patient.user', 'doctor.user'])->findOrFail((int) $identifier);
+        } else {
+            $appointment = Appointment::with(['patient.user', 'doctor.user'])->where('room_code', $identifier)->first();
+            if (!$appointment) {
+                // Check if it's a standalone TelehealthRoom
+                $room = TelehealthRoom::where('room_code', $identifier)->first();
+                if ($room && $room->appointment_id) {
+                    $appointment = Appointment::with(['patient.user', 'doctor.user'])->findOrFail($room->appointment_id);
+                }
+            }
+        }
+
+        if (!$appointment) {
+            // Standalone ad-hoc room
+            $room = TelehealthRoom::where('room_code', $identifier)->firstOrFail();
+            if ($room->status === 'CLOSED') {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'This consultation room has ended and its data has been purged.',
+                    'is_closed' => true,
+                ], 410);
+            }
+
+            $user = $request->user();
+            return response()->json([
+                'success' => true,
+                'room' => $room,
+                'session' => [
+                    'token' => "mock_token_{$room->room_code}_{$user->id}",
+                    'room_name' => "room_{$room->room_code}",
+                    'livekit_url' => config('services.livekit.url', 'ws://localhost:7880'),
+                    'identity' => "user_{$user->id}",
+                    'participant_name' => $user->name,
+                    'role' => strtoupper($user->role?->value ?? 'patient'),
+                ],
+            ]);
+        }
 
         $this->authorize('joinTelehealth', $appointment);
+
+        // Ensure appointment has an active unique room code
+        if (!$appointment->room_code) {
+            $appointment->room_code = TelehealthRoom::generateUniqueCode();
+            $appointment->save();
+        }
 
         $user = $request->user();
         $tokenData = $this->tokenService->generateAppointmentToken($appointment, $user);
@@ -38,6 +105,7 @@ class TelehealthRoomController extends Controller
             patientId: $appointment->patient_id,
             newValues: [
                 'room_name' => $tokenData['room_name'],
+                'room_code' => $appointment->room_code,
                 'participant_identity' => $tokenData['identity'],
                 'role' => $tokenData['role'],
             ],
@@ -46,8 +114,10 @@ class TelehealthRoomController extends Controller
 
         return response()->json([
             'success' => true,
+            'room_code' => $appointment->room_code,
             'appointment' => [
                 'id' => $appointment->id,
+                'room_code' => $appointment->room_code,
                 'patient_name' => $appointment->patient?->user?->name,
                 'doctor_name' => $appointment->doctor?->user?->name,
                 'doctor_specialty' => $appointment->doctor?->specialty,
@@ -56,6 +126,56 @@ class TelehealthRoomController extends Controller
                 'status' => $appointment->status?->value,
             ],
             'session' => $tokenData,
+        ]);
+    }
+
+    /**
+     * Close consultation room and purge all in-room messages & tokens.
+     */
+    public function closeRoom(Request $request, string $identifier): JsonResponse
+    {
+        $appointment = is_numeric($identifier)
+            ? Appointment::find((int) $identifier)
+            : Appointment::where('room_code', $identifier)->first();
+
+        if ($appointment) {
+            $this->authorize('joinTelehealth', $appointment);
+
+            // 1. Purge all in-call ephemeral messages
+            TelehealthMessage::where('appointment_id', $appointment->id)->delete();
+
+            // 2. Generate a fresh new room code for any future consultation
+            $oldCode = $appointment->room_code;
+            $appointment->room_code = TelehealthRoom::generateUniqueCode();
+            $appointment->save();
+
+            // 3. Mark any attached TelehealthRoom as CLOSED
+            TelehealthRoom::where('appointment_id', $appointment->id)
+                ->orWhere('room_code', $oldCode)
+                ->update(['status' => 'CLOSED', 'closed_at' => now()]);
+
+            $this->auditLogger->log(
+                action: AuditAction::TELEHEALTH_LEAVE,
+                recordType: 'Appointment',
+                recordId: $appointment->id,
+                patientId: $appointment->patient_id,
+                newValues: ['action' => 'ROOM_CLOSED_AND_PURGED', 'old_room_code' => $oldCode],
+                actor: $request->user()
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Consultation room closed and all in-call messages securely purged.',
+                'new_room_code' => $appointment->room_code,
+            ]);
+        }
+
+        $room = TelehealthRoom::where('room_code', $identifier)->firstOrFail();
+        $room->closeAndPurge();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ad-hoc consultation room closed and purged.',
         ]);
     }
 
