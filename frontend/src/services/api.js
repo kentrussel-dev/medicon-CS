@@ -588,219 +588,207 @@ const handleMockRoute = (config) => {
     return { status: 200, data: { prescription: item } }
   }
 
-  // 7. AI Clinical Assistant (Gemini Flash Model)
+  // 7. AI Clinical Assistant (Gemini Flash Model & Clinical Conversational Engine)
   if (url === '/ai/chat' && method === 'post') {
-    const prompt = (body.message || '').toLowerCase()
+    const prompt = (body.message || '').trim().toLowerCase()
     const user = JSON.parse(localStorage.getItem('medicon_user') || 'null')
-    // 0. Guest User Context Handling
-    if (!user) {
-      if (prompt.includes('login') || prompt.includes('sign in') || prompt.includes('account') || prompt.includes('register') || prompt.includes('signup')) {
-        answer = "**Medicon Portal Access**\n\n" +
-          "To access your clinical charts, schedule appointments, or join private consultations:\n\n" +
-          "• **Sign In:** Go to [/login](/login) to access your Patient or Doctor portal.\n" +
-          "• **Create Account:** Register as a new patient at [/register](/register).\n\n" +
-          "Demo accounts with 1-click login are available on the sign-in screen!"
-      } else if (prompt.includes('book') || prompt.includes('schedule') || prompt.includes('appointment')) {
-        answer = "**How to Book an Appointment at Medicon**\n\n" +
-          "1. **Sign In or Register:** Please sign in at [/login](/login) or create an account at [/register](/register).\n" +
-          "2. **Select a Specialist:** Choose from Cardiology, Neurology, Dermatology, Primary Care, Psychiatry, or Orthopedics.\n" +
-          "3. **Choose Format:** Select Telehealth HD Video or In-Person Clinic Visit.\n" +
-          "4. **Select Time:** Pick your preferred consultation slot.\n\n" +
-          "Once booked, you will receive real-time SMS and email confirmations with your room code!"
-      } else if (prompt.includes('doctor') || prompt.includes('specialist') || prompt.includes('fee') || prompt.includes('rate') || prompt.includes('cardio') || prompt.includes('neuro') || prompt.includes('derma')) {
-        answer = "**Featured Medical Specialists**\n\n" +
-          "• **Cardiology:** Dr. Sarah Jenkins, MD, FACC (Harvard Alumna, $120)\n" +
-          "• **Neurology:** Dr. Marcus Chen, MD, PhD (Cognitive & Stroke Specialist, $115)\n" +
-          "• **Dermatology:** Dr. Elena Rostova, MD (Clinical Teledermatology, $95)\n" +
-          "• **General Practice:** Dr. James Wilson, MD (Primary Care & Wellness, $75)\n" +
-          "• **Psychiatry:** Dr. Aisha Patel, MD (Clinical Mental Health, $130)\n" +
-          "• **Orthopedics:** Dr. Robert Taylor, MD (Sports & Joint Rehabilitation, $125)\n\n" +
-          "You can browse and book doctors directly on our homepage or after signing in."
-      } else if (prompt.includes('telehealth') || prompt.includes('video') || prompt.includes('room') || prompt.includes('code') || prompt.includes('green room')) {
-        answer = "**Medicon Telehealth Consultations**\n\n" +
-          "• **WebRTC HD Video:** Encrypted 1080p video calls directly in your browser without software installations.\n" +
-          "• **Pre-Join Green Room:** Test your camera, microphone, and view attendance before entering.\n" +
-          "• **Unique Room Codes:** Every consultation uses a 3-part code (e.g. `k9x-yqp2-481`).\n" +
-          "• **Data Privacy:** In-room chat and media credentials are wiped upon consultation end."
-      } else if (prompt.includes('hour') || prompt.includes('open') || prompt.includes('location') || prompt.includes('hotline') || prompt.includes('phone') || prompt.includes('contact')) {
-        answer = "**Clinic Hours & Hotlines**\n\n" +
-          "• **Outpatient Clinics:** Monday – Friday, 8:00 AM – 5:00 PM\n" +
-          "• **Quezon City Main:** +63-2-8723-0101\n" +
-          "• **Global City Center:** +63-2-8789-7700\n" +
-          "• **24/7 Emergency Triage:** +63-2-8521-0020\n" +
-          "• **Telehealth Video Consults:** Available 24/7 based on doctor schedule."
-      } else if (prompt.includes('prescription') || prompt.includes('record') || prompt.includes('history') || prompt.includes('result') || prompt.includes('ehr')) {
-        answer = "**Accessing Medical Records & Prescriptions**\n\n" +
-          "For patient privacy and HIPAA compliance, medical charts and electronic prescriptions require authentication.\n\n" +
-          "Please **Sign In** to your Patient Portal at [/login](/login) to access your diagnostic summaries and active medication courses."
-      } else {
-        answer = "Hello! I am your Medicon Virtual Clinical Navigator.\n\n" +
-          "Since you are currently browsing as a **Guest**, I can answer questions about our hospital specialties, doctors, appointment booking, or telehealth video visits.\n\n" +
-          "To schedule an appointment or view your health records, please **Sign In** or **Create an Account**!"
-      }
-      isCached = true
-    } else if (prompt.includes('website') || prompt.includes('about') || prompt.includes('what is medicon') || prompt.includes('purpose')) {
-      if (role === 'admin') {
-        answer = "**Medicon Clinical Operations Platform**\n\n" +
-          "Medicon is an enterprise hospital management and telehealth platform. As an **Operations Administrator**, your portal allows you to:\n\n" +
-          "1. **Monitor Clinical Utilization:** Track hospital-wide encounters, doctor workload, and department capacity.\n" +
-          "2. **Attendance Risk Triage:** Review appointments flagged by our ML attendance prediction model to prevent clinic no-shows.\n" +
-          "3. **HIPAA Compliance Audit Trail:** Inspect immutable audit logs of all user actions and medical record access.\n" +
-          "4. **User & RBAC Management:** Manage patient, doctor, and staff roles and access permissions."
-      } else if (role === 'doctor') {
-        answer = "**Medicon Clinical Portal**\n\n" +
-          "Medicon is an integrated telehealth and practice management system for medical providers. In your **Physician Portal**, you can:\n\n" +
-          "1. **Manage Clinical Schedule:** Configure weekly consultation hours and appointment slots.\n" +
-          "2. **Conduct Encounters:** Launch encrypted HD telehealth video visits with scheduled patients.\n" +
-          "3. **Document EHR Records:** Record diagnostic notes, ICD-10 codes, and vital signs.\n" +
-          "4. **Issue Prescriptions:** Prescribe and manage electronic medication courses with automatic refills."
-      } else {
-        answer = "**Medicon Healthcare & Patient Portal**\n\n" +
-          "Medicon is a modern telehealth and patient care platform. In your **Patient Portal**, you can:\n\n" +
-          "1. **Book Consultations:** Schedule in-person or virtual HD video appointments with certified specialists.\n" +
-          "2. **Encrypted Medical Records:** View your post-consultation diagnoses, doctor notes, and vitals history.\n" +
-          "3. **Active Prescriptions:** Review prescribed medications, dosages, frequency, and refills remaining.\n" +
-          "4. **Clinical AI Assistant:** Ask questions about clinic hours, appointment preparation, and medications."
-      }
-      isCached = true
-    } else if (role === 'admin') {
-      // Specific Admin queries
-      if (prompt.includes('risk') || prompt.includes('attendance') || prompt.includes('no-show') || prompt.includes('ml')) {
-        answer = "**Attendance Risk Stratification (ML Model)**\n\n" +
-          "- **Function:** Predicts the probability of patient missed visits based on lead time, prior history, and scheduling parameters.\n" +
-          "- **Tiers:** Low (<35%), Moderate (35%-64%), and High (≥65%).\n" +
-          "- **Action:** High-risk appointments appear in the Active Triage Queue for targeted reminder confirmations."
-      } else if (prompt.includes('hipaa') || prompt.includes('audit') || prompt.includes('compliance') || prompt.includes('log')) {
-        answer = "**HIPAA Audit Compliance**\n\n" +
-          "- **Audit Standard:** All patient record access, downloads, role modifications, and AI queries are permanently logged.\n" +
-          "- **Storage:** Immutable records stored with actor ID, IP address, user agent, and ISO-8601 timestamps with 7-year retention."
-      } else if (prompt.includes('utilization') || prompt.includes('doctor') || prompt.includes('metric')) {
-        answer = "**Physician Utilization Registry**\n\n" +
-          "- Active attending physicians: 28 licensed specialists.\n" +
-          "- System-wide consultation completion rate: 88.8%.\n" +
-          "- Real-time workload and rating distributions are tracked on your Executive Dashboard."
-      } else {
-        answer = `Hello, ${user?.name || 'Administrator'}! I am your Medicon Hospital Operations Assistant. I can help analyze clinical attendance metrics, doctor utilization, and HIPAA compliance policies.`
-      }
-    } else if (role === 'doctor') {
-      // Doctor scope
-      if (prompt.includes('soap') || prompt.includes('draft') || prompt.includes('note')) {
-        answer = "**Draft SOAP Clinical Encounter Note**\n\n" +
-          "**S (Subjective):** Patient presents for routine cardiology follow-up. Reports strict adherence to Lisinopril 10mg. Denies chest pain, palpitations, or lightheadedness.\n" +
-          "**O (Objective):** BP 124/80 mmHg, HR 68 bpm regular, SpO2 99%. S1/S2 present, no murmurs. Lungs clear to auscultation bilaterally.\n" +
-          "**A (Assessment):** Primary Essential Hypertension (ICD-10 I10) - well-controlled under current monotherapy.\n" +
-          "**P (Plan):** Maintain Lisinopril 10mg daily. Routine comprehensive metabolic panel in 6 months. Follow-up clinic visit in 6 months."
-      } else if (prompt.includes('interaction') || prompt.includes('potassium') || prompt.includes('nsaid') || prompt.includes('lisinopril')) {
-        answer = "**Pharmacology Clinical Reference: ACE Inhibitors + NSAIDs / Potassium**\n\n" +
-          "- **NSAIDs Interaction:** Co-administration may diminish the antihypertensive effect of ACE inhibitors and increase the risk of acute renal functional deterioration.\n" +
-          "- **Potassium Interaction:** ACE inhibitors reduce aldosterone secretion. Concomitant potassium-sparing agents or potassium supplements elevate hyperkalemia risks.\n" +
-          "- **Clinical Guidance:** Monitor serum potassium and renal function (BUN/Creatinine) periodically."
-      } else if (prompt.includes('patient') || prompt.includes('history') || prompt.includes('summary')) {
-        answer = "**Patient Clinical Summary**\n\n" +
-          "- **Patient:** Jane Doe (Age: 31, Blood Group: O+)\n" +
-          "- **Recorded Allergies:** Penicillin, Sulfa\n" +
-          "- **Active Diagnoses:** Essential Hypertension (ICD-10 I10), Contact Dermatitis (ICD-10 L23.9)\n" +
-          "- **Active Medication:** Lisinopril 10mg PO QD (Refills: 3)"
-      } else {
-        answer = `Hello Dr. ${user?.name || 'Physician'}! I can help draft structured SOAP notes, check pharmacology drug interactions, or summarize patient histories before an appointment.`
-      }
-    } else {
-      // Patient scope - Personal Clinical Nurse Persona
-      const prescriptions = getStoredPrescriptions()
-      const appointments = getStoredAppointments()
-      const records = getStoredRecords()
-      const firstName = (user?.name || 'Jane').split(' ')[0]
+    const role = user?.role || (user ? 'patient' : 'guest')
+    let answer = ''
+    let isCached = false
 
-      // Natural Greetings
-      if (prompt === 'hello' || prompt === 'hi' || prompt === 'hey' || prompt.startsWith('hello') || prompt.startsWith('hi ') || prompt.includes('good morning') || prompt.includes('good afternoon') || prompt.includes('good evening')) {
+    // Natural Greetings (Warm & Conversational)
+    if (
+      prompt === 'hello' ||
+      prompt === 'hi' ||
+      prompt === 'hey' ||
+      prompt === 'hello there' ||
+      prompt.startsWith('hello') ||
+      prompt.startsWith('hi ') ||
+      prompt.startsWith('hey ') ||
+      prompt.includes('good morning') ||
+      prompt.includes('good afternoon') ||
+      prompt.includes('good evening')
+    ) {
+      if (!user) {
+        answer = "Hello there! Welcome to Medicon Medical Center. How can I help you today? Whether you're looking for a doctor, have questions about clinic hours, or want to know how telehealth works, I'm happy to chat!"
+      } else if (role === 'doctor') {
+        answer = `Hello Dr. ${user?.name || 'Physician'}! Ready to assist you with drafting SOAP notes, reviewing patient histories, or checking pharmacology references.`
+      } else if (role === 'admin') {
+        answer = `Hello ${user?.name || 'Admin'}! Ready to assist you with hospital operations, attendance analytics, or audit policies.`
+      } else {
+        const appointments = getStoredAppointments()
+        const firstName = (user?.name || 'Jane').split(' ')[0]
         const nextAppt = appointments[0]
         if (nextAppt) {
           answer = `Hi ${firstName}! Good to see you. How are you feeling today?\n\nBy the way, you have an upcoming visit with **${nextAppt.doctor_name}** (${nextAppt.doctor_specialty}) coming up soon. Let me know if you have any questions about it or your medications!`
         } else {
-          answer = `Hi ${firstName}! Good to see you. I'm here as your personal nurse coordinator. How are you feeling today? Let me know if you'd like to check on appointments, prescriptions, or clinic information.`
+          answer = `Hi ${firstName}! Good to see you. I'm here as your personal care coordinator. How are you feeling today? Let me know if you'd like to check on appointments, prescriptions, or clinic information.`
         }
       }
-      // Conversational inquiries
-      else if (prompt.includes('how do you answer so fast') || prompt.includes('so fast') || prompt.includes('fast reply')) {
-        answer = `I have your patient chart and clinic records right in front of me so you don't have to wait on hold! I'm here whenever you need a quick answer about your care. What's on your mind?`
-      } else if (prompt.includes('how are you') || prompt.includes('how are you doing') || prompt.includes('how r u')) {
-        answer = `I'm doing well, thank you for asking, ${firstName}! Just keeping an eye on your care schedule and health records. How are you doing today? Are you feeling alright?`
-      } else if (prompt.includes('thank') || prompt.includes('thanks') || prompt.includes('appreciate')) {
-        answer = `You're very welcome, ${firstName}! I'm always right here if anything else comes up. Take care of yourself!`
-      } else if (prompt.includes('who are you') || prompt.includes('what are you') || prompt.includes('what can you do') || prompt.includes('help me')) {
-        answer = `Think of me as your personal clinic nurse here at Medicon! I'm here to:\n\n` +
-          `• Keep track of your upcoming doctor appointments and help you prepare\n` +
-          `• Explain what your medications are for and when to take them\n` +
-          `• Walk you through your past lab results and doctor notes in plain language\n` +
-          `• Answer questions about clinic visiting hours and procedures\n\n` +
-          `Is there anything specific you'd like to look at together?`
+    }
+    // Conversational Small Talk
+    else if (prompt.includes('how are you') || prompt.includes('how r u') || prompt.includes('how are u') || prompt.includes("how's it going") || prompt.includes('hows it going')) {
+      answer = "I'm doing great, thank you for asking! I'm here 24/7 to assist you with healthcare information, doctor recommendations, and clinic navigation. How are you feeling today?"
+    }
+    else if (prompt.includes('thank') || prompt.includes('thanks') || prompt.includes('appreciate')) {
+      answer = "You're very welcome! If you have any other questions about our doctors or services, feel free to ask anytime. Take care!"
+    }
+    else if (prompt.includes('who are you') || prompt.includes('what are you') || prompt.includes('what can you do') || prompt.includes('help me') || prompt.includes('what is your name')) {
+      if (!user) {
+        answer = "I'm your Medicon Virtual Health Assistant! I can help you with:\n\n" +
+          "• Finding board-certified doctors across our specialties\n" +
+          "• Explaining how our HD Telehealth consultations work\n" +
+          "• Providing clinic locations, outpatient hours, and 24/7 hotlines\n" +
+          "• Guiding you through booking in-person or virtual appointments\n\n" +
+          "What can I help you explore today?"
+      } else {
+        answer = "Think of me as your personal care coordinator here at Medicon! I'm here to:\n\n" +
+          "• Keep track of your upcoming appointments and help you prepare\n" +
+          "• Explain your prescribed medications and instructions\n" +
+          "• Review your past diagnoses, vitals, and doctor notes in plain language\n" +
+          "• Answer questions about clinic visiting hours and procedures"
       }
-      // Profile & Identity
-      else if (prompt.includes('name') || prompt.includes('who am i') || prompt.includes('my account') || prompt.includes('my profile') || prompt.includes('email')) {
-        answer = `You are logged in as **${user?.name || 'Jane Doe'}**.\n\n` +
-          `• **Email:** ${user?.email || 'patient@medicon.health'}\n` +
-          `• **Blood Type:** ${user?.patient?.blood_type || 'O+'}\n` +
-          `• **Documented Allergies:** ${user?.patient?.allergies || 'Penicillin, Sulfa'}\n\n` +
-          `Everything is up to date in your active chart!`
-      }
-      // Prescriptions
-      else if (prompt.includes('prescription') || prompt.includes('medication') || prompt.includes('drug') || prompt.includes('meds') || prompt.includes('lisinopril')) {
+    }
+    else if (prompt.includes('bye') || prompt.includes('goodbye') || prompt.includes('see you') || prompt.includes('cya')) {
+      answer = "Goodbye! Wishing you good health. Don't hesitate to reach out if you need anything in the future!"
+    }
+    // Symptoms / Empathetic Health Guidance
+    else if (prompt.includes('headache') || prompt.includes('migraine') || prompt.includes('head hurt') || prompt.includes('dizzy') || prompt.includes('vertigo')) {
+      answer = "I'm sorry you're dealing with a headache! Mild headaches often improve with hydration, resting in a quiet dim room, and gentle neck relaxation. However, if your headache is sudden, unusually severe, or accompanied by blurred vision or numbness, please seek immediate medical attention.\n\nOur **Neurology specialist, Dr. Marcus Chen, MD, PhD**, is available for chronic migraine and neurological evaluations if symptoms persist."
+    }
+    else if (prompt.includes('chest pain') || prompt.includes('shortness of breath') || prompt.includes('hard to breathe') || prompt.includes('heart pain') || prompt.includes('palpitation')) {
+      answer = "⚠️ **Immediate Clinical Safety Alert:** If you or someone nearby is experiencing acute chest tightness, difficulty breathing, or pain radiating to the left arm or jaw, please call **911** or contact our 24/7 emergency hotline at **+63-2-8521-0020** immediately.\n\nFor non-emergency preventative check-ups, **Dr. Sarah Jenkins, MD, FACC** (Cardiology) specializes in cardiovascular assessments and rhythm monitoring."
+    }
+    else if (prompt.includes('skin') || prompt.includes('rash') || prompt.includes('itch') || prompt.includes('eczema') || prompt.includes('acne') || prompt.includes('mole') || prompt.includes('spot')) {
+      answer = "Skin rashes and irritations can stem from allergies, contact dermatitis, or eczema. Keep the area clean and avoid harsh soaps or scratching.\n\nOur Dermatology specialist, **Dr. Elena Rostova, MD**, offers both in-person visits and rapid HD Telehealth photo consultations to assess skin concerns."
+    }
+    else if (prompt.includes('stomach') || prompt.includes('nausea') || prompt.includes('vomit') || prompt.includes('diarrhea') || prompt.includes('acid reflux') || prompt.includes('belly')) {
+      answer = "For mild stomach upset, staying hydrated with small sips of water or electrolyte solution, and eating bland foods (like crackers or rice) can help soothe your digestive tract. If pain is severe or fever develops, seeing a doctor is recommended.\n\nOur **General Practice** team (e.g. Dr. James Wilson, MD) is available for same-day walk-ins and virtual visits."
+    }
+    else if (prompt.includes('fever') || prompt.includes('cough') || prompt.includes('cold') || prompt.includes('flu') || prompt.includes('sore throat')) {
+      answer = "For cold and flu symptoms, plenty of rest, warm fluids, and monitoring your temperature are key. If your fever exceeds 38.5°C (101.3°F) for more than 3 days, consulting a physician is advisable.\n\nOur Primary Care doctors can evaluate your symptoms and prescribe appropriate treatments."
+    }
+    else if (prompt.includes('anxiety') || prompt.includes('depress') || prompt.includes('stress') || prompt.includes('mental health') || prompt.includes('insomnia') || prompt.includes('sleep')) {
+      answer = "Mental well-being is just as essential as physical health. Chronic stress, anxiety, or sleep disturbances can significantly impact daily life.\n\nOur Psychiatry specialist, **Dr. Aisha Patel, MD** ($130 fee), provides supportive psychotherapy, stress reduction strategies, and medication management via private telehealth."
+    }
+    else if (prompt.includes('knee') || prompt.includes('joint') || prompt.includes('back pain') || prompt.includes('bone') || prompt.includes('sprain') || prompt.includes('shoulder')) {
+      answer = "For musculoskeletal aches or joint sprains, resting the joint, applying a cold pack for 15-20 minutes, and gentle elevation can provide initial relief.\n\nOur Orthopedic surgeon, **Dr. Robert Taylor, MD** ($125 fee), specializes in joint rehabilitation, sports injuries, and spine health."
+    }
+    // Doctors & Specialists Recommendations
+    else if (prompt.includes('cardio') || prompt.includes('heart') || prompt.includes('blood pressure') || prompt.includes('hypertension')) {
+      answer = "For cardiovascular health and hypertension, **Dr. Sarah Jenkins, MD, FACC** is our Director of Cardiology. She is a Harvard Medical School alumna with 14 years of experience ($120 consultation fee).\n\nShe provides comprehensive cardiac screenings, vital telemetry, and ECG evaluations."
+    }
+    else if (prompt.includes('neuro') || prompt.includes('brain') || prompt.includes('stroke') || prompt.includes('seizure') || prompt.includes('nerve')) {
+      answer = "For brain and nervous system care, **Dr. Marcus Chen, MD, PhD** is our Director of Neurology (10 years experience, $115 consultation fee). He specializes in migraine treatment, stroke prevention, and cognitive health."
+    }
+    else if (prompt.includes('derma') || prompt.includes('skin doctor')) {
+      answer = "Our clinical dermatologist is **Dr. Elena Rostova, MD** (8 years experience, $95 consultation fee). She specializes in teledermatology, eczema protocols, and early skin lesion detection."
+    }
+    else if (prompt.includes('doctor') || prompt.includes('specialist') || prompt.includes('fee') || prompt.includes('cost') || prompt.includes('price') || prompt.includes('physician')) {
+      answer = "**Medicon Board-Certified Specialists:**\n\n" +
+        "• **Cardiology:** Dr. Sarah Jenkins, MD, FACC ($120)\n" +
+        "• **Neurology:** Dr. Marcus Chen, MD, PhD ($115)\n" +
+        "• **Dermatology:** Dr. Elena Rostova, MD ($95)\n" +
+        "• **General Practice:** Dr. James Wilson, MD ($75)\n" +
+        "• **Psychiatry:** Dr. Aisha Patel, MD ($130)\n" +
+        "• **Orthopedics:** Dr. Robert Taylor, MD ($125)\n\n" +
+        "You can browse full physician profiles on our homepage or book a consultation!"
+    }
+    // Telehealth & Video Consultations
+    else if (prompt.includes('telehealth') || prompt.includes('video') || prompt.includes('virtual') || prompt.includes('room') || prompt.includes('green room') || prompt.includes('code')) {
+      answer = "**Medicon Telehealth Video Consultations:**\n\n" +
+        "• **Direct in Browser:** Uses high-definition encrypted WebRTC. No software downloads required!\n" +
+        "• **Pre-Join Green Room:** Test your camera, microphone, and view who is already in the room before joining.\n" +
+        "• **Unique Room Codes:** Each consultation has a private 3-part code (e.g. \`k9x-yqp2-481\`).\n" +
+        "• **Privacy Guaranteed:** In-room chat and ephemeral media tokens are purged when the room closes.\n\n" +
+        "If you have a room code, enter it directly in the Telehealth bar on our homepage to join!"
+    }
+    // How to Book
+    else if (prompt.includes('how to book') || prompt.includes('book an appointment') || prompt.includes('how do i book') || prompt.includes('booking') || (prompt.includes('book') && prompt.includes('visit'))) {
+      answer = "**How to Book a Consultation:**\n\n" +
+        "1. **Select a Specialist:** Browse by specialty (Cardiology, Neurology, Dermatology, Primary Care, etc.).\n" +
+        "2. **Choose Format:** Select an **In-Person Clinic Visit** or an online **HD Telehealth Video Call**.\n" +
+        "3. **Pick a Time:** Choose a date and time slot that fits your schedule.\n" +
+        "4. **Confirm:** Sign in to your patient account or register to secure the booking.\n\n" +
+        "Ready to book? You can click 'Schedule Appointment' on the homepage or sign in to your portal."
+    }
+    // Clinic Hours & Hotlines
+    else if (prompt.includes('hour') || prompt.includes('open') || prompt.includes('time') || prompt.includes('location') || prompt.includes('address') || prompt.includes('phone') || prompt.includes('hotline') || prompt.includes('contact')) {
+      answer = "**Medicon Locations & Hours:**\n\n" +
+        "• **Outpatient Clinics:** Monday – Friday, 8:00 AM – 5:00 PM\n" +
+        "• **Quezon City Hospital:** 279 E. Rodriguez Sr. Ave (+63-2-8723-0101)\n" +
+        "• **Global City Hospital:** 32nd St cor. 5th Ave, BGC (+63-2-8789-7700)\n" +
+        "• **24/7 Emergency Triage:** +63-2-8521-0020\n" +
+        "• **Telehealth Video Consults:** Available 24/7 based on doctor schedule."
+    }
+    // Auth & Portals
+    else if (prompt.includes('login') || prompt.includes('sign in') || prompt.includes('account') || prompt.includes('register') || prompt.includes('signup') || prompt.includes('portal')) {
+      answer = "**Medicon Portal Access:**\n\n" +
+        "Sign in to your portal to manage appointments, view diagnostic summaries, and access prescriptions:\n\n" +
+        "• **Sign In:** [/login](/login)\n" +
+        "• **Create Account:** [/register](/register) (Takes under 1 minute)\n\n" +
+        "You can also use the 1-click Demo accounts on the sign-in page to test any role instantly!"
+    }
+    // Medical Records / Prescriptions (Authenticated vs Guest)
+    else if (prompt.includes('prescription') || prompt.includes('medication') || prompt.includes('drug') || prompt.includes('meds')) {
+      if (!user) {
+        answer = "To view personal prescriptions and refills, please [Sign In to your Patient Portal](/login). Your doctor's active medication orders are safely encrypted under your account!"
+      } else {
+        const prescriptions = getStoredPrescriptions()
         if (prescriptions.length === 0) {
-          answer = `I checked your medical chart, and you don't have any active prescriptions right now. If your doctor recently prescribed something, it will appear here once finalized.`
+          answer = "I checked your medical chart, and you don't have any active prescriptions right now."
         } else {
-          answer = `Here is what we currently have on file for your medications:\n\n` +
-            prescriptions.map((rx, i) => `**${i + 1}. ${rx.medication_name} ${rx.dosage}**\n• ${rx.instructions}\n• Frequency: ${rx.frequency} (${rx.duration})\n• Refills Remaining: **${rx.refills_remaining}**`).join('\n\n') +
-            `\n\nBe sure to take them consistently, and let your doctor know if you notice any unusual side effects!`
+          answer = "Here are your active prescriptions on file:\n\n" +
+            prescriptions.map((rx, i) => `**${i + 1}. ${rx.medication_name} ${rx.dosage}**\n• ${rx.instructions}\n• Frequency: ${rx.frequency} (${rx.duration})\n• Refills: **${rx.refills_remaining}**`).join('\n\n')
         }
       }
-      // Appointments
-      else if (prompt.includes('appointment') || prompt.includes('schedule') || prompt.includes('visit') || prompt.includes('next')) {
-        if (appointments.length === 0) {
-          answer = `You don't have any upcoming appointments scheduled right now. If you'd like to see a specialist, you can click **'Book Appointment'** right from your dashboard!`
-        } else {
-          const next = appointments[0]
-          answer = `Your next visit is coming up with **${next.doctor_name}** (${next.doctor_specialty}) on **${new Date(next.scheduled_start).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}**.\n\n` +
-            `• **Format:** ${next.type === 'TELEHEALTH' ? 'Encrypted HD Video Call (link will be ready on your dashboard)' : 'In-Person Clinic Visit'}\n` +
-            `• **Reason for visit:** ${next.reason}\n\n` +
-            `Would you like instructions on how to prepare for this visit?`
-        }
-      }
-      // Records & Vitals
-      else if (prompt.includes('record') || prompt.includes('diagnos') || prompt.includes('ehr') || prompt.includes('vital') || prompt.includes('history') || prompt.includes('blood pressure')) {
+    }
+    else if (prompt.includes('record') || prompt.includes('diagnos') || prompt.includes('ehr') || prompt.includes('vital') || prompt.includes('history')) {
+      if (!user) {
+        answer = "To view your medical chart, diagnostic summaries, and vitals history, please [Sign In to your Patient Portal](/login)."
+      } else {
+        const records = getStoredRecords()
         if (records.length === 0) {
-          answer = `No clinical encounter summaries have been filed yet. After your upcoming consultation, your doctor's diagnostic notes and vitals will be saved here.`
+          answer = "No clinical encounter summaries have been filed yet. Your notes will appear here after your upcoming consultation."
         } else {
           const recent = records[0]
           answer = `Here is the summary from your most recent visit on **${new Date(recent.created_at).toLocaleDateString()}** with **${recent.doctor_name}**:\n\n` +
             `• **Diagnosis:** ${recent.diagnosis}\n` +
-            `• **Vitals Recorded:** Blood Pressure ${recent.vital_signs?.blood_pressure || '120/80'}, Heart Rate ${recent.vital_signs?.heart_rate || '72 bpm'}\n` +
-            `• **Doctor's Note:** ${recent.clinical_notes}\n\n` +
-            `Let me know if there are specific medical terms you'd like me to explain in plain language!`
+            `• **Vitals:** Blood Pressure ${recent.vital_signs?.blood_pressure || '120/80'}, HR ${recent.vital_signs?.heart_rate || '72 bpm'}\n` +
+            `• **Doctor's Note:** ${recent.clinical_notes}`
         }
       }
-      // Allergies
-      else if (prompt.includes('allergy') || prompt.includes('allergies')) {
-        answer = `Your chart clearly lists **${user?.patient?.allergies || 'Penicillin, Sulfa'}** under your allergy alerts. All doctors you consult with are automatically notified so they choose safe alternative medications for you.`
-      }
-      // Clinic Hours
-      else if (prompt.includes('hour') || prompt.includes('open') || prompt.includes('time') || prompt.includes('when')) {
-        answer = `Our outpatient clinics are open **Monday through Friday, 8:00 AM to 5:00 PM**. If you have an urgent question outside those hours, telehealth video consultations are available based on your physician's schedule.`
-        isCached = true
-      }
-      // Lab Prep
-      else if (prompt.includes('blood test') || prompt.includes('prepare') || prompt.includes('fasting') || prompt.includes('lab')) {
-        answer = `For standard fasting blood tests (like lipid panels or fasting glucose), it's best to avoid eating or drinking anything other than plain water for **8 to 12 hours** before your appointment. You can still take your normal morning medications with water unless your doctor said otherwise!`
-        isCached = true
-      }
-      // Symptoms / Emergency Safety
-      else if (prompt.includes('symptom') || prompt.includes('pain') || prompt.includes('sick') || prompt.includes('hurt') || prompt.includes('fever')) {
-        answer = `⚠️ **Important Nurse Note:** I want to make sure you stay safe! While I can explain your records and medications, I cannot evaluate new symptoms or give a medical diagnosis. If you are having severe pain, chest discomfort, shortness of breath, or feel very sick, please call **911** or contact our urgent triage desk at **+63-2-8521-0020** right away.`
-      }
-      // Conversational Default
-      else {
+    }
+    // Specific Doctor Clinical Copilot Queries
+    else if (role === 'doctor' && (prompt.includes('soap') || prompt.includes('draft') || prompt.includes('note'))) {
+      answer = "**Draft SOAP Clinical Encounter Note**\n\n" +
+        "**S (Subjective):** Patient presents for routine cardiology follow-up. Reports strict adherence to Lisinopril 10mg. Denies chest pain or palpitations.\n" +
+        "**O (Objective):** BP 124/80 mmHg, HR 68 bpm regular, SpO2 99%. S1/S2 present, no murmurs. Lungs clear to auscultation bilaterally.\n" +
+        "**A (Assessment):** Primary Essential Hypertension (ICD-10 I10) - well-controlled under current monotherapy.\n" +
+        "**P (Plan):** Maintain Lisinopril 10mg daily. Routine comprehensive metabolic panel in 6 months."
+    }
+    else if (role === 'doctor' && (prompt.includes('interaction') || prompt.includes('nsaid') || prompt.includes('lisinopril'))) {
+      answer = "**Pharmacology Reference: ACE Inhibitors + NSAIDs**\n\n" +
+        "- **NSAIDs Interaction:** Co-administration may diminish the antihypertensive effect of ACE inhibitors and elevate acute renal impairment risk.\n" +
+        "- **Clinical Guidance:** Monitor serum potassium and renal function (BUN/Creatinine) periodically."
+    }
+    // Specific Admin Operations Queries
+    else if (role === 'admin' && (prompt.includes('risk') || prompt.includes('attendance') || prompt.includes('no-show') || prompt.includes('ml'))) {
+      answer = "**Attendance Risk Stratification (ML Model)**\n\n" +
+        "- **Function:** Predicts the probability of patient missed visits based on lead time and prior attendance history.\n" +
+        "- **Tiers:** Low (<35%), Moderate (35%-64%), and High (≥65%).\n" +
+        "- **Action:** High-risk appointments appear in the Active Triage Queue for confirmation reminders."
+    }
+    // Conversational Fallback
+    else {
+      if (!user) {
+        answer = "I'm happy to help you with that! You can ask me about finding a doctor, our medical specialties, clinic visiting hours, or how to schedule an in-person or telehealth visit. How can I assist you?"
+      } else {
+        const firstName = (user?.name || 'Jane').split(' ')[0]
         answer = `I hear you, ${firstName}! How can I help you today? Whether you want to check your upcoming appointments, go over your medications, or look up clinic info, I'm here for you.`
       }
     }
+    isCached = true
 
     return {
       status: 200,

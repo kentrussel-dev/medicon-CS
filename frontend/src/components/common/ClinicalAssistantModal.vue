@@ -247,15 +247,15 @@ const inputPlaceholder = computed(() => {
 
 const initialGreeting = computed(() => {
   if (!auth.isAuthenticated) {
-    return `Welcome to Medicon Medical Center! I am your Virtual Clinical Navigator.\n\nSince you are browsing as a Guest, I can help you explore our specialties, find doctors, explain how telehealth works, and check clinic hours.\n\nTo schedule appointments, view personal medical charts, or access e-prescriptions, please Sign In or Register!`
+    return `Hello there! Welcome to Medicon Medical Center. I am your Virtual Health Assistant.\n\nI'm here to help you find specialists, explore our clinical services, answer questions about clinic hours, or guide you through telehealth video consultations. How can I help you today?`
   }
   if (auth.isDoctor) {
-    return `Hello, ${auth.user?.name}! I am your Medicon Clinical Co-Pilot. I can assist in drafting SOAP encounter notes, summarizing patient histories, and retrieving pharmacology interaction references.`
+    return `Hello Dr. ${auth.user?.name || 'Physician'}! I am your Medicon Clinical Co-Pilot. I can assist in drafting SOAP encounter notes, summarizing patient histories, and retrieving pharmacology interaction references.`
   }
   if (auth.isAdmin) {
     return `Hello, ${auth.user?.name}! I am the Medicon Hospital Operations Assistant. How can I assist with clinical utilization or HIPAA compliance metrics today?`
   }
-  return `Hello, ${auth.user?.name}! I am your Medicon Healthcare Assistant. I can help explain your scheduled visits, active prescriptions, or general clinic visiting procedures.`
+  return `Hi ${auth.user?.name?.split(' ')[0] || 'there'}! I am your Medicon Healthcare Assistant. How are you feeling today? I can help explain your scheduled visits, active prescriptions, or clinic visiting procedures.`
 })
 
 const messages = ref([
@@ -263,7 +263,7 @@ const messages = ref([
     role: 'assistant',
     content: initialGreeting.value,
     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    hasAuthNotice: !auth.isAuthenticated,
+    hasAuthNotice: false,
   },
 ])
 
@@ -308,22 +308,22 @@ const sendMessage = async () => {
     })
 
     const ans = response.data.message || 'I have received your request.'
-    const mentionsAuth = ans.toLowerCase().includes('sign in') || ans.toLowerCase().includes('login') || ans.toLowerCase().includes('register') || ans.toLowerCase().includes('account')
+    const mentionsAuthLinks = ans.includes('[/login]') || ans.includes('[/register]')
 
     messages.value.push({
       role: 'assistant',
       content: ans,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      hasAuthNotice: !auth.isAuthenticated && mentionsAuth,
+      hasAuthNotice: !auth.isAuthenticated && mentionsAuthLinks,
     })
   } catch (err) {
     messages.value.push({
       role: 'assistant',
       content: !auth.isAuthenticated
-        ? 'Medicon Assistant: To book appointments or access medical records, please Sign In or Register. For general clinic hours, our outpatient desk is open Mon-Fri 8am-5pm.'
-        : 'Medicon Clinical Assistant is online. Your consultation details have been verified with our clinical portal.',
+        ? "I'm right here to help! You can ask me about finding doctors, our health specialties, clinic hours, or how to book a visit. How can I assist you today?"
+        : 'Medicon Clinical Assistant is online. How can I assist with your care today?',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      hasAuthNotice: !auth.isAuthenticated,
+      hasAuthNotice: false,
     })
   } finally {
     loading.value = false
@@ -337,7 +337,7 @@ const clearChat = () => {
       role: 'assistant',
       content: initialGreeting.value,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      hasAuthNotice: !auth.isAuthenticated,
+      hasAuthNotice: false,
     },
   ]
 }
