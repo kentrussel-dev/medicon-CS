@@ -6,6 +6,7 @@ Thumbs.db
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
 *.so
 .Python
 .pytest_cache/
