@@ -53,9 +53,7 @@
                   : 'border-slate-300 bg-white hover:bg-slate-50 text-slate-800'
               ]"
             >
-              <div class="w-8 h-8 bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
-                GC
-              </div>
+              <img :src="gcashIcon" class="w-6 h-6 object-contain" alt="GCash" />
               <div>
                 <p class="text-xs font-bold uppercase">GCash</p>
                 <p class="text-[10px] text-slate-500 font-sans">PayMongo Direct</p>
@@ -73,9 +71,7 @@
                   : 'border-slate-300 bg-white hover:bg-slate-50 text-slate-800'
               ]"
             >
-              <div class="w-8 h-8 bg-emerald-700 text-white flex items-center justify-center font-bold text-xs">
-                MY
-              </div>
+              <img :src="mayaIcon" class="w-6 h-6 object-contain" alt="Maya" />
               <div>
                 <p class="text-xs font-bold uppercase">Maya</p>
                 <p class="text-[10px] text-slate-500 font-sans">PayMongo Direct</p>
@@ -93,9 +89,7 @@
                   : 'border-slate-300 bg-white hover:bg-slate-50 text-slate-800'
               ]"
             >
-              <div class="w-8 h-8 bg-green-800 text-white flex items-center justify-center font-bold text-xs">
-                GP
-              </div>
+              <img :src="grabpayIcon" class="w-6 h-6 object-contain" alt="GrabPay" />
               <div>
                 <p class="text-xs font-bold uppercase">GrabPay</p>
                 <p class="text-[10px] text-slate-500 font-sans">PayMongo Direct</p>
@@ -206,6 +200,9 @@
 import { ref, computed } from 'vue'
 import api from '@/services/api'
 import { useNotificationStore } from '@/stores/notifications'
+import gcashIcon from '@/assets/icons/gcash.svg'
+import mayaIcon from '@/assets/icons/maya.svg'
+import grabpayIcon from '@/assets/icons/grabpay.svg'
 
 const props = defineProps({
   isOpen: Boolean,

@@ -33,14 +33,14 @@
               type="button"
               @click="paymentMethod = 'card'"
               :class="[
-                'p-3 border text-center transition flex flex-col items-center justify-center space-y-1',
+                'p-3 border text-center transition flex flex-col items-center justify-center space-y-1.5',
                 paymentMethod === 'card'
                   ? 'border-brand-700 bg-brand-50 text-brand-950 font-bold ring-1 ring-brand-700'
                   : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
               ]"
             >
-              <CreditCard class="w-4 h-4 text-slate-700" />
-              <span class="text-[11px] uppercase">Card</span>
+              <CreditCard class="w-5 h-5 text-slate-700" />
+              <span class="text-[11px] uppercase font-bold">Card</span>
             </button>
 
             <!-- GCash -->
@@ -48,14 +48,14 @@
               type="button"
               @click="paymentMethod = 'gcash'"
               :class="[
-                'p-3 border text-center transition flex flex-col items-center justify-center space-y-1',
+                'p-3 border text-center transition flex flex-col items-center justify-center space-y-1.5',
                 paymentMethod === 'gcash'
                   ? 'border-brand-700 bg-brand-50 text-brand-950 font-bold ring-1 ring-brand-700'
                   : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
               ]"
             >
-              <div class="w-4 h-4 bg-blue-600 text-white rounded-xs text-[9px] font-black flex items-center justify-center">GC</div>
-              <span class="text-[11px] uppercase">GCash</span>
+              <img :src="gcashIcon" class="w-5 h-5 object-contain" alt="GCash" />
+              <span class="text-[11px] uppercase font-bold">GCash</span>
             </button>
 
             <!-- Maya -->
@@ -63,14 +63,14 @@
               type="button"
               @click="paymentMethod = 'paymaya'"
               :class="[
-                'p-3 border text-center transition flex flex-col items-center justify-center space-y-1',
+                'p-3 border text-center transition flex flex-col items-center justify-center space-y-1.5',
                 paymentMethod === 'paymaya'
                   ? 'border-brand-700 bg-brand-50 text-brand-950 font-bold ring-1 ring-brand-700'
                   : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
               ]"
             >
-              <div class="w-4 h-4 bg-emerald-600 text-white rounded-xs text-[9px] font-black flex items-center justify-center">MY</div>
-              <span class="text-[11px] uppercase">Maya</span>
+              <img :src="mayaIcon" class="w-5 h-5 object-contain" alt="Maya" />
+              <span class="text-[11px] uppercase font-bold">Maya</span>
             </button>
 
             <!-- GrabPay -->
@@ -78,14 +78,14 @@
               type="button"
               @click="paymentMethod = 'grab_pay'"
               :class="[
-                'p-3 border text-center transition flex flex-col items-center justify-center space-y-1',
+                'p-3 border text-center transition flex flex-col items-center justify-center space-y-1.5',
                 paymentMethod === 'grab_pay'
                   ? 'border-brand-700 bg-brand-50 text-brand-950 font-bold ring-1 ring-brand-700'
                   : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
               ]"
             >
-              <div class="w-4 h-4 bg-green-700 text-white rounded-xs text-[9px] font-black flex items-center justify-center">GP</div>
-              <span class="text-[11px] uppercase">GrabPay</span>
+              <img :src="grabpayIcon" class="w-5 h-5 object-contain" alt="GrabPay" />
+              <span class="text-[11px] uppercase font-bold">GrabPay</span>
             </button>
           </div>
 
@@ -105,14 +105,12 @@
                     v-model="form.cardNumber"
                     @input="formatCardNumber"
                     placeholder="1111 2222 3333 4444"
-                    class="w-full pl-3 pr-16 py-2 border border-slate-300 text-xs font-mono text-slate-900 focus:border-slate-800 focus:outline-none bg-white rounded-none tracking-wider"
+                    class="w-full pl-3 pr-24 py-2 border border-slate-300 text-xs font-mono text-slate-900 focus:border-slate-800 focus:outline-none bg-white rounded-none tracking-wider"
                   />
-                  <!-- Card Brand Badges -->
-                  <div class="absolute right-3 top-2 flex items-center space-x-1">
-                    <div class="flex -space-x-1">
-                      <span class="w-3.5 h-3.5 rounded-full bg-rose-500 opacity-90"></span>
-                      <span class="w-3.5 h-3.5 rounded-full bg-amber-500 opacity-90"></span>
-                    </div>
+                  <!-- Real Card Brand Badges -->
+                  <div class="absolute right-3 top-2 flex items-center space-x-1.5">
+                    <img :src="mastercardIcon" class="h-4 w-auto object-contain" alt="Mastercard" />
+                    <img :src="visaIcon" class="h-4 w-auto object-contain" alt="Visa" />
                   </div>
                 </div>
               </div>
@@ -381,6 +379,12 @@ import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import { getStoredAppointments, defaultDoctors } from '@/services/mockData'
 
+import gcashIcon from '@/assets/icons/gcash.svg'
+import mayaIcon from '@/assets/icons/maya.svg'
+import grabpayIcon from '@/assets/icons/grabpay.svg'
+import mastercardIcon from '@/assets/icons/mastercard.svg'
+import visaIcon from '@/assets/icons/visa.svg'
+
 const route = useRoute()
 const router = useRouter()
 const notificationStore = useNotificationStore()
@@ -433,7 +437,6 @@ onMounted(() => {
       consultation_fee_cents: found.consultation_fee_cents || 50000,
     }
   } else {
-    // Default doctor
     const doc = defaultDoctors[0]
     doctorInfo.value = {
       name: doc.name,
@@ -505,7 +508,6 @@ async function handlePaymentSubmit() {
       }, 750)
     }
   } catch (err) {
-    // If mock, proceed
     notificationStore.success(`Payment of ₱${finalTotalFormatted.value} authorized successfully via ${paymentMethodName.value}!`)
     setTimeout(() => {
       router.push({ name: 'patient-appointments' })
