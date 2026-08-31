@@ -37,11 +37,6 @@
           <span class="font-bold">RECONNECTING MEDIA GATEWAY...</span>
         </div>
 
-        <div v-else class="flex items-center space-x-1.5 text-emerald-700 text-[11px]">
-          <span class="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span>
-          <span class="font-bold uppercase">LIVE ({{ participants.length }} Active)</span>
-        </div>
-
         <button
           @click="showSidebar = !showSidebar"
           class="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold uppercase flex items-center space-x-1"
