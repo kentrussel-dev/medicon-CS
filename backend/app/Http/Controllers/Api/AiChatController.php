@@ -14,7 +14,7 @@ class AiChatController extends Controller
     ) {}
 
     /**
-     * Handle incoming AI chat query.
+     * Handle incoming AI chat query with active screen and route context.
      */
     public function chat(Request $request): JsonResponse
     {
@@ -24,6 +24,12 @@ class AiChatController extends Controller
             'conversation_history' => ['nullable', 'array', 'max:20'],
             'conversation_history.*.role' => ['required_with:conversation_history', 'string', 'in:user,assistant,system'],
             'conversation_history.*.content' => ['required_with:conversation_history', 'string', 'max:2000'],
+            'screen_context' => ['nullable', 'array'],
+            'screen_context.path' => ['nullable', 'string', 'max:255'],
+            'screen_context.name' => ['nullable', 'string', 'max:255'],
+            'screen_context.title' => ['nullable', 'string', 'max:255'],
+            'screen_context.description' => ['nullable', 'string', 'max:500'],
+            'screen_context.details' => ['nullable', 'array'],
         ]);
 
         $user = $request->user();
@@ -35,7 +41,9 @@ class AiChatController extends Controller
         }
 
         $history = $validated['conversation_history'] ?? [];
-        $result = $this->chatService->chat($user, $validated['message'], $patientId, $history);
+        $screenContext = $validated['screen_context'] ?? null;
+
+        $result = $this->chatService->chat($user, $validated['message'], $patientId, $history, $screenContext);
 
         return response()->json($result);
     }

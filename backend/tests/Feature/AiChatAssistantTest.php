@@ -183,4 +183,31 @@ class AiChatAssistantTest extends TestCase
 
         $this->assertNotEmpty($response->json('message'));
     }
+
+    public function test_ai_chat_processes_live_screen_context(): void
+    {
+        $patientUser = User::factory()->create(['role' => UserRole::PATIENT]);
+        Patient::factory()->create(['user_id' => $patientUser->id]);
+
+        Sanctum::actingAs($patientUser);
+
+        $response = $this->postJson('/api/ai/chat', [
+            'message' => 'Where am I and how do I pay here?',
+            'screen_context' => [
+                'path' => '/patient/checkout/15',
+                'name' => 'patient-checkout',
+                'title' => 'Checkout & Payment Gateway',
+                'description' => 'Patient is authorizing consultation fee.',
+                'details' => ['appointmentId' => 15, 'currency' => 'PHP'],
+            ],
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'role' => 'patient',
+            ]);
+
+        $this->assertStringContainsString('Payment', $response->json('message'));
+    }
 }

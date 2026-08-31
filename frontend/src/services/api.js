@@ -819,13 +819,67 @@ const handleMockRoute = (config) => {
   // 7. AI Clinical Assistant (Gemini Flash Model & Clinical Conversational Engine)
   if (url === '/ai/chat' && method === 'post') {
     const prompt = (body.message || '').trim().toLowerCase()
+    const screenCtx = body.screen_context || {}
+    const screenPath = screenCtx.path || ''
+    const screenTitle = screenCtx.title || 'Medicon Workspace'
+    const screenDetails = screenCtx.details || {}
     const user = JSON.parse(localStorage.getItem('medicon_user') || 'null')
     const role = user?.role || (user ? 'patient' : 'guest')
     let answer = ''
     let isCached = false
 
-    // Natural Greetings (Warm & Conversational)
+    // Direct On-Screen Contextual Questions ("Where am I?", "What is this page?", "What should I do here?")
     if (
+      prompt.includes('where am i') ||
+      prompt.includes('what page') ||
+      prompt.includes('what is this screen') ||
+      prompt.includes('what is this page') ||
+      prompt.includes('this page') ||
+      prompt.includes('what to do here') ||
+      prompt.includes('help here') ||
+      prompt.includes('explain this screen') ||
+      prompt.includes('what am i looking at')
+    ) {
+      if (screenPath.includes('checkout')) {
+        answer = `**You are on the Secure Consultation Payment Page**\n\n` +
+          `• **Screen In Focus:** ${screenTitle}\n` +
+          `• **Transaction Purpose:** Authorizing consultation fee for your medical specialist.\n` +
+          `• **Supported Payment Methods:** Credit / Debit Cards, GCash, Maya, GrabPay (in Philippine Pesos ₱).\n` +
+          `• **Security:** 256-bit SSL encrypted tunnel with PayMongo & Stripe.\n` +
+          `• **Refund Policy:** 100% refund for cancellations > 24 hours prior to appointment; 50% for 12–24 hours.`
+      } else if (screenPath.includes('telehealth/room')) {
+        const roomCode = screenDetails.roomCode || 'Active'
+        answer = `**You are inside a Live Telehealth Consultation Room (#${roomCode})**\n\n` +
+          `• **Screen In Focus:** ${screenTitle}\n` +
+          `• **Video Session:** Private, peer-to-peer encrypted WebRTC video conference.\n` +
+          `• **Controls:** You can toggle your camera, mute your microphone, or send in-room chat messages.\n` +
+          `• **Clinical Notes & Rx:** After the call concludes, your doctor will automatically save your diagnostic summary and electronic prescriptions to your portal.`
+      } else if (screenPath === '/patient/appointments') {
+        answer = `**You are on your Medical Appointments Schedule**\n\n` +
+          `• **Screen In Focus:** ${screenTitle}\n` +
+          `• **Capabilities:** View all upcoming and historical doctor appointments.\n` +
+          `• **Telehealth Encounters:** Click the green **'Join Room'** button when your session is starting.\n` +
+          `• **Reschedule & Cancel:** Available up to your clinic's advance notice window.`
+      } else if (screenPath === '/patient/prescriptions') {
+        answer = `**You are viewing your Active Prescriptions**\n\n` +
+          `• **Screen In Focus:** ${screenTitle}\n` +
+          `• **Information Displayed:** Prescribed medications, exact daily dosage instructions, administration frequency, and remaining authorized refills.`
+      } else if (screenPath === '/patient/records') {
+        answer = `**You are viewing your Electronic Health Records (EHR)**\n\n` +
+          `• **Screen In Focus:** ${screenTitle}\n` +
+          `• **Information Displayed:** Past clinical visit summaries, attending physicians, diagnosis descriptions, and vital signs telemetry (Blood Pressure, Heart Rate).`
+      } else if (screenPath === '/profile') {
+        answer = `**You are on your Account & Security Settings**\n\n` +
+          `• **Screen In Focus:** ${screenTitle}\n` +
+          `• **Security:** Enable or configure Two-Factor Authentication (2FA TOTP).\n` +
+          `• **Compliance & Rights:** Download a complete JSON health data export or exercise your Right to be Forgotten.`
+      } else {
+        answer = `**You are viewing:** ${screenTitle} (${screenPath || '/'})\n\n` +
+          `I am actively tracking your screen context. You can ask me questions about any controls, forms, or clinical data on this page!`
+      }
+    }
+    // Natural Greetings (Warm, Conversational & Context-Aware)
+    else if (
       prompt === 'hello' ||
       prompt === 'hi' ||
       prompt === 'hey' ||
@@ -838,39 +892,43 @@ const handleMockRoute = (config) => {
       prompt.includes('good evening')
     ) {
       if (!user) {
-        answer = "Hello there! Welcome to Medicon Medical Center. How can I help you today? Whether you're looking for a doctor, have questions about clinic hours, or want to know how telehealth works, I'm happy to chat!"
+        answer = `Hello there! Welcome to Medicon Medical Center. I can see you are currently on **${screenTitle}**.\n\nHow can I help you today? Whether you're looking for a doctor, have questions about clinic hours, or want to know how telehealth works, I'm happy to chat!`
       } else if (role === 'doctor') {
-        answer = `Hello Dr. ${user?.name || 'Physician'}! Ready to assist you with drafting SOAP notes, reviewing patient histories, or checking pharmacology references.`
+        answer = `Hello Dr. ${user?.name || 'Physician'}! I am tracking your active workstation (**${screenTitle}**). Ready to assist with drafting SOAP notes, reviewing patient histories, or checking pharmacology references.`
       } else if (role === 'admin') {
-        answer = `Hello ${user?.name || 'Admin'}! Ready to assist you with hospital operations, attendance analytics, or audit policies.`
+        answer = `Hello ${user?.name || 'Admin'}! I am monitoring **${screenTitle}**. Ready to assist you with hospital operations, ML attendance analytics, or HIPAA audit policies.`
       } else {
         const appointments = getStoredAppointments()
         const firstName = (user?.name || 'Jane').split(' ')[0]
-        const nextAppt = appointments[0]
-        if (nextAppt) {
-          answer = `Hi ${firstName}! Good to see you. How are you feeling today?\n\nBy the way, you have an upcoming visit with **${nextAppt.doctor_name}** (${nextAppt.doctor_specialty}) coming up soon. Let me know if you have any questions about it or your medications!`
-        } else {
-          answer = `Hi ${firstName}! Good to see you. I'm here as your personal care coordinator. How are you feeling today? Let me know if you'd like to check on appointments, prescriptions, or clinic information.`
-        }
+        answer = `Hi ${firstName}! I am tracking your active screen (**${screenTitle}**). How are you feeling today? Let me know if you have questions about what is on your screen or your care.`
       }
+    }
+    // Checkout-specific questions
+    else if (screenPath.includes('checkout') && (prompt.includes('method') || prompt.includes('pay') || prompt.includes('gcash') || prompt.includes('maya') || prompt.includes('card') || prompt.includes('promo') || prompt.includes('discount'))) {
+      answer = `**Payment Information on this Checkout Page:**\n\n` +
+        `• **Payment Options:** You can choose between Credit/Debit Card or local Philippine E-Wallets (**GCash**, **Maya**, **GrabPay**).\n` +
+        `• **Promo Codes:** Enter \`MEDICON10\` or \`SAVE10\` in the promo code box to receive 10% off.\n` +
+        `• **Philippine Peso:** All amounts are processed in PHP centavos through PayMongo/Stripe.\n` +
+        `• **Instant Confirmation:** Once authorized, your consultation slot is automatically locked and confirmed.`
     }
     // Conversational Small Talk
     else if (prompt.includes('how are you') || prompt.includes('how r u') || prompt.includes('how are u') || prompt.includes("how's it going") || prompt.includes('hows it going')) {
-      answer = "I'm doing great, thank you for asking! I'm here 24/7 to assist you with healthcare information, doctor recommendations, and clinic navigation. How are you feeling today?"
+      answer = `I'm doing great, thank you for asking! I'm currently monitoring **${screenTitle}** and ready 24/7 to assist you with healthcare navigation, doctor recommendations, and clinical questions. How can I help?`
     }
     else if (prompt.includes('thank') || prompt.includes('thanks') || prompt.includes('appreciate')) {
-      answer = "You're very welcome! If you have any other questions about our doctors or services, feel free to ask anytime. Take care!"
+      answer = "You're very welcome! If you have any other questions about your screen or services, feel free to ask anytime. Take care!"
     }
     else if (prompt.includes('who are you') || prompt.includes('what are you') || prompt.includes('what can you do') || prompt.includes('help me') || prompt.includes('what is your name')) {
       if (!user) {
-        answer = "I'm your Medicon Virtual Health Assistant! I can help you with:\n\n" +
+        answer = `I'm your Medicon Virtual Health Assistant! I am context-aware and know you are currently on **${screenTitle}**.\n\nI can help you with:\n` +
           "• Finding board-certified doctors across our specialties\n" +
           "• Explaining how our HD Telehealth consultations work\n" +
           "• Providing clinic locations, outpatient hours, and 24/7 hotlines\n" +
           "• Guiding you through booking in-person or virtual appointments\n\n" +
           "What can I help you explore today?"
       } else {
-        answer = "Think of me as your personal care coordinator here at Medicon! I'm here to:\n\n" +
+        answer = `Think of me as your personal care coordinator here at Medicon! I am currently tracking **${screenTitle}** and can:\n\n` +
+          "• Explain controls and data on your current screen\n" +
           "• Keep track of your upcoming appointments and help you prepare\n" +
           "• Explain your prescribed medications and instructions\n" +
           "• Review your past diagnoses, vitals, and doctor notes in plain language\n" +
@@ -882,44 +940,44 @@ const handleMockRoute = (config) => {
     }
     // Symptoms / Empathetic Health Guidance
     else if (prompt.includes('headache') || prompt.includes('migraine') || prompt.includes('head hurt') || prompt.includes('dizzy') || prompt.includes('vertigo')) {
-      answer = "I'm sorry you're dealing with a headache! Mild headaches often improve with hydration, resting in a quiet dim room, and gentle neck relaxation. However, if your headache is sudden, unusually severe, or accompanied by blurred vision or numbness, please seek immediate medical attention.\n\nOur **Neurology specialist, Dr. Marcus Chen, MD, PhD**, is available for chronic migraine and neurological evaluations if symptoms persist."
+      answer = "I'm sorry you're dealing with a headache! Mild headaches often improve with hydration, resting in a quiet dim room, and gentle neck relaxation. However, if your headache is sudden, unusually severe, or accompanied by blurred vision or numbness, please seek immediate medical attention.\n\nOur **Neurology specialist, Dr. Marcus Chen, MD, PhD** (₱1,200.00), is available for chronic migraine and neurological evaluations if symptoms persist."
     }
     else if (prompt.includes('chest pain') || prompt.includes('shortness of breath') || prompt.includes('hard to breathe') || prompt.includes('heart pain') || prompt.includes('palpitation')) {
-      answer = "⚠️ **Immediate Clinical Safety Alert:** If you or someone nearby is experiencing acute chest tightness, difficulty breathing, or pain radiating to the left arm or jaw, please call **911** or contact our 24/7 emergency hotline at **+63-2-8521-0020** immediately.\n\nFor non-emergency preventative check-ups, **Dr. Sarah Jenkins, MD, FACC** (Cardiology) specializes in cardiovascular assessments and rhythm monitoring."
+      answer = "⚠️ **Immediate Clinical Safety Alert:** If you or someone nearby is experiencing acute chest tightness, difficulty breathing, or pain radiating to the left arm or jaw, please call **911** or contact our 24/7 emergency hotline at **+63-2-8521-0020** immediately.\n\nFor non-emergency preventative check-ups, **Dr. Sarah Jenkins, MD, FACC** (₱1,500.00) specializes in cardiovascular assessments and rhythm monitoring."
     }
     else if (prompt.includes('skin') || prompt.includes('rash') || prompt.includes('itch') || prompt.includes('eczema') || prompt.includes('acne') || prompt.includes('mole') || prompt.includes('spot')) {
-      answer = "Skin rashes and irritations can stem from allergies, contact dermatitis, or eczema. Keep the area clean and avoid harsh soaps or scratching.\n\nOur Dermatology specialist, **Dr. Elena Rostova, MD**, offers both in-person visits and rapid HD Telehealth photo consultations to assess skin concerns."
+      answer = "Skin rashes and irritations can stem from allergies, contact dermatitis, or eczema. Keep the area clean and avoid harsh soaps or scratching.\n\nOur Dermatology specialist, **Dr. Elena Rostova, MD** (₱800.00), offers both in-person visits and rapid HD Telehealth photo consultations to assess skin concerns."
     }
     else if (prompt.includes('stomach') || prompt.includes('nausea') || prompt.includes('vomit') || prompt.includes('diarrhea') || prompt.includes('acid reflux') || prompt.includes('belly')) {
-      answer = "For mild stomach upset, staying hydrated with small sips of water or electrolyte solution, and eating bland foods (like crackers or rice) can help soothe your digestive tract. If pain is severe or fever develops, seeing a doctor is recommended.\n\nOur **General Practice** team (e.g. Dr. James Wilson, MD) is available for same-day walk-ins and virtual visits."
+      answer = "For mild stomach upset, staying hydrated with small sips of water or electrolyte solution, and eating bland foods (like crackers or rice) can help soothe your digestive tract. If pain is severe or fever develops, seeing a doctor is recommended.\n\nOur **General Practice** team (Dr. James Wilson, MD, ₱500.00) is available for same-day walk-ins and virtual visits."
     }
     else if (prompt.includes('fever') || prompt.includes('cough') || prompt.includes('cold') || prompt.includes('flu') || prompt.includes('sore throat')) {
-      answer = "For cold and flu symptoms, plenty of rest, warm fluids, and monitoring your temperature are key. If your fever exceeds 38.5°C (101.3°F) for more than 3 days, consulting a physician is advisable.\n\nOur Primary Care doctors can evaluate your symptoms and prescribe appropriate treatments."
+      answer = "For cold and flu symptoms, plenty of rest, warm fluids, and monitoring your temperature are key. If your fever exceeds 38.5°C (101.3°F) for more than 3 days, consulting a physician is advisable.\n\nOur Primary Care doctors (₱500.00) can evaluate your symptoms and prescribe appropriate treatments."
     }
     else if (prompt.includes('anxiety') || prompt.includes('depress') || prompt.includes('stress') || prompt.includes('mental health') || prompt.includes('insomnia') || prompt.includes('sleep')) {
-      answer = "Mental well-being is just as essential as physical health. Chronic stress, anxiety, or sleep disturbances can significantly impact daily life.\n\nOur Psychiatry specialist, **Dr. Aisha Patel, MD** (₱135.00 fee), provides supportive psychotherapy, stress reduction strategies, and medication management via private telehealth."
+      answer = "Mental well-being is just as essential as physical health. Chronic stress, anxiety, or sleep disturbances can significantly impact daily life.\n\nOur Psychiatry specialist, **Dr. Aisha Patel, MD** (₱1,800.00 fee), provides supportive psychotherapy, stress reduction strategies, and medication management via private telehealth."
     }
     else if (prompt.includes('knee') || prompt.includes('joint') || prompt.includes('back pain') || prompt.includes('bone') || prompt.includes('sprain') || prompt.includes('shoulder')) {
-      answer = "For musculoskeletal aches or joint sprains, resting the joint, applying a cold pack for 15-20 minutes, and gentle elevation can provide initial relief.\n\nOur Orthopedic surgeon, **Dr. Robert Taylor, MD** (₱125.00 fee), specializes in joint rehabilitation, sports injuries, and spine health."
+      answer = "For musculoskeletal aches or joint sprains, resting the joint, applying a cold pack for 15-20 minutes, and gentle elevation can provide initial relief.\n\nOur Orthopedic surgeon, **Dr. Robert Taylor, MD** (₱1,250.00 fee), specializes in joint rehabilitation, sports injuries, and spine health."
     }
     // Doctors & Specialists Recommendations
     else if (prompt.includes('cardio') || prompt.includes('heart') || prompt.includes('blood pressure') || prompt.includes('hypertension')) {
-      answer = "For cardiovascular health and hypertension, **Dr. Sarah Jenkins, MD, FACC** is our Director of Cardiology. She is a Harvard Medical School alumna with 14 years of experience (₱120.00 consultation fee).\n\nShe provides comprehensive cardiac screenings, vital telemetry, and ECG evaluations."
+      answer = "For cardiovascular health and hypertension, **Dr. Sarah Jenkins, MD, FACC** is our Director of Cardiology. She is a Harvard Medical School alumna with 14 years of experience (₱1,500.00 consultation fee).\n\nShe provides comprehensive cardiac screenings, vital telemetry, and ECG evaluations."
     }
     else if (prompt.includes('neuro') || prompt.includes('brain') || prompt.includes('stroke') || prompt.includes('seizure') || prompt.includes('nerve')) {
-      answer = "For brain and nervous system care, **Dr. Marcus Chen, MD, PhD** is our Director of Neurology (10 years experience, ₱115.00 consultation fee). He specializes in migraine treatment, stroke prevention, and cognitive health."
+      answer = "For brain and nervous system care, **Dr. Marcus Chen, MD, PhD** is our Director of Neurology (10 years experience, ₱1,200.00 consultation fee). He specializes in migraine treatment, stroke prevention, and cognitive health."
     }
     else if (prompt.includes('derma') || prompt.includes('skin doctor')) {
-      answer = "Our clinical dermatologist is **Dr. Elena Rostova, MD** (8 years experience, ₱95.00 consultation fee). She specializes in teledermatology, eczema protocols, and early skin lesion detection."
+      answer = "Our clinical dermatologist is **Dr. Elena Rostova, MD** (8 years experience, ₱800.00 consultation fee). She specializes in teledermatology, eczema protocols, and early skin lesion detection."
     }
     else if (prompt.includes('doctor') || prompt.includes('specialist') || prompt.includes('fee') || prompt.includes('cost') || prompt.includes('price') || prompt.includes('physician')) {
-      answer = "**Medicon Board-Certified Specialists:**\n\n" +
-        "• **Cardiology:** Dr. Sarah Jenkins, MD, FACC (₱120.00)\n" +
-        "• **Neurology:** Dr. Marcus Chen, MD, PhD (₱115.00)\n" +
-        "• **Dermatology:** Dr. Elena Rostova, MD (₱95.00)\n" +
-        "• **General Practice:** Dr. James Wilson, MD (₱75.00)\n" +
-        "• **Psychiatry:** Dr. Aisha Patel, MD (₱135.00)\n" +
-        "• **Orthopedics:** Dr. Robert Taylor, MD (₱125.00)\n\n" +
+      answer = "**Medicon Board-Certified Specialists (Philippine Rates):**\n\n" +
+        "• **General Practice:** Dr. James Wilson, MD (₱500.00)\n" +
+        "• **Dermatology:** Dr. Elena Rostova, MD (₱800.00)\n" +
+        "• **Neurology:** Dr. Marcus Chen, MD, PhD (₱1,200.00)\n" +
+        "• **Orthopedics:** Dr. Robert Taylor, MD (₱1,250.00)\n" +
+        "• **Cardiology:** Dr. Sarah Jenkins, MD, FACC (₱1,500.00)\n" +
+        "• **Psychiatry:** Dr. Aisha Patel, MD (₱1,800.00)\n\n" +
         "You can browse full physician profiles on our homepage or book a consultation!"
     }
     // Telehealth & Video Consultations
@@ -937,7 +995,7 @@ const handleMockRoute = (config) => {
         "1. **Select a Specialist:** Browse by specialty (Cardiology, Neurology, Dermatology, Primary Care, etc.).\n" +
         "2. **Choose Format:** Select an **In-Person Clinic Visit** or an online **HD Telehealth Video Call**.\n" +
         "3. **Pick a Time:** Choose a date and time slot that fits your schedule.\n" +
-        "4. **Confirm:** Sign in to your patient account or register to secure the booking.\n\n" +
+        "4. **Confirm & Checkout:** Choose payment via Card, GCash, Maya, or GrabPay on our checkout page.\n\n" +
         "Ready to book? You can click 'Schedule Appointment' on the homepage or sign in to your portal."
     }
     // Clinic Hours & Hotlines
@@ -1010,10 +1068,10 @@ const handleMockRoute = (config) => {
     // Conversational Fallback
     else {
       if (!user) {
-        answer = "I'm happy to help you with that! You can ask me about finding a doctor, our medical specialties, clinic visiting hours, or how to schedule an in-person or telehealth visit. How can I assist you?"
+        answer = `I am tracking your active screen (**${screenTitle}**). You can ask me about finding a doctor, medical specialties, clinic visiting hours, or how to schedule a visit. How can I assist you?`
       } else {
         const firstName = (user?.name || 'Jane').split(' ')[0]
-        answer = `I hear you, ${firstName}! How can I help you today? Whether you want to check your upcoming appointments, go over your medications, or look up clinic info, I'm here for you.`
+        answer = `I hear you, ${firstName}! I am tracking **${screenTitle}**. How can I help you today? Whether you want to check what is on your screen, review upcoming appointments, or go over medications, I'm here for you.`
       }
     }
     isCached = true
@@ -1025,6 +1083,7 @@ const handleMockRoute = (config) => {
         message: answer,
         role: role,
         cached: isCached,
+        screen_context: screenCtx,
         timestamp: new Date().toISOString(),
       },
     }
