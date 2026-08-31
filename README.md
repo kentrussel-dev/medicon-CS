@@ -96,9 +96,6 @@ Medicon consolidates these workflows into a single HIPAA-conscious platform:
 
 ## System Architecture Diagram
 
-> [!TIP]
-> **Interactive Zoom**: GitHub natively renders the Mermaid diagram below. Click the diagram on GitHub to open fullscreen view with pan and zoom capabilities.
-
 ```mermaid
 graph TB
     subgraph Client["Frontend Client Layer (Vue 3 + Vite)"]
