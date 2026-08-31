@@ -31,9 +31,6 @@
             <div class="font-bold text-xs uppercase tracking-wider leading-none">
               Clinical Assistant
             </div>
-            <div class="text-[9px] font-mono text-slate-400 uppercase tracking-widest leading-none mt-1">
-              Encrypted Clinical Portal
-            </div>
           </div>
         </div>
 
@@ -111,11 +108,6 @@
             <span>Consulting clinical reference...</span>
           </div>
         </div>
-      </div>
-
-      <!-- Medical Disclaimer Bar -->
-      <div class="bg-slate-100 px-3 py-1.5 border-t border-slate-200 text-[10px] font-mono text-slate-500 text-center leading-tight">
-        INFORMATIONAL ONLY &bull; NO DIRECT DIAGNOSIS &bull; CALL 911 IN AN EMERGENCY
       </div>
 
       <!-- Bottom Chat Input Bar -->
