@@ -1,34 +1,34 @@
 <template>
   <div>
     <div class="text-center mb-6">
-      <h3 class="text-xl font-bold text-slate-900">Sign in to your account</h3>
+      <h3 class="text-xl font-black text-slate-900 tracking-tight">Sign in to your account</h3>
       <p class="text-xs text-slate-500 mt-1">Access your health records and clinical schedule</p>
     </div>
 
     <!-- Quick Demo Logins Pill Strip -->
-    <div class="mb-6 p-3 bg-slate-50 border border-slate-200/80 rounded-2xl">
-      <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 text-center">
-        ⚡ Instant Demo Role Login
+    <div class="mb-6 p-3.5 bg-slate-50 border border-slate-100 rounded-2xl">
+      <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2 text-center">
+        ⚡ 1-Click Demo Role Login
       </p>
       <div class="grid grid-cols-3 gap-2">
         <button
           type="button"
           @click="fillDemo('patient@medicon.health')"
-          class="px-2 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all shadow-2xs"
+          class="px-2 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all shadow-2xs"
         >
           Patient
         </button>
         <button
           type="button"
           @click="fillDemo('sarah.jenkins@medicon.health')"
-          class="px-2 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all shadow-2xs"
+          class="px-2 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all shadow-2xs"
         >
           Doctor
         </button>
         <button
           type="button"
           @click="fillDemo('admin@medicon.health')"
-          class="px-2 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all shadow-2xs"
+          class="px-2 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all shadow-2xs"
         >
           Admin
         </button>
@@ -44,7 +44,7 @@
           required
           autocomplete="email"
           placeholder="name@provider.com"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
         />
       </div>
 
@@ -56,17 +56,17 @@
           required
           autocomplete="current-password"
           placeholder="••••••••"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
         />
       </div>
 
       <button
         type="submit"
         :disabled="loading"
-        class="w-full mt-2 py-3 px-4 rounded-xl font-bold text-sm bg-brand-600 hover:bg-brand-700 text-white transition-colors shadow-md shadow-brand-600/20 disabled:opacity-50 flex items-center justify-center space-x-2"
+        class="w-full mt-2 py-3.5 px-4 rounded-2xl font-black text-xs uppercase tracking-wider bg-brand-600 hover:bg-brand-700 text-white transition-all shadow-md shadow-brand-600/25 disabled:opacity-50 flex items-center justify-center space-x-2"
       >
-        <span v-if="loading">Authenticating...</span>
-        <span v-else>Sign In</span>
+        <span v-if="loading">Signing in...</span>
+        <span v-else>Sign In to Medicon</span>
       </button>
     </form>
 

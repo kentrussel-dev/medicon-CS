@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-center mb-6">
-      <h3 class="text-xl font-bold text-slate-900">Create Patient Account</h3>
+      <h3 class="text-xl font-black text-slate-900 tracking-tight">Create Patient Account</h3>
       <p class="text-xs text-slate-500 mt-1">Register for confidential telehealth & specialist booking</p>
     </div>
 
@@ -13,7 +13,7 @@
           v-model="form.name"
           required
           placeholder="Jane Doe"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
         />
       </div>
 
@@ -25,7 +25,7 @@
             v-model="form.email"
             required
             placeholder="jane@example.com"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
           />
         </div>
         <div>
@@ -34,7 +34,7 @@
             type="text"
             v-model="form.phone"
             placeholder="+1 (555) 019-2834"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
           />
         </div>
       </div>
@@ -46,7 +46,7 @@
             type="date"
             v-model="form.date_of_birth"
             required
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
           />
         </div>
         <div>
@@ -68,27 +68,27 @@
           type="password"
           v-model="form.password"
           required
-          placeholder="Min. 8 characters (letters, numbers, symbols)"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          placeholder="Min. 8 characters"
+          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
         />
       </div>
 
       <div>
         <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-          Known Drug / Environmental Allergies <span class="text-slate-400 font-normal">(Encrypted)</span>
+          Known Drug Allergies <span class="text-slate-400 font-normal">(AES-256 Encrypted)</span>
         </label>
         <input
           type="text"
           v-model="form.allergies"
           placeholder="e.g. Penicillin, Sulfa, Latex, None"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
         />
       </div>
 
       <button
         type="submit"
         :disabled="loading"
-        class="w-full mt-2 py-3 px-4 rounded-xl font-bold text-sm bg-brand-600 hover:bg-brand-700 text-white transition-colors shadow-md shadow-brand-600/20 disabled:opacity-50"
+        class="w-full mt-2 py-3.5 px-4 rounded-2xl font-black text-xs uppercase tracking-wider bg-brand-600 hover:bg-brand-700 text-white transition-all shadow-md shadow-brand-600/25 disabled:opacity-50"
       >
         <span v-if="loading">Creating Account...</span>
         <span v-else>Register Account</span>

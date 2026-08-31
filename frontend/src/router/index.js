@@ -5,6 +5,9 @@ import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/layouts/AppLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 
+// Public Landing View (Doc.Wise Design)
+import LandingView from '@/views/public/LandingView.vue'
+
 // Auth Views
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
@@ -34,15 +37,11 @@ import ForbiddenView from '@/views/common/ForbiddenView.vue'
 import NotFoundView from '@/views/common/NotFoundView.vue'
 
 const routes = [
+  // Public Landing Page
   {
     path: '/',
-    redirect: () => {
-      const auth = useAuthStore()
-      if (!auth.isAuthenticated) return { name: 'login' }
-      if (auth.isAdmin) return { name: 'admin-dashboard' }
-      if (auth.isDoctor) return { name: 'doctor-dashboard' }
-      return { name: 'patient-dashboard' }
-    },
+    name: 'landing',
+    component: LandingView,
   },
   {
     path: '/',

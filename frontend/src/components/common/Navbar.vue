@@ -1,5 +1,5 @@
 <template>
-  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100/90 px-4 sm:px-8 py-3.5 flex items-center justify-between">
     <!-- Left: Brand / Sidebar toggle -->
     <div class="flex items-center space-x-3">
       <button
@@ -8,21 +8,23 @@
       >
         <Menu class="w-5 h-5" />
       </button>
-      <div class="flex items-center space-x-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-          <HeartPulse class="w-5 h-5" />
-        </div>
-        <div>
-          <span class="font-extrabold text-lg text-slate-900 tracking-tight flex items-center">
-            Medicon
-            <span class="ml-1 text-[10px] uppercase font-bold px-1.5 py-0.2 bg-brand-50 text-brand-700 rounded border border-brand-200">PRO</span>
-          </span>
-        </div>
-      </div>
+      <router-link to="/" class="flex items-center space-x-1 text-xl font-black tracking-tight text-slate-900">
+        <span>Doc</span><span class="text-brand-600">.</span><span class="text-brand-600">Wise</span>
+        <span class="ml-1.5 text-[10px] uppercase font-black px-2 py-0.5 bg-brand-50 text-brand-700 rounded-full border border-brand-200">
+          Medicon
+        </span>
+      </router-link>
     </div>
 
     <!-- Right: Role indicator & User Menu -->
     <div class="flex items-center space-x-4">
+      <router-link
+        to="/"
+        class="hidden sm:inline-flex text-xs font-bold text-slate-500 hover:text-brand-600 transition-colors"
+      >
+        Public Homepage
+      </router-link>
+
       <div v-if="auth.isAuthenticated" class="hidden sm:flex items-center space-x-2">
         <Badge :variant="auth.role">{{ auth.role }}</Badge>
       </div>
@@ -38,7 +40,7 @@
             alt="Avatar"
             class="w-8 h-8 rounded-full object-cover border border-slate-200"
           />
-          <span class="hidden md:block text-xs font-semibold text-slate-700 max-w-[120px] truncate">
+          <span class="hidden md:block text-xs font-bold text-slate-800 max-w-[120px] truncate">
             {{ auth.user?.name || 'User' }}
           </span>
           <ChevronDown class="w-3.5 h-3.5 text-slate-400" />
@@ -65,7 +67,7 @@
             <router-link
               to="/profile"
               @click="isMenuOpen = false"
-              class="flex items-center px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition-colors"
+              class="flex items-center px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition-colors font-medium text-xs"
             >
               <User class="w-4 h-4 mr-2.5 text-slate-400" />
               Account Settings
@@ -73,7 +75,7 @@
 
             <button
               @click="handleLogout"
-              class="w-full flex items-center px-4 py-2 text-rose-600 hover:bg-rose-50 transition-colors text-left"
+              class="w-full flex items-center px-4 py-2 text-rose-600 hover:bg-rose-50 transition-colors text-left font-medium text-xs"
             >
               <LogOut class="w-4 h-4 mr-2.5 text-rose-400" />
               Sign Out
@@ -88,7 +90,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { HeartPulse, Menu, ChevronDown, User, LogOut } from 'lucide-vue-next'
+import { Menu, ChevronDown, User, LogOut } from 'lucide-vue-next'
 import Badge from './Badge.vue'
 
 defineEmits(['toggle-sidebar'])

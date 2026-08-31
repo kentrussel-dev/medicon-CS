@@ -4,22 +4,22 @@
     <div
       v-if="isOpen"
       @click="$emit('close')"
-      class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs lg:hidden"
+      class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs lg:hidden"
     ></div>
 
     <!-- Sidebar Container -->
     <aside
-      class="fixed top-0 bottom-0 left-0 z-40 w-64 bg-white border-r border-slate-200/80 transform transition-transform duration-300 ease-in-out lg:translate-x-0 flex flex-col"
+      class="fixed top-0 bottom-0 left-0 z-40 w-64 bg-white border-r border-slate-100/90 transform transition-transform duration-300 ease-in-out lg:translate-x-0 flex flex-col"
       :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
     >
       <!-- Logo Section -->
-      <div class="h-16 flex items-center justify-between px-6 border-b border-slate-100">
-        <div class="flex items-center space-x-2.5">
-          <div class="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-sm">
-            <HeartPulse class="w-4 h-4" />
-          </div>
-          <span class="font-black text-lg text-slate-900 tracking-tight">Medicon</span>
-        </div>
+      <div class="h-20 flex items-center justify-between px-6 border-b border-slate-100">
+        <router-link to="/" class="flex items-center space-x-1 text-xl font-black tracking-tight text-slate-900">
+          <span>Doc</span><span class="text-brand-600">.</span><span class="text-brand-600">Wise</span>
+          <span class="ml-1.5 text-[9px] uppercase font-black px-2 py-0.5 bg-brand-50 text-brand-700 rounded-full border border-brand-200">
+            Medicon
+          </span>
+        </router-link>
         <button
           @click="$emit('close')"
           class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
@@ -30,7 +30,7 @@
 
       <!-- Navigation Section -->
       <nav class="flex-1 overflow-y-auto px-4 py-6 space-y-1.5">
-        <div class="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <div class="px-3 pb-2 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
           {{ roleSectionTitle }}
         </div>
 
@@ -39,16 +39,16 @@
           :key="item.name"
           :to="item.to"
           @click="$emit('close')"
-          class="flex items-center px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all group"
+          class="flex items-center px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all group"
           :class="
             $route.path === item.to
-              ? 'bg-brand-50 text-brand-700 font-bold shadow-xs'
+              ? 'bg-brand-50 text-brand-600 font-extrabold shadow-xs'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
           "
         >
           <component
             :is="item.icon"
-            class="w-5 h-5 mr-3 transition-colors"
+            class="w-4 h-4 mr-3 transition-colors"
             :class="$route.path === item.to ? 'text-brand-600' : 'text-slate-400 group-hover:text-slate-600'"
           />
           {{ item.label }}
@@ -59,6 +59,17 @@
             {{ item.badge }}
           </span>
         </router-link>
+
+        <div class="pt-4 border-t border-slate-100 mt-4">
+          <router-link
+            to="/"
+            @click="$emit('close')"
+            class="flex items-center px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-500 hover:bg-slate-50 hover:text-brand-600 transition-all"
+          >
+            <Home class="w-4 h-4 mr-3 text-slate-400" />
+            Public Homepage
+          </router-link>
+        </div>
       </nav>
 
       <!-- User Profile Badge Footer -->
@@ -83,15 +94,14 @@
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import {
-  HeartPulse,
   X,
+  Home,
   LayoutDashboard,
   Users,
   Calendar,
   FileText,
   Pill,
   Clock,
-  ShieldAlert,
   History,
   Activity,
 } from 'lucide-vue-next'
