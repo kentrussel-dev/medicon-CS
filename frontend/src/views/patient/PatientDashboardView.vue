@@ -1,50 +1,52 @@
 <template>
-  <div class="space-y-8">
-    <!-- Welcome Header Banner -->
-    <div class="p-6 sm:p-8 bg-gradient-to-r from-brand-700 via-emerald-600 to-teal-700 rounded-3xl text-white shadow-lg relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
-      <div class="relative z-10 max-w-xl">
-        <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider text-emerald-100">
-          Patient Portal
-        </span>
-        <h2 class="text-2xl sm:text-3xl font-black mt-2">Welcome, {{ auth.user?.name }}</h2>
-        <p class="text-xs sm:text-sm text-emerald-100/90 mt-1">
-          Your personal health dashboard. Manage appointments, encrypted clinical notes, and prescriptions with ease.
+  <div class="space-y-6">
+    <!-- Header Banner Strip -->
+    <div class="p-5 bg-white border border-slate-300 shadow-crisp flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-600 bg-slate-100 px-2 py-0.5 border border-slate-300">
+            Patient Portal &bull; Medical Records
+          </span>
+        </div>
+        <h2 class="text-xl font-bold uppercase tracking-tight text-slate-950 mt-1">Patient Record: {{ auth.user?.name }}</h2>
+        <p class="text-xs text-slate-600 font-mono mt-0.5">
+          Patient ID: #{{ auth.user?.patient?.id || 1 }} &bull; Health Identifier: {{ auth.user?.email }}
         </p>
       </div>
 
-      <div class="relative z-10 flex flex-wrap items-center gap-3">
+      <div class="flex items-center space-x-2">
         <button
           @click="showBookModal = true"
-          class="px-5 py-2.5 rounded-2xl bg-white text-brand-800 text-xs font-bold shadow-md hover:bg-emerald-50 transition-all flex items-center space-x-2"
+          class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold uppercase tracking-wider border border-brand-700 transition-colors flex items-center space-x-1.5"
         >
-          <CalendarPlus class="w-4 h-4 text-brand-600" />
-          <span>Book Consultation</span>
+          <CalendarPlus class="w-4 h-4" />
+          <span>Request Consultation</span>
         </button>
         <router-link
           to="/patient/doctors"
-          class="px-5 py-2.5 rounded-2xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold backdrop-blur-md transition-all flex items-center space-x-2"
+          class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold uppercase tracking-wider border border-slate-300 transition-colors flex items-center space-x-1.5"
         >
           <Search class="w-4 h-4" />
-          <span>Find Specialist</span>
+          <span>Physician Directory</span>
         </router-link>
       </div>
     </div>
 
-    <!-- Overview Stat Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <!-- Key Metrics Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <StatCard
-        title="Upcoming Appointments"
+        title="Upcoming Consultations"
         :value="upcomingAppointments.length"
-        subtitle="Confirmed telehealth & clinic visits"
+        subtitle="Scheduled virtual and clinic visits"
         :icon="Calendar"
-        color="emerald"
+        color="blue"
       />
       <StatCard
-        title="Clinical Encounters"
+        title="Clinical EHR Encounters"
         :value="recordsCount"
-        subtitle="Encrypted medical consultation records"
+        subtitle="Encrypted diagnostic summaries"
         :icon="FileText"
-        color="blue"
+        color="emerald"
       />
       <StatCard
         title="Active Prescriptions"
@@ -55,41 +57,40 @@
       />
     </div>
 
-    <!-- Next Upcoming Appointment Alert / Hero -->
-    <div v-if="nextAppointment" class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-100 shadow-sm space-y-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-brand-700">
-          <Clock class="w-4 h-4 text-brand-600" />
-          <span>Next Scheduled Encounter</span>
+    <!-- Next Upcoming Consultation Card -->
+    <div v-if="nextAppointment" class="bg-white border border-slate-300 shadow-crisp">
+      <div class="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold uppercase">
+        <div class="flex items-center space-x-2 text-brand-600">
+          <Clock class="w-4 h-4" />
+          <span>Next Scheduled Clinical Visit</span>
         </div>
         <Badge :variant="nextAppointment.status">{{ nextAppointment.status }}</Badge>
       </div>
 
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+      <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h4 class="text-lg font-black text-slate-900">{{ nextAppointment.reason }}</h4>
-          <p class="text-xs text-slate-500 mt-0.5">
-            With <span class="font-bold text-slate-800">{{ nextAppointment.doctor_name }}</span> ({{ nextAppointment.doctor_specialty }})
+          <h4 class="text-base font-bold text-slate-900 uppercase">{{ nextAppointment.reason }}</h4>
+          <p class="text-xs text-slate-700 mt-1">
+            Attending Physician: <span class="font-bold text-slate-900">{{ nextAppointment.doctor_name }}</span> ({{ nextAppointment.doctor_specialty }})
           </p>
-          <p class="text-xs text-brand-700 font-semibold mt-1.5 flex items-center">
-            <Calendar class="w-3.5 h-3.5 mr-1" />
-            {{ formatDate(nextAppointment.scheduled_start) }}
+          <p class="text-xs text-brand-600 font-mono font-bold mt-1">
+            Scheduled Time: {{ formatDate(nextAppointment.scheduled_start) }} (30 Mins)
           </p>
         </div>
 
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2">
           <a
             v-if="nextAppointment.type === 'TELEHEALTH' && nextAppointment.meeting_link"
             :href="nextAppointment.meeting_link"
             target="_blank"
-            class="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all flex items-center space-x-1.5 shadow-sm"
+            class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold uppercase tracking-wider border border-emerald-800 transition-colors flex items-center space-x-1.5"
           >
             <Video class="w-4 h-4" />
-            <span>Join Telehealth Room</span>
+            <span>Enter Telehealth Room</span>
           </a>
           <button
             @click="openReschedule(nextAppointment)"
-            class="px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold transition-all"
+            class="px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-bold uppercase tracking-wider"
           >
             Reschedule
           </button>
@@ -97,59 +98,61 @@
       </div>
     </div>
 
-    <!-- Fast Links & Recent Appointments -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Recent Appointments list -->
-      <div class="lg:col-span-2 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="font-black text-base text-slate-900">Recent Appointments</h3>
-          <router-link to="/patient/appointments" class="text-xs font-bold text-brand-600 hover:text-brand-700">
-            View All &rarr;
+    <!-- Two-Column Structured Clinical Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Recent Encounters Table -->
+      <div class="lg:col-span-2 bg-white border border-slate-300 shadow-crisp">
+        <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900">Encounter History</h3>
+          <router-link to="/patient/appointments" class="text-xs font-mono font-bold text-brand-600 hover:underline uppercase">
+            View All Encounters &rarr;
           </router-link>
         </div>
 
-        <div v-if="loading" class="py-8">
+        <div v-if="loading" class="p-8">
           <LoadingSpinner />
         </div>
 
-        <div v-else-if="appointments.length === 0" class="text-center py-10 text-slate-400 text-xs font-medium">
-          No appointments recorded yet. Use the "Book Consultation" button to schedule your first visit.
+        <div v-else-if="appointments.length === 0" class="p-8 text-center text-slate-500 text-xs font-mono">
+          No clinical appointments found on record.
         </div>
 
-        <div v-else class="divide-y divide-slate-100">
+        <div v-else class="divide-y divide-slate-200">
           <div
             v-for="appt in appointments.slice(0, 4)"
             :key="appt.id"
-            class="py-3.5 flex items-center justify-between text-xs"
+            class="p-4 flex items-center justify-between text-xs hover:bg-slate-50 transition-colors"
           >
             <div>
-              <p class="font-bold text-slate-900 text-sm">{{ appt.doctor_name }}</p>
-              <p class="text-slate-500 mt-0.5">{{ appt.doctor_specialty }} &bull; {{ appt.reason }}</p>
-              <span class="text-slate-400 text-[11px]">{{ formatDate(appt.scheduled_start) }}</span>
+              <p class="font-bold text-slate-900 uppercase">{{ appt.doctor_name }} &bull; {{ appt.doctor_specialty }}</p>
+              <p class="text-slate-600 mt-0.5">{{ appt.reason }}</p>
+              <span class="text-slate-500 text-[11px] font-mono">{{ formatDate(appt.scheduled_start) }}</span>
             </div>
             <div class="text-right flex flex-col items-end space-y-1">
               <Badge :variant="appt.status">{{ appt.status }}</Badge>
-              <span class="text-[11px] text-slate-400 capitalize">{{ appt.type.toLowerCase() }}</span>
+              <span class="text-[10px] font-mono text-slate-500 uppercase">{{ appt.type }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Health Profile Card -->
-      <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
-        <h3 class="font-black text-base text-slate-900">Encrypted Profile</h3>
-        <div class="space-y-3 text-xs">
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-            <span class="text-slate-400 font-semibold block">Known Drug Allergies</span>
-            <span class="font-bold text-slate-800 mt-0.5 block">{{ auth.user?.patient?.allergies || 'None recorded' }}</span>
+      <!-- Medical Profile & Allergies Card -->
+      <div class="bg-white border border-slate-300 shadow-crisp">
+        <div class="px-4 py-3 bg-slate-50 border-b border-slate-200">
+          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900">Patient Health Profile</h3>
+        </div>
+        <div class="p-4 space-y-3 text-xs font-mono">
+          <div class="p-3 bg-slate-50 border border-slate-200">
+            <span class="text-slate-500 uppercase text-[10px] block">Recorded Allergies (Encrypted)</span>
+            <span class="font-bold text-rose-800 mt-0.5 block">{{ auth.user?.patient?.allergies || 'None Recorded' }}</span>
           </div>
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-            <span class="text-slate-400 font-semibold block">Blood Group</span>
-            <span class="font-bold text-slate-800 mt-0.5 block">{{ auth.user?.patient?.blood_type || 'O+' }}</span>
+          <div class="p-3 bg-slate-50 border border-slate-200">
+            <span class="text-slate-500 uppercase text-[10px] block">Blood Type</span>
+            <span class="font-bold text-slate-900 mt-0.5 block">{{ auth.user?.patient?.blood_type || 'O+' }}</span>
           </div>
-          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-            <span class="text-slate-400 font-semibold block">Emergency Contact</span>
-            <span class="font-bold text-slate-800 mt-0.5 block">
+          <div class="p-3 bg-slate-50 border border-slate-200">
+            <span class="text-slate-500 uppercase text-[10px] block">Emergency Contact</span>
+            <span class="font-bold text-slate-900 mt-0.5 block">
               {{ auth.user?.patient?.emergency_contact_name || 'Primary Contact' }} ({{ auth.user?.patient?.emergency_contact_phone || '+1 555-0199' }})
             </span>
           </div>

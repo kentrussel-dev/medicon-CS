@@ -1,79 +1,79 @@
 <template>
   <div>
-    <div class="text-center mb-6">
-      <h3 class="text-xl font-black text-slate-900 tracking-tight">Sign in to your account</h3>
-      <p class="text-xs text-slate-500 mt-1">Access your health records and clinical schedule</p>
+    <div class="text-left mb-6 pb-3 border-b border-slate-200">
+      <h3 class="text-lg font-bold text-slate-900 uppercase tracking-tight">Identity Authentication</h3>
+      <p class="text-xs text-slate-600 mt-0.5">Enter authorized clinical credentials to access your account</p>
     </div>
 
     <!-- Quick Demo Logins Pill Strip -->
-    <div class="mb-6 p-3.5 bg-slate-50 border border-slate-100 rounded-2xl">
-      <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2 text-center">
-        Demo Role Quick Access
+    <div class="mb-5 p-3 bg-slate-50 border border-slate-300">
+      <p class="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 mb-2">
+        Fast Role Selection (Testing Profiles)
       </p>
       <div class="grid grid-cols-3 gap-2">
         <button
           type="button"
           @click="fillDemo('patient@medicon.health')"
-          class="px-2 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all shadow-2xs"
+          class="px-2 py-1.5 bg-white border border-slate-300 text-xs font-mono font-bold text-slate-800 hover:bg-slate-100 hover:border-slate-400 transition-colors uppercase"
         >
-          Patient
+          [Patient]
         </button>
         <button
           type="button"
           @click="fillDemo('sarah.jenkins@medicon.health')"
-          class="px-2 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all shadow-2xs"
+          class="px-2 py-1.5 bg-white border border-slate-300 text-xs font-mono font-bold text-slate-800 hover:bg-slate-100 hover:border-slate-400 transition-colors uppercase"
         >
-          Doctor
+          [Doctor]
         </button>
         <button
           type="button"
           @click="fillDemo('admin@medicon.health')"
-          class="px-2 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all shadow-2xs"
+          class="px-2 py-1.5 bg-white border border-slate-300 text-xs font-mono font-bold text-slate-800 hover:bg-slate-100 hover:border-slate-400 transition-colors uppercase"
         >
-          Admin
+          [Admin]
         </button>
       </div>
     </div>
 
     <form @submit.prevent="handleLogin" class="space-y-4">
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Email Address</label>
+        <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Email Address</label>
         <input
           type="email"
           v-model="email"
           required
           autocomplete="email"
-          placeholder="name@provider.com"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+          placeholder="user@medicon.health"
+          class="w-full px-3 py-2 border border-slate-300 text-sm focus:border-brand-600 focus:outline-none bg-white rounded-none font-sans"
         />
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Password</label>
+        <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Access Password</label>
         <input
           type="password"
           v-model="password"
           required
           autocomplete="current-password"
           placeholder="••••••••"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+          class="w-full px-3 py-2 border border-slate-300 text-sm focus:border-brand-600 focus:outline-none bg-white rounded-none font-sans"
         />
       </div>
 
       <button
         type="submit"
         :disabled="loading"
-        class="w-full mt-2 py-3.5 px-4 rounded-2xl font-black text-xs uppercase tracking-wider bg-brand-600 hover:bg-brand-700 text-white transition-all shadow-md shadow-brand-600/25 disabled:opacity-50 flex items-center justify-center space-x-2"
+        class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs uppercase tracking-wider border border-brand-700 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2"
       >
-        <span v-if="loading">Signing in...</span>
-        <span v-else>Sign In to Medicon</span>
+        <span v-if="loading">Verifying Credentials...</span>
+        <span v-else>Authenticate &bull; Sign In</span>
       </button>
     </form>
 
-    <div class="mt-6 text-center text-xs text-slate-500">
-      Don't have an account?
-      <router-link to="/register" class="font-bold text-brand-600 hover:text-brand-700 underline">
-        Create patient account
+    <div class="mt-6 pt-4 border-t border-slate-200 text-center text-xs text-slate-600">
+      Need patient access?
+      <router-link to="/register" class="font-bold text-brand-600 hover:underline uppercase font-mono ml-1">
+        Register Account
       </router-link>
     </div>
   </div>
@@ -111,7 +111,7 @@ const handleLogin = async () => {
       router.push({ name: 'patient-dashboard' })
     }
   } catch (err) {
-    // Interceptor handled toast
+    // Handled
   } finally {
     loading.value = false
   }

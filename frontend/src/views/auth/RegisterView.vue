@@ -1,59 +1,59 @@
 <template>
   <div>
-    <div class="text-center mb-6">
-      <h3 class="text-xl font-black text-slate-900 tracking-tight">Create Patient Account</h3>
-      <p class="text-xs text-slate-500 mt-1">Register for confidential telehealth & specialist booking</p>
+    <div class="text-left mb-6 pb-3 border-b border-slate-200">
+      <h3 class="text-lg font-bold text-slate-900 uppercase tracking-tight">Patient Account Registration</h3>
+      <p class="text-xs text-slate-600 mt-0.5">Register for confidential telehealth consultations and encrypted medical records</p>
     </div>
 
     <form @submit.prevent="handleRegister" class="space-y-4">
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Full Legal Name</label>
+        <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Full Legal Name</label>
         <input
           type="text"
           v-model="form.name"
           required
           placeholder="Jane Doe"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+          class="w-full px-3 py-2 border border-slate-300 text-sm focus:border-brand-600 focus:outline-none bg-white rounded-none font-sans"
         />
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Email Address</label>
+          <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Email Address</label>
           <input
             type="email"
             v-model="form.email"
             required
             placeholder="jane@example.com"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+            class="w-full px-3 py-2 border border-slate-300 text-sm focus:border-brand-600 focus:outline-none bg-white rounded-none font-sans"
           />
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Phone Number</label>
+          <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Contact Phone</label>
           <input
             type="text"
             v-model="form.phone"
             placeholder="+1 (555) 019-2834"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+            class="w-full px-3 py-2 border border-slate-300 text-sm focus:border-brand-600 focus:outline-none bg-white rounded-none font-sans"
           />
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Date of Birth</label>
+          <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Date of Birth</label>
           <input
             type="date"
             v-model="form.date_of_birth"
             required
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+            class="w-full px-3 py-2 border border-slate-300 text-sm focus:border-brand-600 focus:outline-none bg-white rounded-none font-sans"
           />
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Biological Gender</label>
+          <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Biological Gender</label>
           <select
             v-model="form.gender"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+            class="w-full px-3 py-2 border border-slate-300 text-sm focus:border-brand-600 focus:outline-none bg-white rounded-none font-sans"
           >
             <option value="F">Female</option>
             <option value="M">Male</option>
@@ -63,41 +63,41 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Password</label>
+        <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">Password</label>
         <input
           type="password"
           v-model="form.password"
           required
           placeholder="Min. 8 characters"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+          class="w-full px-3 py-2 border border-slate-300 text-sm focus:border-brand-600 focus:outline-none bg-white rounded-none font-sans"
         />
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-          Known Drug Allergies <span class="text-slate-400 font-normal">(AES-256 Encrypted)</span>
+        <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+          Known Drug Allergies <span class="text-slate-500 font-normal font-sans">(AES-256 Encrypted)</span>
         </label>
         <input
           type="text"
           v-model="form.allergies"
           placeholder="e.g. Penicillin, Sulfa, Latex, None"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+          class="w-full px-3 py-2 border border-slate-300 text-sm focus:border-brand-600 focus:outline-none bg-white rounded-none font-sans"
         />
       </div>
 
       <button
         type="submit"
         :disabled="loading"
-        class="w-full mt-2 py-3.5 px-4 rounded-2xl font-black text-xs uppercase tracking-wider bg-brand-600 hover:bg-brand-700 text-white transition-all shadow-md shadow-brand-600/25 disabled:opacity-50"
+        class="w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs uppercase tracking-wider border border-brand-700 transition-colors disabled:opacity-50"
       >
-        <span v-if="loading">Creating Account...</span>
-        <span v-else>Register Account</span>
+        <span v-if="loading">Processing Registration...</span>
+        <span v-else>Register Clinical Account</span>
       </button>
     </form>
 
-    <div class="mt-6 text-center text-xs text-slate-500">
-      Already have an account?
-      <router-link to="/login" class="font-bold text-brand-600 hover:text-brand-700 underline">
+    <div class="mt-6 pt-4 border-t border-slate-200 text-center text-xs text-slate-600">
+      Existing account holder?
+      <router-link to="/login" class="font-bold text-brand-600 hover:underline uppercase font-mono ml-1">
         Sign in here
       </router-link>
     </div>

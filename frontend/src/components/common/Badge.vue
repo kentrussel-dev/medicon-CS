@@ -1,6 +1,6 @@
 <template>
   <span
-    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide capitalize"
+    class="inline-flex items-center px-2 py-0.5 text-[11px] font-mono font-bold tracking-wider uppercase border"
     :class="colorClasses"
   >
     <slot>{{ text }}</slot>
@@ -22,35 +22,35 @@ const props = defineProps({
 })
 
 const colorClasses = computed(() => {
-  const v = props.variant.toLowerCase()
+  const v = (props.variant || '').toLowerCase()
   switch (v) {
     case 'confirmed':
     case 'success':
     case 'active':
     case 'completed':
-      return 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+      return 'bg-emerald-50 text-emerald-800 border-emerald-400'
     case 'pending':
     case 'warning':
     case 'medium':
-      return 'bg-amber-100 text-amber-800 border border-amber-200'
+      return 'bg-amber-50 text-amber-900 border-amber-400'
     case 'cancelled':
     case 'danger':
     case 'error':
     case 'no_show':
     case 'inactive':
     case 'high':
-      return 'bg-rose-100 text-rose-800 border border-rose-200'
+      return 'bg-rose-50 text-rose-800 border-rose-400'
     case 'in_progress':
     case 'telehealth':
     case 'info':
     case 'low':
-      return 'bg-sky-100 text-sky-800 border border-sky-200'
+      return 'bg-blue-50 text-blue-800 border-blue-400'
     case 'doctor':
-      return 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+      return 'bg-slate-100 text-slate-800 border-slate-400'
     case 'admin':
-      return 'bg-purple-100 text-purple-800 border border-purple-200'
+      return 'bg-slate-900 text-white border-slate-900'
     default:
-      return 'bg-slate-100 text-slate-700 border border-slate-200'
+      return 'bg-slate-50 text-slate-700 border-slate-300'
   }
 })
 </script>

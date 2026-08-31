@@ -1,23 +1,24 @@
 <template>
-  <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-    <div class="flex items-center justify-between">
+  <div class="bg-white border border-slate-300 p-5 shadow-crisp relative">
+    <div class="absolute top-0 left-0 right-0 h-1" :class="accentClass"></div>
+    <div class="flex items-start justify-between">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ title }}</p>
-        <h4 class="text-2xl font-extrabold text-slate-900 mt-1">{{ value }}</h4>
-        <p v-if="subtitle" class="text-xs text-slate-500 mt-1">{{ subtitle }}</p>
+        <p class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500">{{ title }}</p>
+        <h4 class="text-2xl font-bold text-slate-900 font-mono mt-1.5">{{ value }}</h4>
+        <p v-if="subtitle" class="text-xs text-slate-600 mt-1">{{ subtitle }}</p>
       </div>
-      <div v-if="icon" class="p-3 rounded-2xl" :class="iconBgClass">
-        <component :is="icon" class="w-6 h-6" :class="iconColorClass" />
+      <div v-if="icon" class="p-2 border border-slate-200 bg-slate-50 text-slate-700">
+        <component :is="icon" class="w-5 h-5" />
       </div>
     </div>
-    <div v-if="trend" class="mt-4 pt-4 border-t border-slate-50 flex items-center text-xs">
+    <div v-if="trend" class="mt-3 pt-2.5 border-t border-slate-100 flex items-center text-xs">
       <span
-        :class="trendPositive ? 'text-emerald-600 bg-emerald-50' : 'text-rose-600 bg-rose-50'"
-        class="font-bold px-1.5 py-0.5 rounded mr-1.5"
+        :class="trendPositive ? 'text-emerald-800 bg-emerald-50 border border-emerald-300' : 'text-rose-800 bg-rose-50 border border-rose-300'"
+        class="font-mono font-bold px-1 py-0.2 mr-1.5"
       >
         {{ trend }}
       </span>
-      <span class="text-slate-400">vs last month</span>
+      <span class="text-slate-500">vs last reporting period</span>
     </div>
   </div>
 </template>
@@ -32,7 +33,7 @@ const props = defineProps({
   icon: Object,
   color: {
     type: String,
-    default: 'emerald', // emerald, blue, purple, amber, rose
+    default: 'blue',
   },
   trend: String,
   trendPositive: {
@@ -41,33 +42,18 @@ const props = defineProps({
   },
 })
 
-const iconBgClass = computed(() => {
+const accentClass = computed(() => {
   switch (props.color) {
-    case 'blue':
-      return 'bg-sky-50'
-    case 'purple':
-      return 'bg-purple-50'
+    case 'emerald':
+      return 'bg-emerald-600'
     case 'amber':
-      return 'bg-amber-50'
+      return 'bg-amber-600'
     case 'rose':
-      return 'bg-rose-50'
-    default:
-      return 'bg-emerald-50'
-  }
-})
-
-const iconColorClass = computed(() => {
-  switch (props.color) {
-    case 'blue':
-      return 'text-sky-600'
+      return 'bg-rose-600'
     case 'purple':
-      return 'text-purple-600'
-    case 'amber':
-      return 'text-amber-600'
-    case 'rose':
-      return 'text-rose-600'
+      return 'bg-slate-800'
     default:
-      return 'text-emerald-600'
+      return 'bg-blue-700'
   }
 })
 </script>
