@@ -1,17 +1,21 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-5">
     <!-- Header Bar -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="bg-white border border-slate-300 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h2 class="text-xl font-black text-slate-900">My Medical Appointments</h2>
-        <p class="text-xs text-slate-500 mt-0.5">Manage scheduled telemedicine consultations and in-clinic visits</p>
+        <div class="flex items-center space-x-2 text-[11px] font-mono text-slate-500 uppercase">
+          <span>Patient Portal</span>
+          <span>/</span>
+          <span class="font-bold text-slate-900">Appointments Schedule</span>
+        </div>
+        <h1 class="text-xl font-bold uppercase tracking-tight text-slate-950 mt-0.5">Medical Appointments</h1>
       </div>
 
-      <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-2">
         <select
           v-model="statusFilter"
           @change="loadAppointments"
-          class="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-brand-500 bg-white"
+          class="px-2.5 py-1.5 border border-slate-300 text-xs font-mono focus:border-slate-800 bg-white rounded-none uppercase"
         >
           <option value="">All Statuses</option>
           <option value="CONFIRMED">Confirmed</option>
@@ -21,9 +25,9 @@
 
         <button
           @click="showBookModal = true"
-          class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-xs flex items-center space-x-1.5"
+          class="px-3.5 py-1.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold uppercase tracking-wider border border-brand-800 transition-colors flex items-center space-x-1.5"
         >
-          <CalendarPlus class="w-4 h-4" />
+          <CalendarPlus class="w-3.5 h-3.5" />
           <span>New Appointment</span>
         </button>
       </div>
@@ -34,59 +38,53 @@
       <LoadingSpinner text="Loading appointment schedule..." />
     </div>
 
-    <div v-else-if="appointments.length === 0" class="bg-white rounded-3xl p-12 text-center border border-slate-100">
-      <CalendarX class="w-12 h-12 text-slate-300 mx-auto mb-3" />
-      <h4 class="font-bold text-slate-700 text-sm">No Appointments Found</h4>
-      <p class="text-xs text-slate-400 mt-1">You do not have any scheduled appointments matching the current filter.</p>
+    <div v-else-if="appointments.length === 0" class="bg-white border border-slate-300 p-12 text-center">
+      <p class="text-xs font-mono text-slate-500">No scheduled appointments found on record.</p>
     </div>
 
-    <div v-else class="space-y-4">
+    <div v-else class="space-y-3">
       <div
         v-for="appt in appointments"
         :key="appt.id"
-        class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-6"
+        class="bg-white border border-slate-300 p-4 hover:border-brand-600 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
       >
-        <div class="flex items-start space-x-4">
-          <div class="p-3.5 rounded-2xl bg-brand-50 text-brand-700 flex-shrink-0">
-            <component :is="appt.type === 'TELEHEALTH' ? Video : Building2" class="w-6 h-6" />
+        <div class="flex items-start space-x-3">
+          <div class="p-2.5 bg-slate-100 border border-slate-200 text-slate-700 flex-shrink-0">
+            <component :is="appt.type === 'TELEHEALTH' ? Video : Building2" class="w-5 h-5" />
           </div>
           <div>
-            <div class="flex items-center space-x-2.5">
-              <h4 class="font-bold text-slate-900 text-base">{{ appt.doctor_name }}</h4>
+            <div class="flex items-center space-x-2">
+              <h3 class="font-bold text-slate-950 text-sm uppercase">{{ appt.doctor_name }}</h3>
               <Badge :variant="appt.status">{{ appt.status }}</Badge>
             </div>
-            <p class="text-xs font-semibold text-brand-600 mt-0.5">{{ appt.doctor_specialty }}</p>
-            <p class="text-xs text-slate-600 mt-2 font-medium">{{ appt.reason }}</p>
+            <span class="text-[11px] font-mono font-bold text-brand-600 uppercase block mt-0.5">{{ appt.doctor_specialty }}</span>
+            <p class="text-xs text-slate-700 mt-1.5">{{ appt.reason }}</p>
 
-            <div class="flex flex-wrap items-center gap-4 mt-3 text-xs text-slate-500">
-              <span class="flex items-center font-bold text-slate-800">
+            <div class="flex items-center space-x-4 mt-2 text-xs font-mono text-slate-500">
+              <span class="flex items-center">
                 <Calendar class="w-3.5 h-3.5 mr-1 text-slate-400" />
                 {{ formatDate(appt.scheduled_start) }}
               </span>
-              <span class="flex items-center">
-                <Clock class="w-3.5 h-3.5 mr-1 text-slate-400" />
-                30 Minutes Duration
-              </span>
+              <span class="uppercase">Type: {{ appt.type }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Actions -->
-        <div class="flex flex-wrap items-center gap-2.5 sm:self-center">
+        <div class="flex flex-wrap items-center gap-2 self-start md:self-auto border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
           <a
             v-if="appt.type === 'TELEHEALTH' && appt.status === 'CONFIRMED' && appt.meeting_link"
             :href="appt.meeting_link"
             target="_blank"
-            class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-xs flex items-center space-x-1.5"
+            class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold uppercase tracking-wider border border-emerald-800 transition-colors flex items-center space-x-1"
           >
             <Video class="w-3.5 h-3.5" />
-            <span>Join Call</span>
+            <span>Join Room</span>
           </a>
 
           <button
             v-if="appt.status === 'CONFIRMED' || appt.status === 'PENDING'"
             @click="openReschedule(appt)"
-            class="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all"
+            class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-bold uppercase tracking-wider"
           >
             Reschedule
           </button>
@@ -94,7 +92,7 @@
           <button
             v-if="appt.status === 'CONFIRMED' || appt.status === 'PENDING'"
             @click="openCancel(appt)"
-            class="px-3 py-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-bold transition-all"
+            class="px-3 py-1.5 bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 text-xs font-bold uppercase tracking-wider"
           >
             Cancel
           </button>
@@ -103,32 +101,53 @@
     </div>
 
     <!-- Modals -->
-    <BookAppointmentModal :is-open="showBookModal" @close="showBookModal = false" @booked="loadAppointments" />
-    <RescheduleModal :is-open="showRescheduleModal" :appointment="selectedAppointment" @close="showRescheduleModal = false" @updated="loadAppointments" />
-    <CancelModal :is-open="showCancelModal" :appointment="selectedAppointment" @close="showCancelModal = false" @cancelled="loadAppointments" />
+    <BookAppointmentModal
+      :is-open="showBookModal"
+      @close="showBookModal = false"
+      @booked="loadAppointments"
+    />
+
+    <RescheduleModal
+      :is-open="showRescheduleModal"
+      :appointment="selectedAppointment"
+      @close="showRescheduleModal = false"
+      @updated="loadAppointments"
+    />
+
+    <CancelModal
+      :is-open="showCancelModal"
+      :appointment="selectedAppointment"
+      @close="showCancelModal = false"
+      @cancelled="loadAppointments"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAppointmentStore } from '@/stores/appointments'
 import Badge from '@/components/common/Badge.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import BookAppointmentModal from '@/components/patient/BookAppointmentModal.vue'
 import RescheduleModal from '@/components/patient/RescheduleModal.vue'
 import CancelModal from '@/components/patient/CancelModal.vue'
-import { Calendar, CalendarPlus, CalendarX, Clock, Video, Building2 } from 'lucide-vue-next'
+import {
+  Calendar,
+  CalendarPlus,
+  Video,
+  Building2,
+} from 'lucide-vue-next'
 
 const appointmentStore = useAppointmentStore()
-const loading = ref(false)
+
+const appointments = ref([])
 const statusFilter = ref('')
+const loading = ref(false)
 
 const showBookModal = ref(false)
 const showRescheduleModal = ref(false)
 const showCancelModal = ref(false)
 const selectedAppointment = ref(null)
-
-const appointments = computed(() => appointmentStore.appointments)
 
 const formatDate = (iso) => {
   if (!iso) return ''
@@ -151,9 +170,10 @@ const openCancel = (appt) => {
 const loadAppointments = async () => {
   loading.value = true
   try {
-    await appointmentStore.fetchAppointments({
+    const data = await appointmentStore.fetchAppointments({
       status: statusFilter.value || undefined,
     })
+    appointments.value = data
   } finally {
     loading.value = false
   }

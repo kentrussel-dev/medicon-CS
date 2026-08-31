@@ -1,71 +1,51 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header Banner -->
-    <div class="p-5 bg-white border border-slate-300 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <div class="space-y-5">
+    <!-- Top Minimalist Header Bar -->
+    <div class="bg-white border border-slate-300 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <div class="flex items-center space-x-2">
-          <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-100 bg-slate-900 px-2 py-0.5 border border-slate-800">
-            Executive Administration &bull; Clinical Operations
-          </span>
+        <div class="flex items-center space-x-2 text-[11px] font-mono text-slate-500 uppercase">
+          <span>Executive Administration</span>
+          <span>/</span>
+          <span class="font-bold text-slate-900">Hospital Operations</span>
         </div>
-        <h2 class="text-xl font-bold uppercase tracking-tight text-slate-950 mt-1">Clinical Operations & Utilization Overview</h2>
-        <p class="text-xs text-slate-600 font-mono mt-0.5">
-          Patient attendance risk stratification, physician utilization rates, and HIPAA compliance monitoring
-        </p>
+        <h1 class="text-xl font-bold uppercase tracking-tight text-slate-950 mt-0.5">Clinical Operations & Utilization</h1>
       </div>
 
       <div class="flex items-center space-x-2">
         <router-link
           to="/admin/audit-logs"
-          class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold uppercase tracking-wider border border-slate-950 transition-colors flex items-center space-x-2"
+          class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold uppercase tracking-wider border border-slate-950 transition-colors flex items-center space-x-1.5"
         >
-          <History class="w-4 h-4" />
-          <span>Audit Log Viewer</span>
+          <History class="w-3.5 h-3.5" />
+          <span>Audit Log Trail</span>
         </router-link>
       </div>
     </div>
 
-    <!-- Executive Stat Cards Grid -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <StatCard
-        title="Registered Patients"
-        :value="overview?.total_patients || 4"
-        subtitle="Verified patient records"
-        :icon="Users"
-        color="emerald"
-      />
-      <StatCard
-        title="Active Clinicians"
-        :value="overview?.total_doctors || 5"
-        subtitle="On-duty certified staff"
-        :icon="Activity"
-        color="blue"
-      />
-      <StatCard
-        title="Historical No-Show Rate"
-        :value="(overview?.no_show_rate || 14.3) + '%'"
-        subtitle="Clinic absence metric"
-        :icon="AlertTriangle"
-        color="amber"
-      />
-      <StatCard
-        title="Flagged Attendance Risk"
-        :value="highRiskList.length || 1"
-        subtitle="Attendance risk >= 65%"
-        :icon="ShieldAlert"
-        color="rose"
-      />
+    <!-- Key Metrics (Crisp Clean Stats) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="bg-white border border-slate-300 p-4">
+        <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Total Patients</span>
+        <span class="text-2xl font-bold font-mono text-slate-900 mt-1 block">{{ overview?.total_patients || 1240 }}</span>
+      </div>
+      <div class="bg-white border border-slate-300 p-4">
+        <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Active Clinicians</span>
+        <span class="text-2xl font-bold font-mono text-slate-900 mt-1 block">{{ overview?.total_doctors || 28 }}</span>
+      </div>
+      <div class="bg-white border border-slate-300 p-4">
+        <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Absence Rate</span>
+        <span class="text-2xl font-bold font-mono text-slate-900 mt-1 block">{{ overview?.no_show_rate || 11.2 }}%</span>
+      </div>
+      <div class="bg-white border border-slate-300 p-4">
+        <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Flagged Attendance Risk</span>
+        <span class="text-2xl font-bold font-mono text-rose-800 mt-1 block">{{ highRiskList.length || 1 }}</span>
+      </div>
     </div>
 
     <!-- Attendance Risk Triage Section -->
-    <div class="bg-white border border-slate-300 shadow-sm">
-      <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div>
-          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900">Attendance Risk Stratification Triage</h3>
-          <p class="text-[11px] text-slate-500 font-mono mt-0.5">
-            Appointments flagged with elevated absence risk based on scheduling lead time, prior clinic history, and slot factors
-          </p>
-        </div>
+    <div class="bg-white border border-slate-300">
+      <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+        <span class="font-bold uppercase tracking-wider text-slate-800">Attendance Risk Stratification</span>
         <span class="text-[10px] font-mono font-bold uppercase bg-rose-50 text-rose-800 px-2 py-0.5 border border-rose-300 self-start sm:self-auto">
           Active Triage Queue
         </span>
@@ -75,30 +55,30 @@
         <table class="w-full text-left text-xs">
           <thead class="bg-slate-100 text-slate-600 uppercase font-mono font-bold border-b border-slate-200">
             <tr>
-              <th class="px-4 py-2.5">Patient Name</th>
-              <th class="px-4 py-2.5">Attending Physician</th>
-              <th class="px-4 py-2.5">Scheduled Slot</th>
-              <th class="px-4 py-2.5">Attendance Risk Score</th>
-              <th class="px-4 py-2.5 text-right">Actions</th>
+              <th class="px-4 py-2">Patient</th>
+              <th class="px-4 py-2">Attending Doctor</th>
+              <th class="px-4 py-2">Scheduled Slot</th>
+              <th class="px-4 py-2">Risk Score</th>
+              <th class="px-4 py-2 text-right">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-200 font-mono">
             <tr v-for="item in highRiskList" :key="item.id" class="hover:bg-slate-50">
-              <td class="px-4 py-3 font-sans font-bold text-slate-900">{{ item.patient_name }}</td>
-              <td class="px-4 py-3 font-sans">{{ item.doctor_name }} ({{ item.doctor_specialty }})</td>
-              <td class="px-4 py-3 text-slate-600 font-bold">{{ formatDate(item.scheduled_start) }}</td>
-              <td class="px-4 py-3">
+              <td class="px-4 py-2.5 font-sans font-bold text-slate-900">{{ item.patient_name }}</td>
+              <td class="px-4 py-2.5 font-sans">{{ item.doctor_name }} ({{ item.doctor_specialty }})</td>
+              <td class="px-4 py-2.5 text-slate-600">{{ formatDate(item.scheduled_start) }}</td>
+              <td class="px-4 py-2.5">
                 <RiskBadge
                   :level="item.no_show_risk_level || 'HIGH'"
                   :score="item.no_show_risk_score || 0.74"
                 />
               </td>
-              <td class="px-4 py-3 text-right">
+              <td class="px-4 py-2.5 text-right">
                 <button
                   @click="openTriage(item)"
-                  class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-[11px] uppercase"
+                  class="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-[10px] uppercase"
                 >
-                  Review Factors
+                  Review
                 </button>
               </td>
             </tr>
@@ -107,37 +87,36 @@
       </div>
     </div>
 
-    <!-- Doctor Utilization & Risk Distribution -->
+    <!-- Doctor Utilization Registry -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <!-- Doctor Utilization -->
-      <div class="bg-white border border-slate-300 shadow-sm">
-        <div class="px-4 py-3 bg-slate-50 border-b border-slate-200">
-          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900">Physician Utilization Registry</h3>
+      <div class="bg-white border border-slate-300">
+        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 text-xs font-bold uppercase text-slate-800">
+          Physician Utilization Registry
         </div>
         <div class="divide-y divide-slate-200 text-xs">
           <div
             v-for="doc in doctorUtilizationList"
             :key="doc.doctor_id"
-            class="p-3.5 flex items-center justify-between hover:bg-slate-50"
+            class="p-3 flex items-center justify-between hover:bg-slate-50"
           >
             <div>
               <span class="font-bold text-slate-900 block uppercase">{{ doc.name }}</span>
-              <span class="text-slate-500 font-mono text-[11px]">{{ doc.specialty }}</span>
+              <span class="text-slate-400 font-mono text-[11px]">{{ doc.specialty }}</span>
             </div>
             <div class="text-right font-mono">
               <span class="font-bold text-slate-900 block">{{ doc.total_appointments }} Encounters</span>
-              <span class="text-slate-500 text-[11px]">{{ doc.rating }} &starf; Score</span>
+              <span class="text-slate-400 text-[11px]">{{ doc.rating }} &starf;</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Risk Stratification Summary -->
-      <div class="bg-white border border-slate-300 shadow-sm">
-        <div class="px-4 py-3 bg-slate-50 border-b border-slate-200">
-          <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900">Patient Risk Tier Stratification</h3>
+      <!-- Risk Tier Stratification -->
+      <div class="bg-white border border-slate-300">
+        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 text-xs font-bold uppercase text-slate-800">
+          Patient Risk Distribution
         </div>
-        <div class="p-4 space-y-4 font-mono text-xs">
+        <div class="p-4 space-y-3 font-mono text-xs">
           <div>
             <div class="flex justify-between font-bold mb-1">
               <span class="text-emerald-800 uppercase">Low Risk (&lt; 35%)</span>
@@ -161,7 +140,7 @@
           <div>
             <div class="flex justify-between font-bold mb-1">
               <span class="text-rose-800 uppercase">High Risk (&ge; 65%)</span>
-              <span class="text-slate-800">13% Flagged for Outreach</span>
+              <span class="text-slate-800">13% Flagged</span>
             </div>
             <div class="w-full bg-slate-100 h-2 border border-slate-300">
               <div class="bg-rose-600 h-full" style="width: 13%"></div>
@@ -183,14 +162,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useAdminStore } from '@/stores/admin'
-import StatCard from '@/components/common/StatCard.vue'
 import RiskBadge from '@/components/common/RiskBadge.vue'
 import HighRiskReviewModal from '@/components/admin/HighRiskReviewModal.vue'
 import {
-  Users,
-  Activity,
-  AlertTriangle,
-  ShieldAlert,
   History,
 } from 'lucide-vue-next'
 
@@ -203,10 +177,10 @@ const overview = computed(() => adminStore.overview)
 const doctorUtilizationList = computed(() => {
   if (adminStore.doctorUtilization?.length) return adminStore.doctorUtilization
   return [
-    { doctor_id: 1, name: 'Dr. Sarah Jenkins', specialty: 'Cardiology', total_appointments: 14, rating: 4.95 },
-    { doctor_id: 2, name: 'Dr. Marcus Chen', specialty: 'Neurology', total_appointments: 11, rating: 4.88 },
-    { doctor_id: 3, name: 'Dr. Elena Rostova', specialty: 'Dermatology', total_appointments: 9, rating: 4.92 },
-    { doctor_id: 4, name: 'Dr. James Wilson', specialty: 'General Practice', total_appointments: 8, rating: 4.90 },
+    { doctor_id: 1, name: 'Dr. Sarah Jenkins', specialty: 'Cardiology', total_appointments: 48, rating: 4.95 },
+    { doctor_id: 2, name: 'Dr. Marcus Chen', specialty: 'Neurology', total_appointments: 36, rating: 4.88 },
+    { doctor_id: 3, name: 'Dr. Elena Rostova', specialty: 'Dermatology', total_appointments: 42, rating: 4.92 },
+    { doctor_id: 4, name: 'Dr. James Wilson', specialty: 'General Practice', total_appointments: 64, rating: 4.90 },
   ]
 })
 
@@ -219,7 +193,7 @@ const highRiskList = computed(() => {
       doctor_name: 'Dr. Sarah Jenkins',
       doctor_specialty: 'Cardiology',
       scheduled_start: new Date(Date.now() + 10 * 86400000).toISOString(),
-      no_show_risk_score: 0.7420,
+      no_show_risk_score: 0.74,
       no_show_risk_level: 'HIGH',
       risk_factors: [
         'Booking lead time (12 days)',
@@ -248,8 +222,6 @@ onMounted(async () => {
   try {
     await adminStore.fetchDashboard()
     await adminStore.fetchHighRiskAppointments()
-  } catch (err) {
-    // Handled
   } finally {
     loading.value = false
   }

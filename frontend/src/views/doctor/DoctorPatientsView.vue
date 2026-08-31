@@ -1,62 +1,66 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-5">
     <!-- Header -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="bg-white border border-slate-300 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h2 class="text-xl font-black text-slate-900">Patient Directory</h2>
-        <p class="text-xs text-slate-500 mt-0.5">Review patient clinical records, chronic condition profiles, and encounter history</p>
+        <div class="flex items-center space-x-2 text-[11px] font-mono text-slate-500 uppercase">
+          <span>Doctor Portal</span>
+          <span>/</span>
+          <span class="font-bold text-slate-900">Registry</span>
+        </div>
+        <h1 class="text-xl font-bold uppercase tracking-tight text-slate-950 mt-0.5">Patient Clinical Directory</h1>
       </div>
 
-      <div class="relative w-full sm:w-72">
-        <Search class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+      <div class="relative w-full sm:w-64">
+        <Search class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
         <input
           type="text"
           v-model="search"
-          placeholder="Filter by patient name or email..."
-          class="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-500"
+          placeholder="Filter by patient name..."
+          class="w-full pl-9 pr-3 py-1.5 border border-slate-300 text-xs focus:border-slate-800 bg-white rounded-none font-mono"
         />
       </div>
     </div>
 
     <!-- Patients List -->
-    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-300 overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-slate-100 text-slate-600 uppercase font-bold border-b border-slate-200">
             <tr>
-              <th class="px-6 py-4">Patient Name</th>
-              <th class="px-6 py-4">Gender / Age</th>
-              <th class="px-6 py-4">Encrypted Allergies</th>
-              <th class="px-6 py-4">Clinical Profile</th>
-              <th class="px-6 py-4 text-right">Encounter Actions</th>
+              <th class="px-4 py-2.5">Patient Name</th>
+              <th class="px-4 py-2.5">Gender / Age</th>
+              <th class="px-4 py-2.5">Encrypted Allergies</th>
+              <th class="px-4 py-2.5">Clinical Profile</th>
+              <th class="px-4 py-2.5 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
-            <tr v-for="patient in filteredPatients" :key="patient.id" class="hover:bg-slate-50/50">
-              <td class="px-6 py-4">
-                <div class="font-bold text-slate-900 text-sm">{{ patient.name }}</div>
+          <tbody class="divide-y divide-slate-200">
+            <tr v-for="patient in filteredPatients" :key="patient.id" class="hover:bg-slate-50">
+              <td class="px-4 py-3">
+                <div class="font-bold font-sans text-slate-950 text-sm uppercase">{{ patient.name }}</div>
                 <div class="text-slate-400 text-[11px]">{{ patient.email }}</div>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-4 py-3">
                 {{ patient.gender === 'F' ? 'Female' : 'Male' }} &bull; {{ patient.age }} yrs
-                <div class="text-[11px] text-slate-400">DOB: {{ patient.dob }}</div>
+                <div class="text-[10px] text-slate-400">DOB: {{ patient.dob }}</div>
               </td>
-              <td class="px-6 py-4 font-semibold text-rose-700">
+              <td class="px-4 py-3 font-semibold text-rose-800">
                 {{ patient.allergies || 'None Known' }}
               </td>
-              <td class="px-6 py-4">
-                <div class="flex flex-wrap gap-1.5">
-                  <span v-if="patient.hypertension" class="px-2 py-0.5 rounded bg-amber-50 text-amber-800 text-[10px] font-bold">Hypertension</span>
-                  <span v-if="patient.diabetes" class="px-2 py-0.5 rounded bg-blue-50 text-blue-800 text-[10px] font-bold">Diabetes</span>
-                  <span v-if="!patient.hypertension && !patient.diabetes" class="text-slate-400 text-[11px]">Normal Baseline</span>
+              <td class="px-4 py-3">
+                <div class="flex flex-wrap gap-1">
+                  <span v-if="patient.hypertension" class="px-1.5 py-0.5 bg-amber-50 text-amber-900 border border-amber-300 text-[10px]">Hypertension</span>
+                  <span v-if="patient.diabetes" class="px-1.5 py-0.5 bg-blue-50 text-blue-900 border border-blue-300 text-[10px]">Diabetes</span>
+                  <span v-if="!patient.hypertension && !patient.diabetes" class="text-slate-400 text-[10px]">Baseline Normal</span>
                 </div>
               </td>
-              <td class="px-6 py-4 text-right space-x-2">
+              <td class="px-4 py-3 text-right">
                 <button
                   @click="openHistory(patient)"
-                  class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors"
+                  class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] uppercase border border-slate-950"
                 >
-                  View Clinical History
+                  Clinical History
                 </button>
               </td>
             </tr>
@@ -64,73 +68,59 @@
         </table>
       </div>
     </div>
-
-    <!-- Clinical History Modal -->
-    <PatientClinicalHistoryModal
-      :is-open="showHistoryModal"
-      :patient="selectedPatient"
-      @close="showHistoryModal = false"
-    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import PatientClinicalHistoryModal from '@/components/doctor/PatientClinicalHistoryModal.vue'
 import { Search } from 'lucide-vue-next'
 
 const search = ref('')
-const showHistoryModal = ref(false)
-const selectedPatient = ref(null)
 
 const patients = ref([
   {
     id: 1,
-    name: 'John Doe',
+    name: 'Jane Doe',
     email: 'patient@medicon.health',
-    gender: 'M',
-    age: 42,
-    dob: '1984-06-15',
-    allergies: 'Penicillin, Shellfish',
+    gender: 'F',
+    age: 31,
+    dob: '1995-05-10',
+    allergies: 'Penicillin, Sulfa',
     hypertension: true,
     diabetes: false,
-    notes: 'Patient has mild essential hypertension under Lisinopril management.',
   },
   {
     id: 2,
-    name: 'Emily Clark',
-    email: 'emily.clark@medicon.health',
-    gender: 'F',
-    age: 33,
-    dob: '1992-11-23',
+    name: 'Robert Vance',
+    email: 'robert.vance@example.com',
+    gender: 'M',
+    age: 48,
+    dob: '1978-02-14',
     allergies: 'Latex',
-    hypertension: false,
-    diabetes: false,
-    notes: 'Episodic migraine headaches with light sensitivity aura.',
+    hypertension: true,
+    diabetes: true,
   },
   {
     id: 3,
-    name: 'Robert Vance',
-    email: 'robert.vance@medicon.health',
-    gender: 'M',
-    age: 58,
-    dob: '1968-03-08',
-    allergies: 'Sulfa Drugs',
-    hypertension: true,
-    diabetes: true,
-    notes: 'Type 2 Diabetes Mellitus managed with oral hypoglycemics.',
+    name: 'Maria Santos',
+    email: 'maria.santos@example.com',
+    gender: 'F',
+    age: 26,
+    dob: '2000-09-22',
+    allergies: null,
+    hypertension: false,
+    diabetes: false,
   },
   {
     id: 4,
-    name: 'Lisa Martinez',
-    email: 'lisa.martinez@medicon.health',
-    gender: 'F',
-    age: 31,
-    dob: '1995-08-30',
-    allergies: 'None Known',
-    hypertension: false,
+    name: 'David Kim',
+    email: 'david.kim@example.com',
+    gender: 'M',
+    age: 62,
+    dob: '1964-11-03',
+    allergies: 'Aspirin',
+    hypertension: true,
     diabetes: false,
-    notes: 'Annual preventative wellness and dermatology checks.',
   },
 ])
 
@@ -143,7 +133,6 @@ const filteredPatients = computed(() => {
 })
 
 const openHistory = (patient) => {
-  selectedPatient.value = patient
-  showHistoryModal.value = true
+  alert(`Viewing full encrypted EHR records for ${patient.name}`)
 }
 </script>
