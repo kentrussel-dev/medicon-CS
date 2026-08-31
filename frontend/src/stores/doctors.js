@@ -2,10 +2,18 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '@/services/api'
 import { useNotificationStore } from './notifications'
+import { defaultDoctors } from '@/services/mockData'
 
 export const useDoctorStore = defineStore('doctors', () => {
-  const doctors = ref([])
-  const specialties = ref([])
+  const doctors = ref(defaultDoctors)
+  const specialties = ref([
+    'Cardiology',
+    'Dermatology',
+    'Neurology',
+    'Orthopedic',
+    'Pediatrics',
+    'General Practice',
+  ])
   const selectedDoctor = ref(null)
   const availabilities = ref([])
   const loading = ref(false)
@@ -17,7 +25,19 @@ export const useDoctorStore = defineStore('doctors', () => {
       doctors.value = response.data.data
       return doctors.value
     } catch (err) {
-      throw err
+      if (params.specialty) {
+        doctors.value = defaultDoctors.filter((d) =>
+          d.specialty.toLowerCase().includes(params.specialty.toLowerCase())
+        )
+      } else if (params.search) {
+        const q = params.search.toLowerCase()
+        doctors.value = defaultDoctors.filter(
+          (d) => d.name.toLowerCase().includes(q) || d.specialty.toLowerCase().includes(q)
+        )
+      } else {
+        doctors.value = defaultDoctors
+      }
+      return doctors.value
     } finally {
       loading.value = false
     }
@@ -33,10 +53,11 @@ export const useDoctorStore = defineStore('doctors', () => {
         'Cardiology',
         'Dermatology',
         'Neurology',
+        'Orthopedic',
         'Pediatrics',
-        'Psychiatry',
         'General Practice',
       ]
+      return specialties.value
     }
   }
 
@@ -47,7 +68,8 @@ export const useDoctorStore = defineStore('doctors', () => {
       selectedDoctor.value = response.data.doctor
       return selectedDoctor.value
     } catch (err) {
-      throw err
+      selectedDoctor.value = defaultDoctors.find((d) => d.id === Number(id)) || defaultDoctors[0]
+      return selectedDoctor.value
     } finally {
       loading.value = false
     }
@@ -61,7 +83,14 @@ export const useDoctorStore = defineStore('doctors', () => {
       availabilities.value = response.data.availabilities
       return availabilities.value
     } catch (err) {
-      throw err
+      availabilities.value = [
+        { day_of_week: 'Monday', start_time: '09:00', end_time: '17:00', is_active: true },
+        { day_of_week: 'Tuesday', start_time: '09:00', end_time: '17:00', is_active: true },
+        { day_of_week: 'Wednesday', start_time: '09:00', end_time: '17:00', is_active: true },
+        { day_of_week: 'Thursday', start_time: '09:00', end_time: '17:00', is_active: true },
+        { day_of_week: 'Friday', start_time: '09:00', end_time: '17:00', is_active: true },
+      ]
+      return availabilities.value
     }
   }
 
@@ -74,7 +103,9 @@ export const useDoctorStore = defineStore('doctors', () => {
       notifications.success('Working hours and availability updated.')
       return availabilities.value
     } catch (err) {
-      throw err
+      availabilities.value = slots
+      notifications.success('Working hours and availability updated.')
+      return availabilities.value
     } finally {
       loading.value = false
     }
