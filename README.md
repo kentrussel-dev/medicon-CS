@@ -15,10 +15,6 @@
 
 Medicon is a full-stack clinical encounter and telehealth platform built for healthcare providers, outpatient clinics, and hospital networks. It bridges modern telemedicine consultations with institutional electronic medical record (EMR) workflows.
 
-### System Architecture Overview
-
-![Medicon System Architecture](docs/images/architecture.png)
-
 ### Purpose & Problem Solved
 Traditional clinic management systems frequently suffer from fragmented tooling: video calls occur in disconnected third-party apps, diagnostic notes are documented in outdated desktop software, and missed appointments lead to lost physician utilization and delayed patient care.
 
@@ -33,9 +29,106 @@ Medicon consolidates these workflows into a single HIPAA-conscious platform:
 
 ---
 
+## System Architecture Diagram
+
+> [!TIP]
+> **Interactive Zoom**: GitHub natively renders the Mermaid diagram below. Click the diagram on GitHub to open fullscreen view with pan and zoom capabilities.
+
+```mermaid
+graph TB
+    subgraph Client["Frontend Client Layer (Vue 3 + Vite)"]
+        Landing["Public Landing Page & AI Navigator"]
+        PatientPortal["Patient Portal & Directory"]
+        DoctorPortal["Physician Workspace & SOAP EMR"]
+        AdminPortal["Executive Operations & Triage"]
+        WebRTCClient["WebRTC Green Room Engine (1080p HD)"]
+    end
+
+    subgraph Gateway["Backend API Gateway (Laravel 11 & PHP 8.2)"]
+        SanctumAuth["Sanctum Token Auth & RBAC"]
+        ApptService["Appointment Scheduling & Conflict Engine"]
+        EHRService["Encrypted Medical Records (AES-256)"]
+        RxService["Electronic Prescriptions (e-Rx)"]
+        AuditService["HIPAA Immutable Forensic Audit Logger"]
+    end
+
+    subgraph MLService["Machine Learning Microservice (FastAPI & Python 3.11)"]
+        MLAPI["REST Prediction Endpoints"]
+        FeatureEngine["Feature Vectorizer & StandardScaler"]
+        Model["Scikit-Learn Random Forest Classifier"]
+    end
+
+    subgraph DataLayer["Data & Persistence Layer"]
+        DB[(MySQL 8.0 / PostgreSQL)]
+        RedisCache[(Redis 7.2 Cache & Queues)]
+        Storage[(MinIO / S3 Encrypted Attachments)]
+    end
+
+    %% Client to Gateway
+    PatientPortal -->|REST API / HTTPS| SanctumAuth
+    DoctorPortal -->|REST API / HTTPS| SanctumAuth
+    AdminPortal -->|REST API / HTTPS| SanctumAuth
+    Landing -->|AI Chat Gateway| SanctumAuth
+
+    %% WebRTC P2P
+    WebRTCClient -.->|Peer-to-Peer Encrypted Media| WebRTCClient
+
+    %% Gateway Internal Dispatch
+    SanctumAuth --> ApptService
+    SanctumAuth --> EHRService
+    SanctumAuth --> RxService
+    SanctumAuth --> AuditService
+
+    %% Gateway to ML Microservice
+    ApptService -->|HTTP Async Payload| MLAPI
+    MLAPI --> FeatureEngine
+    FeatureEngine --> Model
+    Model -->|Risk Score & Tiers| ApptService
+
+    %% Persistence
+    ApptService --> DB
+    EHRService --> DB
+    RxService --> DB
+    AuditService --> DB
+
+    ApptService --> RedisCache
+    EHRService --> Storage
+```
+
+<details>
+<summary>Click to view High-Resolution Architecture Graphic</summary>
+
+![Medicon System Architecture](docs/images/architecture.png)
+
+</details>
+
+---
+
 ## Telehealth Consultation Protocol & Green Room
 
-![Medicon Telehealth Protocol](docs/images/telehealth_workflow.png)
+```mermaid
+graph LR
+    subgraph Stage1["Step 1: Pre-Join Green Room Lobby"]
+        A1["Enter Room via Code (#k9x-yqp2-481)"] --> A2["Camera & Mic Self-Check (Default: Muted/Off)"]
+        A2 --> A3["Check Attendee Presence Preview"]
+        A3 --> A4["Click 'Join Now'"]
+    end
+
+    subgraph Stage2["Step 2: 1080p WebRTC Consultation"]
+        B1["16:9 Widescreen Video Grid"] --> B2["Real-Time SOAP Charting & Vitals"]
+        B2 --> B3["Screen Sharing & Diagnostics Spotlight"]
+        B3 --> B4["Multi-Specialist Secondary Invite"]
+    end
+
+    subgraph Stage3["Step 3: Consultation End & Purge"]
+        C1["Formulate Electronic Prescription (e-Rx)"] --> C2["Finalize Encounter Diagnostic Note"]
+        C2 --> C3["End Call for Everyone"]
+        C3 --> C4["Permanent Ephemeral Chat & Token Purge"]
+    end
+
+    A4 --> B1
+    B4 --> C1
+```
 
 ### Telehealth Workflow Stages:
 1. **Pre-Join Green Room Lobby**:
@@ -50,11 +143,53 @@ Medicon consolidates these workflows into a single HIPAA-conscious platform:
 3. **Session Closure & Ephemeral Data Purge**:
    - Instant chat messages and ephemeral media tokens are permanently wiped from the database upon consultation closure.
 
+<details>
+<summary>Click to view High-Resolution Telehealth Protocol Graphic</summary>
+
+![Medicon Telehealth Protocol](docs/images/telehealth_workflow.png)
+
+</details>
+
 ---
 
 ## Machine Learning Attendance Risk Pipeline
 
-![Medicon AI Attendance Risk Pipeline](docs/images/ml_risk_pipeline.png)
+```mermaid
+graph LR
+    subgraph Inputs["1. Clinical Feature Inputs"]
+        F1["Lead Time in Days"]
+        F2["Prior No-Show Count"]
+        F3["Patient Age Group"]
+        F4["Clinical Specialty"]
+        F5["Day of Week & Time Slot"]
+    end
+
+    subgraph Pipeline["2. FastAPI Scikit-Learn Pipeline"]
+        P1["One-Hot & Numerical Vectorizer"] --> P2["StandardScaler Normalization"]
+        P2 --> P3["Random Forest Classifier Model"]
+    end
+
+    subgraph Tiers["3. Risk Stratification"]
+        T1["Low Risk (< 35%)"]
+        T2["Moderate Risk (35% - 64%)"]
+        T3["High Risk (>= 65%)"]
+    end
+
+    subgraph Actions["4. Automated Hospital Actions"]
+        ACT1["Standard Appointment Dispatch"]
+        ACT2["Automated SMS/Email Reminder"]
+        ACT3["Active Triage Queue & Clinical Follow-up"]
+    end
+
+    Inputs --> P1
+    P3 --> T1
+    P3 --> T2
+    P3 --> T3
+
+    T1 --> ACT1
+    T2 --> ACT2
+    T3 --> ACT3
+```
 
 ### Predictive Triage Architecture:
 1. **Clinical Feature Inputs**: Lead time (days), prior no-show frequency, age group, appointment specialty, day of week, and time slot.
@@ -64,6 +199,75 @@ Medicon consolidates these workflows into a single HIPAA-conscious platform:
    - **Moderate Risk (35% - 64%)**: Standard reminder queue.
    - **High Risk (>=65%)**: Flagged in Active Triage Queue for targeted confirmation calls and overbooking adjustments.
 4. **Automated Clinical Actions**: Real-time triage dashboards for Chief Medical Officers and Clinic Administrators.
+
+<details>
+<summary>Click to view High-Resolution ML Pipeline Graphic</summary>
+
+![Medicon AI Attendance Risk Pipeline](docs/images/ml_risk_pipeline.png)
+
+</details>
+
+---
+
+## Database Relational Entity-Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    USERS ||--o{ APPOINTMENTS : "schedules / attends"
+    USERS ||--o{ MEDICAL_RECORDS : "owns / documents"
+    USERS ||--o{ PRESCRIPTIONS : "receives / issues"
+    USERS ||--o{ AUDIT_LOGS : "triggers"
+    DOCTORS ||--o{ APPOINTMENTS : "assigned to"
+    PATIENTS ||--o{ APPOINTMENTS : "books"
+    APPOINTMENTS ||--o| TELEHEALTH_ROOMS : "generates"
+    APPOINTMENTS ||--o| MEDICAL_RECORDS : "produces"
+    MEDICAL_RECORDS ||--o{ PRESCRIPTIONS : "contains"
+
+    USERS {
+        int id PK
+        string name
+        string email
+        string role
+        string password
+    }
+
+    APPOINTMENTS {
+        int id PK
+        int patient_id FK
+        int doctor_id FK
+        string room_code
+        datetime scheduled_start
+        string status
+        float no_show_risk_score
+        string no_show_risk_level
+    }
+
+    MEDICAL_RECORDS {
+        int id PK
+        int appointment_id FK
+        string diagnosis
+        text clinical_notes
+        json vital_signs
+        text encrypted_data
+    }
+
+    PRESCRIPTIONS {
+        int id PK
+        int record_id FK
+        string medication_name
+        string dosage
+        string frequency
+        int refills_remaining
+    }
+
+    TELEHEALTH_ROOMS {
+        int id PK
+        string room_code
+        string session_token
+        string status
+        datetime expires_at
+    }
+```
 
 ---
 
