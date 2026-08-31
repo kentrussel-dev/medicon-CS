@@ -139,24 +139,32 @@
 
             <!-- Who's Already in the Call -->
             <div>
-              <span class="text-xs font-mono font-bold text-slate-700 block uppercase mb-2">
-                Already in this consultation ({{ otherParticipants.length }}):
-              </span>
-              <div class="space-y-2">
-                <div
-                  v-for="p in otherParticipants"
-                  :key="p.id"
-                  class="flex items-center space-x-3 p-2 rounded-lg bg-slate-50 border border-slate-200"
-                >
-                  <div class="w-7 h-7 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-xs">
-                    {{ p.name.charAt(0) }}
+              <div v-if="otherParticipants.length > 0">
+                <span class="text-xs font-mono font-bold text-slate-700 block uppercase mb-2">
+                  Already in this consultation ({{ otherParticipants.length }}):
+                </span>
+                <div class="space-y-2">
+                  <div
+                    v-for="p in otherParticipants"
+                    :key="p.id"
+                    class="flex items-center space-x-3 p-2 rounded-lg bg-slate-50 border border-slate-200"
+                  >
+                    <div class="w-7 h-7 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-xs">
+                      {{ p.name.charAt(0) }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <span class="font-bold text-xs text-slate-900 block truncate">{{ p.name }}</span>
+                      <span class="text-[10px] font-mono text-slate-500">{{ p.role }}</span>
+                    </div>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                   </div>
-                  <div class="flex-1 min-w-0">
-                    <span class="font-bold text-xs text-slate-900 block truncate">{{ p.name }}</span>
-                    <span class="text-[10px] font-mono text-slate-500">{{ p.role }}</span>
-                  </div>
-                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 </div>
+              </div>
+              <div v-else class="p-3.5 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-center space-y-1">
+                <span class="text-xs font-bold text-slate-800 uppercase tracking-tight block">No one else is in this room yet</span>
+                <p class="text-[11px] text-slate-500 font-sans">
+                  You are the first participant. Share room code <span class="font-mono font-bold text-brand-700">#{{ roomCode }}</span> with others to invite them.
+                </p>
               </div>
             </div>
 
@@ -1059,27 +1067,13 @@ const sendChatMessage = async () => {
 
 const canAddParticipants = computed(() => auth.isDoctor || auth.isAdmin)
 
-// Simulated live multi-participant roster matching clinical consultation parameters
+// Live consultation participant roster (starts with local user only)
 const participants = ref([
   {
     id: 'local',
-    name: auth.user?.name || 'Jane Doe',
+    name: auth.user?.name || (auth.isDoctor ? 'Dr. Sarah Jenkins' : 'Jane Doe'),
     role: auth.role?.toUpperCase() || 'PATIENT',
     isLocal: true,
-    audioActive: true,
-  },
-  {
-    id: 'remote-1',
-    name: 'Dr. Sarah Jenkins, MD, FACC',
-    role: 'ATTENDING DOCTOR',
-    isLocal: false,
-    audioActive: true,
-  },
-  {
-    id: 'remote-2',
-    name: 'Dr. Marcus Chen (Neurology Specialist)',
-    role: 'SPECIALIST',
-    isLocal: false,
     audioActive: true,
   },
 ])
@@ -1340,6 +1334,15 @@ const createNewRoom = () => {
   inLobby.value = true
   micOn.value = false
   cameraOn.value = false
+  participants.value = [
+    {
+      id: 'local',
+      name: auth.user?.name || (auth.isDoctor ? 'Dr. Sarah Jenkins' : 'Jane Doe'),
+      role: auth.role?.toUpperCase() || 'PATIENT',
+      isLocal: true,
+      audioActive: true,
+    },
+  ]
   router.push(`/telehealth/room/${newCode}`)
 }
 
@@ -1358,7 +1361,8 @@ const loadSession = async () => {
   try {
     const identifier = rawParam.value || roomCode.value
     let res
-    if (/^\d+$/.test(String(identifier))) {
+    const isApptNum = /^\d+$/.test(String(identifier))
+    if (isApptNum) {
       res = await api.get(`/appointments/${identifier}/telehealth/token`)
     } else {
       res = await api.get(`/telehealth/rooms/${identifier}/token`)
@@ -1371,6 +1375,45 @@ const loadSession = async () => {
     }
     if (res.data?.appointment) {
       appointment.value = res.data.appointment
+    }
+
+    const localUser = {
+      id: 'local',
+      name: auth.user?.name || (auth.isDoctor ? 'Dr. Sarah Jenkins' : 'Jane Doe'),
+      role: auth.role?.toUpperCase() || 'PATIENT',
+      isLocal: true,
+      audioActive: true,
+    }
+
+    // Only add counterpart participant if this is a pre-scheduled appointment
+    if (res.data?.appointment && isApptNum) {
+      const appt = res.data.appointment
+      if (auth.isDoctor) {
+        participants.value = [
+          localUser,
+          {
+            id: 'remote-patient',
+            name: appt.patient_name || 'Jane Doe',
+            role: 'PATIENT',
+            isLocal: false,
+            audioActive: true,
+          },
+        ]
+      } else {
+        participants.value = [
+          localUser,
+          {
+            id: 'remote-doctor',
+            name: appt.doctor_name || 'Dr. Sarah Jenkins, MD, FACC',
+            role: 'ATTENDING DOCTOR',
+            isLocal: false,
+            audioActive: true,
+          },
+        ]
+      }
+    } else {
+      // For any newly created or ad-hoc room, ONLY the local user is here
+      participants.value = [localUser]
     }
   } catch (err) {
     // Handled via mock adapter
@@ -1395,6 +1438,15 @@ watch(
       showSidebar.value = false
       showLeaveModal.value = false
       chatMessages.value = []
+      participants.value = [
+        {
+          id: 'local',
+          name: auth.user?.name || (auth.isDoctor ? 'Dr. Sarah Jenkins' : 'Jane Doe'),
+          role: auth.role?.toUpperCase() || 'PATIENT',
+          isLocal: true,
+          audioActive: true,
+        },
+      ]
 
       // 3. Update room code
       roomCode.value = isAlphanumericCode(newVal) ? String(newVal) : generateUniqueRoomCode()
