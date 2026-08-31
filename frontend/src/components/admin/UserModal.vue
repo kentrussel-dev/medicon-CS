@@ -84,7 +84,7 @@
           </div>
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Consultation Fee ($)</label>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Consultation Fee (₱)</label>
           <input
             type="number"
             v-model.number="form.consultation_fee"

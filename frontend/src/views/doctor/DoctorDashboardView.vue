@@ -164,7 +164,7 @@
           </div>
           <div class="flex justify-between border-b border-slate-100 pb-1.5">
             <span class="text-slate-400 uppercase">Standard Fee:</span>
-            <span class="text-slate-900 font-bold">${{ auth.user?.doctor?.consultation_fee || 90 }}.00</span>
+            <span class="text-slate-900 font-bold">₱{{ (auth.user?.doctor?.consultation_fee_cents ? auth.user?.doctor?.consultation_fee_cents / 100 : (auth.user?.doctor?.consultation_fee || 120)).toFixed(2) }}</span>
           </div>
 
           <div class="pt-2">

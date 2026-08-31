@@ -338,7 +338,7 @@
             <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
               <div>
                 <span class="text-[10px] text-slate-400 font-mono uppercase block">Consultation Fee</span>
-                <span class="text-sm font-bold font-mono text-slate-900">${{ doc.consultation_fee }}</span>
+                <span class="text-sm font-bold font-mono text-slate-900">₱{{ (doc.consultation_fee_cents ? doc.consultation_fee_cents / 100 : (doc.consultation_fee || 120)).toFixed(2) }}</span>
               </div>
               <button
                 @click="openBookingForDoctor(doc)"

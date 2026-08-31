@@ -897,29 +897,29 @@ const handleMockRoute = (config) => {
       answer = "For cold and flu symptoms, plenty of rest, warm fluids, and monitoring your temperature are key. If your fever exceeds 38.5°C (101.3°F) for more than 3 days, consulting a physician is advisable.\n\nOur Primary Care doctors can evaluate your symptoms and prescribe appropriate treatments."
     }
     else if (prompt.includes('anxiety') || prompt.includes('depress') || prompt.includes('stress') || prompt.includes('mental health') || prompt.includes('insomnia') || prompt.includes('sleep')) {
-      answer = "Mental well-being is just as essential as physical health. Chronic stress, anxiety, or sleep disturbances can significantly impact daily life.\n\nOur Psychiatry specialist, **Dr. Aisha Patel, MD** ($130 fee), provides supportive psychotherapy, stress reduction strategies, and medication management via private telehealth."
+      answer = "Mental well-being is just as essential as physical health. Chronic stress, anxiety, or sleep disturbances can significantly impact daily life.\n\nOur Psychiatry specialist, **Dr. Aisha Patel, MD** (₱135.00 fee), provides supportive psychotherapy, stress reduction strategies, and medication management via private telehealth."
     }
     else if (prompt.includes('knee') || prompt.includes('joint') || prompt.includes('back pain') || prompt.includes('bone') || prompt.includes('sprain') || prompt.includes('shoulder')) {
-      answer = "For musculoskeletal aches or joint sprains, resting the joint, applying a cold pack for 15-20 minutes, and gentle elevation can provide initial relief.\n\nOur Orthopedic surgeon, **Dr. Robert Taylor, MD** ($125 fee), specializes in joint rehabilitation, sports injuries, and spine health."
+      answer = "For musculoskeletal aches or joint sprains, resting the joint, applying a cold pack for 15-20 minutes, and gentle elevation can provide initial relief.\n\nOur Orthopedic surgeon, **Dr. Robert Taylor, MD** (₱125.00 fee), specializes in joint rehabilitation, sports injuries, and spine health."
     }
     // Doctors & Specialists Recommendations
     else if (prompt.includes('cardio') || prompt.includes('heart') || prompt.includes('blood pressure') || prompt.includes('hypertension')) {
-      answer = "For cardiovascular health and hypertension, **Dr. Sarah Jenkins, MD, FACC** is our Director of Cardiology. She is a Harvard Medical School alumna with 14 years of experience ($120 consultation fee).\n\nShe provides comprehensive cardiac screenings, vital telemetry, and ECG evaluations."
+      answer = "For cardiovascular health and hypertension, **Dr. Sarah Jenkins, MD, FACC** is our Director of Cardiology. She is a Harvard Medical School alumna with 14 years of experience (₱120.00 consultation fee).\n\nShe provides comprehensive cardiac screenings, vital telemetry, and ECG evaluations."
     }
     else if (prompt.includes('neuro') || prompt.includes('brain') || prompt.includes('stroke') || prompt.includes('seizure') || prompt.includes('nerve')) {
-      answer = "For brain and nervous system care, **Dr. Marcus Chen, MD, PhD** is our Director of Neurology (10 years experience, $115 consultation fee). He specializes in migraine treatment, stroke prevention, and cognitive health."
+      answer = "For brain and nervous system care, **Dr. Marcus Chen, MD, PhD** is our Director of Neurology (10 years experience, ₱115.00 consultation fee). He specializes in migraine treatment, stroke prevention, and cognitive health."
     }
     else if (prompt.includes('derma') || prompt.includes('skin doctor')) {
-      answer = "Our clinical dermatologist is **Dr. Elena Rostova, MD** (8 years experience, $95 consultation fee). She specializes in teledermatology, eczema protocols, and early skin lesion detection."
+      answer = "Our clinical dermatologist is **Dr. Elena Rostova, MD** (8 years experience, ₱95.00 consultation fee). She specializes in teledermatology, eczema protocols, and early skin lesion detection."
     }
     else if (prompt.includes('doctor') || prompt.includes('specialist') || prompt.includes('fee') || prompt.includes('cost') || prompt.includes('price') || prompt.includes('physician')) {
       answer = "**Medicon Board-Certified Specialists:**\n\n" +
-        "• **Cardiology:** Dr. Sarah Jenkins, MD, FACC ($120)\n" +
-        "• **Neurology:** Dr. Marcus Chen, MD, PhD ($115)\n" +
-        "• **Dermatology:** Dr. Elena Rostova, MD ($95)\n" +
-        "• **General Practice:** Dr. James Wilson, MD ($75)\n" +
-        "• **Psychiatry:** Dr. Aisha Patel, MD ($130)\n" +
-        "• **Orthopedics:** Dr. Robert Taylor, MD ($125)\n\n" +
+        "• **Cardiology:** Dr. Sarah Jenkins, MD, FACC (₱120.00)\n" +
+        "• **Neurology:** Dr. Marcus Chen, MD, PhD (₱115.00)\n" +
+        "• **Dermatology:** Dr. Elena Rostova, MD (₱95.00)\n" +
+        "• **General Practice:** Dr. James Wilson, MD (₱75.00)\n" +
+        "• **Psychiatry:** Dr. Aisha Patel, MD (₱135.00)\n" +
+        "• **Orthopedics:** Dr. Robert Taylor, MD (₱125.00)\n\n" +
         "You can browse full physician profiles on our homepage or book a consultation!"
     }
     // Telehealth & Video Consultations
