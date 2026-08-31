@@ -53,7 +53,7 @@
                   : 'border-slate-300 bg-white hover:bg-slate-50 text-slate-800'
               ]"
             >
-              <img :src="gcashIcon" class="w-6 h-6 object-contain" alt="GCash" />
+              <Smartphone class="w-5 h-5 text-blue-600 shrink-0" />
               <div>
                 <p class="text-xs font-bold uppercase">GCash</p>
                 <p class="text-[10px] text-slate-500 font-sans">PayMongo Direct</p>
@@ -71,7 +71,7 @@
                   : 'border-slate-300 bg-white hover:bg-slate-50 text-slate-800'
               ]"
             >
-              <img :src="mayaIcon" class="w-6 h-6 object-contain" alt="Maya" />
+              <Wallet class="w-5 h-5 text-emerald-600 shrink-0" />
               <div>
                 <p class="text-xs font-bold uppercase">Maya</p>
                 <p class="text-[10px] text-slate-500 font-sans">PayMongo Direct</p>
@@ -89,7 +89,7 @@
                   : 'border-slate-300 bg-white hover:bg-slate-50 text-slate-800'
               ]"
             >
-              <img :src="grabpayIcon" class="w-6 h-6 object-contain" alt="GrabPay" />
+              <Banknote class="w-5 h-5 text-green-700 shrink-0" />
               <div>
                 <p class="text-xs font-bold uppercase">GrabPay</p>
                 <p class="text-[10px] text-slate-500 font-sans">PayMongo Direct</p>
@@ -107,11 +107,7 @@
                   : 'border-slate-300 bg-white hover:bg-slate-50 text-slate-800'
               ]"
             >
-              <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center font-bold text-xs">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-              </div>
+              <CreditCard class="w-5 h-5 text-slate-800 shrink-0" />
               <div>
                 <p class="text-xs font-bold uppercase">Card</p>
                 <p class="text-[10px] text-slate-500 font-sans">PayMongo + Stripe</p>
@@ -200,9 +196,7 @@
 import { ref, computed } from 'vue'
 import api from '@/services/api'
 import { useNotificationStore } from '@/stores/notifications'
-import gcashIcon from '@/assets/icons/gcash.svg'
-import mayaIcon from '@/assets/icons/maya.svg'
-import grabpayIcon from '@/assets/icons/grabpay.svg'
+import { Smartphone, Wallet, Banknote, CreditCard } from 'lucide-vue-next'
 
 const props = defineProps({
   isOpen: Boolean,

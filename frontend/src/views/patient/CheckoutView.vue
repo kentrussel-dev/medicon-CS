@@ -54,7 +54,7 @@
                   : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
               ]"
             >
-              <img :src="gcashIcon" class="w-5 h-5 object-contain" alt="GCash" />
+              <Smartphone class="w-5 h-5 text-blue-600" />
               <span class="text-[11px] uppercase font-bold">GCash</span>
             </button>
 
@@ -69,7 +69,7 @@
                   : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
               ]"
             >
-              <img :src="mayaIcon" class="w-5 h-5 object-contain" alt="Maya" />
+              <Wallet class="w-5 h-5 text-emerald-600" />
               <span class="text-[11px] uppercase font-bold">Maya</span>
             </button>
 
@@ -84,7 +84,7 @@
                   : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
               ]"
             >
-              <img :src="grabpayIcon" class="w-5 h-5 object-contain" alt="GrabPay" />
+              <Banknote class="w-5 h-5 text-green-700" />
               <span class="text-[11px] uppercase font-bold">GrabPay</span>
             </button>
           </div>
@@ -105,12 +105,10 @@
                     v-model="form.cardNumber"
                     @input="formatCardNumber"
                     placeholder="1111 2222 3333 4444"
-                    class="w-full pl-3 pr-24 py-2 border border-slate-300 text-xs font-mono text-slate-900 focus:border-slate-800 focus:outline-none bg-white rounded-none tracking-wider"
+                    class="w-full pl-3 pr-20 py-2 border border-slate-300 text-xs font-mono text-slate-900 focus:border-slate-800 focus:outline-none bg-white rounded-none tracking-wider"
                   />
-                  <!-- Real Card Brand Badges -->
-                  <div class="absolute right-3 top-2 flex items-center space-x-1.5">
-                    <img :src="mastercardIcon" class="h-4 w-auto object-contain" alt="Mastercard" />
-                    <img :src="visaIcon" class="h-4 w-auto object-contain" alt="Visa" />
+                  <div class="absolute right-3 top-2 flex items-center space-x-1 font-mono text-[10px] text-slate-400 font-bold">
+                    <span>CARD</span>
                   </div>
                 </div>
               </div>
@@ -373,17 +371,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { CreditCard, ShieldCheck } from 'lucide-vue-next'
+import { CreditCard, Smartphone, Wallet, Banknote, ShieldCheck } from 'lucide-vue-next'
 import { useNotificationStore } from '@/stores/notifications'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import { getStoredAppointments, defaultDoctors } from '@/services/mockData'
-
-import gcashIcon from '@/assets/icons/gcash.svg'
-import mayaIcon from '@/assets/icons/maya.svg'
-import grabpayIcon from '@/assets/icons/grabpay.svg'
-import mastercardIcon from '@/assets/icons/mastercard.svg'
-import visaIcon from '@/assets/icons/visa.svg'
 
 const route = useRoute()
 const router = useRouter()
