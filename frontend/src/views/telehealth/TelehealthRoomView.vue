@@ -675,8 +675,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import AddParticipantModal from '@/components/telehealth/AddParticipantModal.vue'
@@ -1042,13 +1042,26 @@ const stopLocalMedia = () => {
     animFrameId = null
   }
   if (localMediaStream) {
-    localMediaStream.getTracks().forEach((t) => t.stop())
+    try {
+      localMediaStream.getTracks().forEach((t) => {
+        t.stop()
+      })
+    } catch (e) {}
     localMediaStream = null
   }
   if (screenShareStream.value) {
-    screenShareStream.value.getTracks().forEach((t) => t.stop())
+    try {
+      screenShareStream.value.getTracks().forEach((t) => {
+        t.stop()
+      })
+    } catch (e) {}
     screenShareStream.value = null
   }
+  videoElements.forEach((el) => {
+    if (el) {
+      el.srcObject = null
+    }
+  })
 }
 
 const toggleMic = () => {
@@ -1120,10 +1133,10 @@ const createNewRoom = () => {
   chatMessages.value = []
   isRoomClosed.value = false
   router.push(`/telehealth/room/${newCode}`)
-  startLocalMedia()
 }
 
 const goToDashboard = () => {
+  stopLocalMedia()
   if (auth.isDoctor) {
     router.push('/doctor/appointments')
   } else if (auth.isAdmin) {
@@ -1156,6 +1169,34 @@ const loadSession = async () => {
   }
 }
 
+// Watch route parameter changes (e.g. switching between different room codes)
+watch(
+  () => route.params.code || route.params.id,
+  async (newVal, oldVal) => {
+    if (newVal && newVal !== oldVal) {
+      // 1. Cleanly tear down previous session & media tracks
+      stopLocalMedia()
+      videoElements.clear()
+
+      // 2. Reset in-room state and controls
+      micOn.value = true
+      cameraOn.value = true
+      isScreenSharing.value = false
+      isRoomClosed.value = false
+      showSidebar.value = false
+      showLeaveModal.value = false
+      chatMessages.value = []
+
+      // 3. Update room code
+      roomCode.value = isAlphanumericCode(newVal) ? String(newVal) : generateUniqueRoomCode()
+
+      // 4. Initialize fresh media and session for new room
+      await loadSession()
+      await startLocalMedia()
+    }
+  }
+)
+
 onMounted(async () => {
   await loadSession()
   await startLocalMedia()
@@ -1169,8 +1210,14 @@ onMounted(async () => {
   })
 })
 
+onBeforeRouteLeave(() => {
+  stopLocalMedia()
+  videoElements.clear()
+})
+
 onUnmounted(() => {
   stopLocalMedia()
+  videoElements.clear()
 })
 </script>
 
