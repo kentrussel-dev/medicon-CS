@@ -9,6 +9,10 @@ import {
   getStoredPrescriptions,
   saveStoredPrescriptions,
   getStoredAuditLogs,
+  getStoredPayments,
+  saveStoredPayments,
+  getTwoFactorState,
+  setTwoFactorState,
   generateUniqueRoomCode,
 } from './mockData'
 
@@ -79,6 +83,7 @@ const handleMockRoute = (config) => {
           specialty: 'Cardiology',
           license_number: 'MD-CAR-88210',
           consultation_fee: 120,
+          consultation_fee_cents: 12000,
           rating: 4.96,
           years_of_experience: 14,
         },
@@ -95,12 +100,105 @@ const handleMockRoute = (config) => {
           specialty: 'Neurology',
           license_number: 'MD-NEU-41903',
           consultation_fee: 115,
+          consultation_fee_cents: 11500,
           rating: 4.91,
           years_of_experience: 10,
         },
       }
     }
-    return { status: 200, data: { user, token: 'mock_jwt_token_' + Date.now() } }
+
+    const twoFactorState = getTwoFactorState()
+    if (twoFactorState.enabled) {
+      return {
+        status: 200,
+        data: {
+          success: true,
+          two_factor_required: true,
+          two_factor_token: 'mock_2fa_token_' + Date.now(),
+          message: 'Two-factor authentication required. Enter your 6-digit code or recovery code.',
+        },
+      }
+    }
+
+    return { status: 200, data: { user, token: 'mock_jwt_token_' + Date.now(), two_factor_required: false } }
+  }
+
+  if (url === '/auth/2fa/enable' && method === 'post') {
+    const recoveryCodes = [
+      'A7B2-99F1', '4C3D-88E2', 'K9X1-77M4', 'P2Q9-66R3',
+      'W5V8-55T2', 'Z1Y4-44X9', 'N3M7-33L8', 'H6J2-22G5',
+    ]
+    const secret = 'JBSWY3DPEHPK3PXP'
+    const qr_code_uri = `otpauth://totp/Medicon:patient@medicon.health?secret=${secret}&issuer=Medicon%20Healthcare&algorithm=SHA1&digits=6&period=30`
+    return {
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          secret,
+          qr_code_uri,
+          recovery_codes: recoveryCodes,
+        },
+      },
+    }
+  }
+
+  if (url === '/auth/2fa/confirm' && method === 'post') {
+    setTwoFactorState({
+      enabled: true,
+      confirmed_at: new Date().toISOString(),
+      secret: 'JBSWY3DPEHPK3PXP',
+      recovery_codes: [
+        'A7B2-99F1', '4C3D-88E2', 'K9X1-77M4', 'P2Q9-66R3',
+        'W5V8-55T2', 'Z1Y4-44X9', 'N3M7-33L8', 'H6J2-22G5',
+      ],
+    })
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: 'Two-factor authentication is now active.',
+        data: { two_factor_enabled: true },
+      },
+    }
+  }
+
+  if (url === '/auth/2fa/disable' && method === 'post') {
+    setTwoFactorState({ enabled: false, secret: null, recovery_codes: [] })
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: 'Two-factor authentication disabled.',
+        data: { two_factor_enabled: false },
+      },
+    }
+  }
+
+  if (url === '/auth/2fa/challenge' && method === 'post') {
+    const user = {
+      id: 1,
+      name: 'Jane Doe',
+      email: 'patient@medicon.health',
+      role: 'patient',
+      avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+      patient: {
+        id: 1,
+        allergies: 'Penicillin, Sulfa Drugs',
+        blood_type: 'O+',
+        emergency_contact_name: 'Mark Doe (Spouse)',
+        emergency_contact_phone: '+1 (555) 019-9831',
+      },
+    }
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: 'Two-factor code verified.',
+        user,
+        token: 'mock_jwt_token_' + Date.now(),
+      },
+    }
   }
 
   if (url === '/auth/register' && method === 'post') {
@@ -125,11 +223,141 @@ const handleMockRoute = (config) => {
 
   if (url === '/auth/me' && method === 'get') {
     const user = JSON.parse(localStorage.getItem('medicon_user') || 'null')
-    return { status: 200, data: { user } }
+    const twoFactorState = getTwoFactorState()
+    return { status: 200, data: { user, two_factor_enabled: !!twoFactorState.enabled } }
   }
 
   if (url === '/auth/logout' && method === 'post') {
     return { status: 200, data: { message: 'Logged out' } }
+  }
+
+  // Payments & Checkout Mock Routes
+  if (url === '/payments/checkout' && method === 'post') {
+    const payments = getStoredPayments()
+    const appts = getStoredAppointments()
+    const appt = appts.find((a) => a.id === Number(body.appointment_id))
+
+    const methodType = body.payment_method || 'gcash'
+    const isCard = methodType === 'card'
+    const amountCents = body.amount_cents || (appt?.consultation_fee_cents || 12000)
+    const gateway = isCard ? (Math.random() > 0.1 ? 'paymongo' : 'stripe') : 'paymongo'
+
+    const newPayment = {
+      id: Date.now(),
+      appointment_id: Number(body.appointment_id),
+      user_id: 1,
+      amount_cents: amountCents,
+      amount_pesos: (amountCents / 100).toFixed(2),
+      currency: 'PHP',
+      gateway,
+      payment_method: methodType,
+      status: 'paid',
+      gateway_payment_id: `pay_${gateway}_${Date.now()}`,
+      refund_amount_cents: 0,
+      refund_amount_pesos: '0.00',
+      refunded_at: null,
+      created_at: new Date().toISOString(),
+    }
+
+    payments.unshift(newPayment)
+    saveStoredPayments(payments)
+
+    if (appt) {
+      appt.status = 'CONFIRMED'
+      appt.payment_status = 'paid'
+      appt.consultation_fee_cents = amountCents
+      saveStoredAppointments(appts)
+    }
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: 'Payment processed successfully.',
+        data: {
+          payment_id: newPayment.id,
+          gateway,
+          amount_cents: amountCents,
+          amount_pesos: (amountCents / 100).toFixed(2),
+          currency: 'PHP',
+          status: 'paid',
+          checkout_url: `https://pm.link/pay/${newPayment.gateway_payment_id}`,
+        },
+      },
+    }
+  }
+
+  if (url.match(/^\/payments\/\d+$/) && method === 'get') {
+    const id = Number(url.split('/')[2])
+    const payment = getStoredPayments().find((p) => p.id === id) || getStoredPayments()[0]
+    return { status: 200, data: { success: true, data: payment } }
+  }
+
+  // Universal Full-Text Search Mock Route
+  if (url === '/search' && method === 'get') {
+    const q = (params.q || '').toLowerCase().trim()
+    const type = params.type || 'all'
+
+    const matchedDoctors = defaultDoctors.filter(
+      (d) => d.name.toLowerCase().includes(q) || d.specialty.toLowerCase().includes(q) || d.bio.toLowerCase().includes(q)
+    )
+
+    const matchedRecords = getStoredRecords().filter(
+      (r) => r.diagnosis?.toLowerCase().includes(q) || r.clinical_notes?.toLowerCase().includes(q) || r.doctor_name?.toLowerCase().includes(q)
+    )
+
+    const matchedPrescriptions = getStoredPrescriptions().filter(
+      (rx) => rx.notes?.toLowerCase().includes(q) || rx.items?.some((i) => i.medication_name.toLowerCase().includes(q))
+    )
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        query: q,
+        data: {
+          doctors: matchedDoctors,
+          records: matchedRecords,
+          prescriptions: matchedPrescriptions,
+        },
+      },
+    }
+  }
+
+  // Data Compliance & Privacy Mock Routes
+  if (url === '/compliance/export' && method === 'get') {
+    const user = JSON.parse(localStorage.getItem('medicon_user') || '{}')
+    return {
+      status: 200,
+      data: {
+        success: true,
+        filename: `medicon_health_export_${user.id || 1}_${Date.now()}.json`,
+        data: {
+          compliance_standard: 'HIPAA / Data Privacy Act (DPA) Complete Health Record Export',
+          export_generated_at: new Date().toISOString(),
+          patient_profile: user,
+          appointments: getStoredAppointments(),
+          medical_records: getStoredRecords(),
+          prescriptions: getStoredPrescriptions(),
+          payments: getStoredPayments(),
+          audit_logs: getStoredAuditLogs(),
+        },
+      },
+    }
+  }
+
+  if (url === '/compliance/account-deletion' && method === 'post') {
+    localStorage.removeItem('medicon_auth_token')
+    localStorage.removeItem('medicon_user')
+    setTwoFactorState({ enabled: false, secret: null, recovery_codes: [] })
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: 'Your account has been permanently anonymized and closed in compliance with HIPAA.',
+      },
+    }
   }
 
   // 2. Admin Analytics

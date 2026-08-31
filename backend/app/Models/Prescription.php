@@ -31,6 +31,21 @@ class Prescription extends Model
         ];
     }
 
+    public function toSearchableArray(): array
+    {
+        $medications = $this->items->map(fn ($item) => "{$item->medication_name} {$item->dosage} {$item->instructions}")->implode('; ');
+
+        return [
+            'id' => $this->id,
+            'patient_id' => $this->patient_id,
+            'doctor_id' => $this->doctor_id,
+            'notes' => $this->notes,
+            'medications' => $medications,
+            'valid_until' => $this->valid_until?->toDateString(),
+            'is_dispensed' => $this->is_dispensed,
+        ];
+    }
+
     public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class);

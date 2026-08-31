@@ -36,6 +36,20 @@ class MedicalRecord extends Model
         ];
     }
 
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'patient_id' => $this->patient_id,
+            'doctor_id' => $this->doctor_id,
+            'record_date' => $this->record_date?->toDateString(),
+            'diagnosis' => $this->diagnosis,
+            'clinical_notes' => $this->clinical_notes,
+            'treatment_plan' => $this->treatment_plan,
+            'icd_10_codes' => is_array($this->icd_10_codes) ? implode(' ', $this->icd_10_codes) : $this->icd_10_codes,
+        ];
+    }
+
     public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class);

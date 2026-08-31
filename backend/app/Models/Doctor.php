@@ -18,6 +18,7 @@ class Doctor extends Model
         'license_number',
         'bio',
         'consultation_fee',
+        'consultation_fee_cents',
         'years_of_experience',
         'rating',
         'is_active',
@@ -27,9 +28,30 @@ class Doctor extends Model
     {
         return [
             'consultation_fee' => 'decimal:2',
+            'consultation_fee_cents' => 'integer',
             'years_of_experience' => 'integer',
             'rating' => 'decimal:2',
             'is_active' => 'boolean',
+        ];
+    }
+
+    public function getConsultationFeePesosAttribute(): string
+    {
+        $cents = $this->consultation_fee_cents ?? ($this->consultation_fee ? (int)round($this->consultation_fee * 100) : 12000);
+        return number_format($cents / 100, 2);
+    }
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->user?->name,
+            'email' => $this->user?->email,
+            'specialty' => $this->specialty,
+            'license_number' => $this->license_number,
+            'bio' => $this->bio,
+            'consultation_fee_cents' => $this->consultation_fee_cents,
+            'years_of_experience' => $this->years_of_experience,
         ];
     }
 

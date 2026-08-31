@@ -7,14 +7,18 @@ use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\AttachmentController;
 use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DataComplianceController;
 use App\Http\Controllers\Api\DoctorAvailabilityController;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\HealthCheckController;
 use App\Http\Controllers\Api\MedicalRecordController;
 use App\Http\Controllers\Api\PatientController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PrescriptionController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\TelehealthRoomController;
+use App\Http\Controllers\Api\TwoFactorAuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,23 +30,39 @@ use Illuminate\Support\Facades\Route;
 // Health Check & Monitoring
 Route::get('/health', [HealthCheckController::class, 'health']);
 
-// Public Doctor Discovery
+// Public Doctor Discovery & Universal Search
 Route::get('/doctors/specialties', [DoctorController::class, 'specialties']);
 Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/doctors/{id}', [DoctorController::class, 'show']);
+Route::get('/search', [SearchController::class, 'search']);
 
 // Signed File Download
 Route::get('/attachments/{attachment}/download', [AttachmentController::class, 'download'])
     ->name('api.attachments.download');
 
+// Webhook Handlers (Public, Signature-Verified)
+Route::prefix('payments/webhooks')->group(function () {
+    Route::post('/paymongo', [PaymentController::class, 'handlePayMongoWebhook']);
+    Route::post('/stripe', [PaymentController::class, 'handleStripeWebhook']);
+});
+
 // Authentication Routes (Rate-limited)
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
+    Route::post('/2fa/challenge', [TwoFactorAuthController::class, 'challenge'])->middleware('throttle:auth');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
+
+        // Two-Factor Authentication Management
+        Route::prefix('2fa')->group(function () {
+            Route::post('/enable', [TwoFactorAuthController::class, 'enable']);
+            Route::post('/confirm', [TwoFactorAuthController::class, 'confirm']);
+            Route::post('/disable', [TwoFactorAuthController::class, 'disable']);
+            Route::post('/recovery-codes', [TwoFactorAuthController::class, 'regenerateRecoveryCodes']);
+        });
     });
 });
 
@@ -54,6 +74,18 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::get('/', [ProfileController::class, 'show']);
         Route::put('/', [ProfileController::class, 'update']);
         Route::put('/password', [ProfileController::class, 'updatePassword']);
+    });
+
+    // Patient Data Compliance & Privacy (GDPR / DPA / HIPAA)
+    Route::prefix('compliance')->group(function () {
+        Route::get('/export', [DataComplianceController::class, 'export']);
+        Route::post('/account-deletion', [DataComplianceController::class, 'deleteAccount']);
+    });
+
+    // Payments & Consultations Checkout
+    Route::prefix('payments')->group(function () {
+        Route::post('/checkout', [PaymentController::class, 'checkout']);
+        Route::get('/{id}', [PaymentController::class, 'show']);
     });
 
     // Patient Clinical Records & History

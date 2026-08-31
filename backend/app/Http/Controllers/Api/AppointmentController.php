@@ -15,6 +15,7 @@ use App\Models\Doctor;
 use App\Models\Patient;
 use App\Services\AppointmentSchedulingService;
 use App\Services\AuditLoggerService;
+use App\Services\Payment\PaymentService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,8 @@ class AppointmentController extends Controller
 {
     public function __construct(
         protected AppointmentSchedulingService $schedulingService,
-        protected AuditLoggerService $auditLogger
+        protected AuditLoggerService $auditLogger,
+        protected PaymentService $paymentService
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -146,9 +148,12 @@ class AppointmentController extends Controller
             cancellationReason: $validated['cancellation_reason']
         );
 
+        $refundResult = $this->paymentService->processCancellationRefund($cancelled, $validated['cancellation_reason']);
+
         return response()->json([
             'message' => 'Appointment cancelled.',
             'appointment' => new AppointmentResource($cancelled),
+            'refund' => $refundResult,
         ]);
     }
 

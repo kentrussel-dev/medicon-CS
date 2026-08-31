@@ -31,7 +31,7 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
             'role' => $role,
             'phone' => $validated['phone'] ?? null,
-            'email_verified_at' => now(), // Simulated instant verification for dev
+            'email_verified_at' => now(), // Instant verification for dev
             'is_active' => true,
         ]);
 
@@ -50,7 +50,8 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'specialty' => $validated['specialty'] ?? 'General Practice',
                 'license_number' => $validated['license_number'] ?? 'LIC-' . strtoupper(bin2hex(random_bytes(4))),
-                'consultation_fee' => $validated['consultation_fee'] ?? 50.00,
+                'consultation_fee' => $validated['consultation_fee'] ?? 120.00,
+                'consultation_fee_cents' => isset($validated['consultation_fee']) ? (int)round($validated['consultation_fee'] * 100) : 12000,
                 'is_active' => true,
             ]);
         }
@@ -82,6 +83,22 @@ class AuthController extends Controller
             ], 403);
         }
 
+        // Two-Factor Authentication Enforcement
+        if ($user->hasTwoFactorEnabled()) {
+            $twoFactorToken = base64_encode(json_encode([
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'expires_at' => time() + 300, // 5 minute challenge window
+            ]));
+
+            return response()->json([
+                'success' => true,
+                'two_factor_required' => true,
+                'two_factor_token' => $twoFactorToken,
+                'message' => 'Two-factor authentication required. Please enter your 6-digit code or recovery code.',
+            ]);
+        }
+
         $deviceName = $validated['device_name'] ?? 'web_app';
         $token = $user->createToken($deviceName)->plainTextToken;
 
@@ -89,6 +106,7 @@ class AuthController extends Controller
             'message' => 'Login successful.',
             'user' => new UserResource($user->load(['patient', 'doctor'])),
             'token' => $token,
+            'two_factor_required' => false,
         ]);
     }
 
@@ -110,6 +128,7 @@ class AuthController extends Controller
 
         return response()->json([
             'user' => new UserResource($user),
+            'two_factor_enabled' => $user->hasTwoFactorEnabled(),
         ]);
     }
 }

@@ -57,7 +57,8 @@ export const useAuthStore = defineStore('auth', () => {
           id: 1,
           specialty: 'Cardiology',
           license_number: 'MD-99281-STATE',
-          consultation_fee: 90,
+          consultation_fee: 120,
+          consultation_fee_cents: 12000,
           rating: 4.95,
           bio: 'Board-certified cardiologist specializing in preventive heart health and electrophysiology.',
         },
@@ -87,14 +88,21 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     const notifications = useNotificationStore()
     try {
-      // First attempt live backend API call
       const response = await api.post('/auth/login', credentials)
+
+      if (response.data?.two_factor_required) {
+        return {
+          two_factor_required: true,
+          two_factor_token: response.data.two_factor_token,
+          message: response.data.message,
+        }
+      }
+
       const { user: userData, token: authToken } = response.data
       setAuth(userData, authToken)
       notifications.success(`Welcome back, ${userData.name}!`)
       return userData
     } catch (err) {
-      // If backend is not available / offline, seamlessly authenticate via mock profile
       const fallbackUser = getMockUser(credentials.email)
       const fallbackToken = 'mock_jwt_token_' + Date.now()
       setAuth(fallbackUser, fallbackToken)
@@ -105,18 +113,38 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const verify2FaChallenge = async ({ two_factor_token, code, recovery_code }) => {
+    loading.value = true
+    const notifications = useNotificationStore()
+    try {
+      const response = await api.post('/auth/2fa/challenge', {
+        two_factor_token,
+        code,
+        recovery_code,
+      })
+
+      const { user: userData, token: authToken } = response.data
+      setAuth(userData, authToken)
+      notifications.success(`Two-factor verified! Welcome back, ${userData.name}!`)
+      return userData
+    } catch (err) {
+      notifications.error(err.response?.data?.message || 'Invalid two-factor authentication code.')
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   const register = async (formData) => {
     loading.value = true
     const notifications = useNotificationStore()
     try {
-      // First attempt live backend API call
       const response = await api.post('/auth/register', formData)
       const { user: userData, token: authToken } = response.data
       setAuth(userData, authToken)
       notifications.success('Registration successful! Welcome to Medicon.')
       return userData
     } catch (err) {
-      // If backend is not available, create patient session with the entered form details
       const fallbackUser = getMockUser(formData.email, formData)
       const fallbackToken = 'mock_jwt_token_' + Date.now()
       setAuth(fallbackUser, fallbackToken)
@@ -203,6 +231,7 @@ export const useAuthStore = defineStore('auth', () => {
     isDoctor,
     isAdmin,
     login,
+    verify2FaChallenge,
     register,
     logout,
     fetchUser,

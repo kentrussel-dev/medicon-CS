@@ -71,7 +71,7 @@
           <div class="mt-3 pt-2.5 border-t border-slate-200 grid grid-cols-2 gap-2 text-xs font-mono">
             <div class="p-2 bg-slate-50 border border-slate-200">
               <span class="text-[10px] text-slate-500 uppercase block">Consultation Fee</span>
-              <span class="font-bold text-slate-900">${{ doctor.consultation_fee || 75 }}.00</span>
+              <span class="font-bold text-slate-900">₱{{ (doctor.consultation_fee_cents ? doctor.consultation_fee_cents / 100 : (doctor.consultation_fee || 120)).toFixed(2) }}</span>
             </div>
             <div class="p-2 bg-slate-50 border border-slate-200">
               <span class="text-[10px] text-slate-500 uppercase block">Rating Score</span>

@@ -22,6 +22,8 @@ class Appointment extends Model
         'scheduled_start',
         'scheduled_end',
         'status',
+        'payment_status',
+        'consultation_fee_cents',
         'type',
         'reason',
         'notes',
@@ -42,6 +44,7 @@ class Appointment extends Model
             'type' => AppointmentType::class,
             'no_show_risk_level' => RiskLevel::class,
             'no_show_risk_score' => 'float',
+            'consultation_fee_cents' => 'integer',
             'notes' => 'encrypted',
             'risk_factors' => 'array',
             'is_reminder_sent' => 'boolean',
@@ -56,6 +59,11 @@ class Appointment extends Model
     public function doctor(): BelongsTo
     {
         return $this->belongsTo(Doctor::class);
+    }
+
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
     }
 
     public function medicalRecord(): HasOne
@@ -76,6 +84,17 @@ class Appointment extends Model
     public function participants(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(AppointmentParticipant::class);
+    }
+
+    public function getConsultationFeePesosAttribute(): string
+    {
+        $cents = $this->consultation_fee_cents ?? 12000;
+        return number_format($cents / 100, 2);
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->payment_status === 'paid';
     }
 
     public function isPast(): bool
