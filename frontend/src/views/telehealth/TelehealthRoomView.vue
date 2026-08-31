@@ -698,14 +698,22 @@ import {
   RefreshCw,
   ShieldCheck,
 } from 'lucide-vue-next'
+import { generateUniqueRoomCode } from '@/services/mockData'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-// Unique Room Code (e.g. sdf-sdyy-125)
-const roomCode = ref(route.params.code || route.params.id || 'sdf-sdyy-125')
-const appointmentId = computed(() => (isNumeric(roomCode.value) ? Number(roomCode.value) : 1))
+const rawParam = computed(() => route.params.code || route.params.id || '')
+const isAlphanumericCode = (val) => /^[a-z0-9]{3}-[a-z0-9]{4}-[0-9]{3}$/i.test(String(val))
+
+// Dynamic unique room code (e.g. k9x-yqp2-481)
+const roomCode = ref(
+  isAlphanumericCode(rawParam.value)
+    ? String(rawParam.value)
+    : generateUniqueRoomCode()
+)
+const appointmentId = computed(() => (/^\d+$/.test(String(rawParam.value)) ? Number(rawParam.value) : 1))
 const appointment = ref(null)
 const connectionState = ref('connected') // connected, reconnecting, disconnected
 const micOn = ref(true)
@@ -718,10 +726,6 @@ const isRoomClosed = ref(false)
 const copiedLink = ref(false)
 const localVideoEl = ref(null)
 let localMediaStream = null
-
-function isNumeric(str) {
-  return /^\d+$/.test(String(str))
-}
 
 const copyRoomLink = async () => {
   try {
@@ -1111,12 +1115,7 @@ const closeAndPurgeRoom = async () => {
 }
 
 const createNewRoom = () => {
-  // Generate fresh unique room code (e.g. med-7x3q-992)
-  const part1 = Math.random().toString(36).substring(2, 5)
-  const part2 = Math.random().toString(36).substring(2, 6)
-  const part3 = Math.floor(100 + Math.random() * 900)
-  const newCode = `${part1}-${part2}-${part3}`
-  
+  const newCode = generateUniqueRoomCode()
   roomCode.value = newCode
   chatMessages.value = []
   isRoomClosed.value = false
@@ -1136,12 +1135,21 @@ const goToDashboard = () => {
 
 const loadSession = async () => {
   try {
-    const res = await api.get(`/appointments/${appointmentId.value}/telehealth/token`)
+    const identifier = rawParam.value || roomCode.value
+    let res
+    if (/^\d+$/.test(String(identifier))) {
+      res = await api.get(`/appointments/${identifier}/telehealth/token`)
+    } else {
+      res = await api.get(`/telehealth/rooms/${identifier}/token`)
+    }
+
+    if (res.data?.room_code) {
+      roomCode.value = res.data.room_code
+    } else if (res.data?.appointment?.room_code) {
+      roomCode.value = res.data.appointment.room_code
+    }
     if (res.data?.appointment) {
       appointment.value = res.data.appointment
-      if (res.data.appointment.room_code) {
-        roomCode.value = res.data.appointment.room_code
-      }
     }
   } catch (err) {
     // Handled via mock adapter

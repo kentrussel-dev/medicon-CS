@@ -86,6 +86,16 @@ export const defaultDoctors = [
   },
 ]
 
+// Unique room code generator (e.g. k9x-yqp2-481)
+export function generateUniqueRoomCode() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz'
+  const digits = '0123456789'
+  const p1 = Array.from({ length: 3 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+  const p2 = Array.from({ length: 4 }, () => (Math.random() > 0.5 ? chars[Math.floor(Math.random() * chars.length)] : digits[Math.floor(Math.random() * digits.length)])).join('')
+  const p3 = Math.floor(100 + Math.random() * 900)
+  return `${p1}-${p2}-${p3}`
+}
+
 export const defaultAppointments = [
   {
     id: 1,
@@ -98,9 +108,9 @@ export const defaultAppointments = [
     scheduled_end: new Date(Date.now() + 1 * 86400000 + 1800000).toISOString(),
     status: 'CONFIRMED',
     type: 'TELEHEALTH',
-    room_code: 'sdf-sdyy-125',
+    room_code: 'k9x-yqp2-481',
     reason: 'Cardiovascular Follow-up & Blood Pressure Regulation Review',
-    meeting_link: 'https://meet.medicon.health/telehealth/room/sdf-sdyy-125',
+    meeting_link: 'https://meet.medicon.health/telehealth/room/k9x-yqp2-481',
     no_show_risk_score: 0.082,
     no_show_risk_level: 'LOW',
     risk_factors: ['High patient engagement score', 'SMS reminder confirmed'],

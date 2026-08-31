@@ -9,6 +9,7 @@ import {
   getStoredPrescriptions,
   saveStoredPrescriptions,
   getStoredAuditLogs,
+  generateUniqueRoomCode,
 } from './mockData'
 
 const api = axios.create({
@@ -268,7 +269,8 @@ const handleMockRoute = (config) => {
   // Telehealth WebRTC Room Endpoints
   if (url.match(/^\/appointments\/\d+\/telehealth\/token$/) && method === 'get') {
     const id = Number(url.split('/')[2])
-    const appt = getStoredAppointments().find((a) => a.id === id) || {
+    const appts = getStoredAppointments()
+    const appt = appts.find((a) => a.id === id) || {
       id: id,
       doctor_name: 'Dr. Sarah Jenkins, MD, FACC',
       doctor_specialty: 'Cardiology',
@@ -277,10 +279,12 @@ const handleMockRoute = (config) => {
       type: 'TELEHEALTH',
       status: 'CONFIRMED',
       reason: 'Cardiology Multi-Party Consultation',
+      room_code: generateUniqueRoomCode(),
     }
     const user = JSON.parse(localStorage.getItem('medicon_user') || 'null')
     const role = (user?.role || 'patient').toUpperCase()
-    const roomCode = 'sdf-sdyy-125'
+    const roomCode = appt.room_code || generateUniqueRoomCode()
+    appt.room_code = roomCode
 
     return {
       status: 200,
@@ -302,16 +306,58 @@ const handleMockRoute = (config) => {
     }
   }
 
+  if (url.match(/^\/telehealth\/rooms\/[^/]+\/token$/) && method === 'get') {
+    const code = url.split('/')[3]
+    const user = JSON.parse(localStorage.getItem('medicon_user') || 'null')
+    const role = (user?.role || 'patient').toUpperCase()
+    const appts = getStoredAppointments()
+    const matchedAppt = appts.find((a) => a.room_code === code)
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        room_code: code,
+        appointment: matchedAppt || {
+          id: Date.now(),
+          room_code: code,
+          reason: 'Direct Clinical Telehealth Consultation',
+          patient_name: user?.name || 'Jane Doe',
+          doctor_name: 'Dr. Sarah Jenkins, MD, FACC',
+          doctor_specialty: 'Cardiology',
+          scheduled_start: new Date().toISOString(),
+        },
+        session: {
+          token: `lk_mock_jwt_token_${code}_${Date.now()}`,
+          room_name: `medicon_room_${code}`,
+          livekit_url: 'ws://localhost:7880',
+          identity: `user_${user?.id || 1}_${role.toLowerCase()}`,
+          participant_name: user?.name || 'Jane Doe',
+          role: role,
+          is_host: role === 'DOCTOR' || role === 'ADMIN',
+          expires_at: new Date(Date.now() + 7200000).toISOString(),
+        },
+      },
+    }
+  }
+
   if (url.match(/^\/appointments\/\d+\/telehealth\/close$/) && method === 'post') {
     const id = Number(url.split('/')[2])
+    const newCode = generateUniqueRoomCode()
+    const appts = getStoredAppointments()
+    const appt = appts.find((a) => a.id === id)
+    if (appt) {
+      localStorage.removeItem(`medicon_chat_room_${appt.room_code}`)
+      appt.room_code = newCode
+      saveStoredAppointments(appts)
+    }
     localStorage.removeItem(`medicon_chat_room_${id}`)
-    localStorage.removeItem(`medicon_chat_room_sdf-sdyy-125`)
     return {
       status: 200,
       data: {
         success: true,
         message: 'Consultation room closed and in-call messages purged.',
-        new_room_code: 'med-' + Math.random().toString(36).substring(2, 6) + '-' + Math.floor(100 + Math.random() * 900),
+        new_room_code: newCode,
       },
     }
   }
@@ -329,10 +375,7 @@ const handleMockRoute = (config) => {
   }
 
   if (url === '/telehealth/rooms/create' && method === 'post') {
-    const part1 = Math.random().toString(36).substring(2, 5)
-    const part2 = Math.random().toString(36).substring(2, 6)
-    const part3 = Math.floor(100 + Math.random() * 900)
-    const code = `${part1}-${part2}-${part3}`
+    const code = generateUniqueRoomCode()
     return {
       status: 201,
       data: {

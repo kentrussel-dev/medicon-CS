@@ -217,6 +217,8 @@ import {
   Video,
 } from 'lucide-vue-next'
 
+import { generateUniqueRoomCode } from '@/services/mockData'
+
 const router = useRouter()
 const auth = useAuthStore()
 const appointmentStore = useAppointmentStore()
@@ -236,10 +238,7 @@ const joinByCode = () => {
 }
 
 const createInstantMeeting = () => {
-  const part1 = Math.random().toString(36).substring(2, 5)
-  const part2 = Math.random().toString(36).substring(2, 6)
-  const part3 = Math.floor(100 + Math.random() * 900)
-  const code = `${part1}-${part2}-${part3}`
+  const code = generateUniqueRoomCode()
   router.push(`/telehealth/room/${code}`)
 }
 
