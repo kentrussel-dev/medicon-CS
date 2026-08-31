@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-slate-100 text-slate-900 font-sans min-h-screen text-[14px] leading-normal;
+    @apply bg-slate-100 text-slate-900 font-sans min-h-screen text-[14px] leading-normal antialiased;
   }
 
   input, select, textarea, button {
@@ -29,10 +29,116 @@
 @layer components {
   /* Crisp Institutional Panel */
   .gov-card {
-    @apply bg-white border border-slate-300 shadow-sm;
+    @apply bg-white border border-slate-300 shadow-sm transition-all duration-200 hover:border-slate-400;
   }
 
   .gov-card-header {
     @apply px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-700;
   }
+}
+
+/* ========================================================================= */
+/* Crisp Medical Dashboard Entrance & Page Transition Keyframes              */
+/* ========================================================================= */
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Utility Animation Classes */
+.animate-fade-up {
+  animation: fadeSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Stagger Delays for Dashboard Widgets */
+.animate-enter-1 {
+  animation-delay: 30ms;
+}
+
+.animate-enter-2 {
+  animation-delay: 80ms;
+}
+
+.animate-enter-3 {
+  animation-delay: 130ms;
+}
+
+.animate-enter-4 {
+  animation-delay: 180ms;
+}
+
+.animate-enter-5 {
+  animation-delay: 230ms;
+}
+
+.animate-enter-6 {
+  animation-delay: 280ms;
+}
+
+/* ========================================================================= */
+/* Vue Router Page Transition Classes                                        */
+/* ========================================================================= */
+
+.page-fade-enter-active {
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-fade-leave-active {
+  transition: opacity 0.12s cubic-bezier(0.7, 0, 0.84, 0), transform 0.12s cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+.page-fade-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.page-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }

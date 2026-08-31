@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-5">
     <!-- Top Minimalist Header Bar -->
-    <div class="bg-white border border-slate-300 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="bg-white border border-slate-300 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-up animate-enter-1">
       <div>
         <div class="flex items-center space-x-2 text-[11px] font-mono text-slate-500 uppercase">
           <span>Executive Administration</span>
@@ -23,27 +23,27 @@
     </div>
 
     <!-- Key Metrics (Crisp Clean Stats) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      <div class="bg-white border border-slate-300 p-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 animate-fade-up animate-enter-2">
+      <div class="bg-white border border-slate-300 p-4 hover:border-slate-400 transition-colors">
         <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Total Patients</span>
         <span class="text-2xl font-bold font-mono text-slate-900 mt-1 block">{{ overview?.total_patients || 1240 }}</span>
       </div>
-      <div class="bg-white border border-slate-300 p-4">
+      <div class="bg-white border border-slate-300 p-4 hover:border-slate-400 transition-colors">
         <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Active Clinicians</span>
         <span class="text-2xl font-bold font-mono text-slate-900 mt-1 block">{{ overview?.total_doctors || 28 }}</span>
       </div>
-      <div class="bg-white border border-slate-300 p-4">
+      <div class="bg-white border border-slate-300 p-4 hover:border-slate-400 transition-colors">
         <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Absence Rate</span>
         <span class="text-2xl font-bold font-mono text-slate-900 mt-1 block">{{ overview?.no_show_rate || 11.2 }}%</span>
       </div>
-      <div class="bg-white border border-slate-300 p-4">
+      <div class="bg-white border border-slate-300 p-4 hover:border-slate-400 transition-colors">
         <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Flagged Attendance Risk</span>
         <span class="text-2xl font-bold font-mono text-rose-800 mt-1 block">{{ highRiskList.length || 1 }}</span>
       </div>
     </div>
 
     <!-- Attendance Risk Triage Section -->
-    <div class="bg-white border border-slate-300">
+    <div class="bg-white border border-slate-300 animate-fade-up animate-enter-3">
       <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
         <span class="font-bold uppercase tracking-wider text-slate-800">Attendance Risk Stratification</span>
         <span class="text-[10px] font-mono font-bold uppercase bg-rose-50 text-rose-800 px-2 py-0.5 border border-rose-300 self-start sm:self-auto">

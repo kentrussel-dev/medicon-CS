@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-5">
     <!-- Top Minimalist Header Bar -->
-    <div class="bg-white border border-slate-300 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="bg-white border border-slate-300 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-up animate-enter-1">
       <div>
         <div class="flex items-center space-x-2 text-[11px] font-mono text-slate-500 uppercase">
           <span>Patient Portal</span>
@@ -30,7 +30,7 @@
     </div>
 
     <!-- Quick Join / Instant Telehealth Consultation Banner -->
-    <div class="bg-white border border-slate-300 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs">
+    <div class="bg-white border border-slate-300 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs animate-fade-up animate-enter-2">
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 bg-brand-50 border border-brand-200 text-brand-700 rounded-lg flex items-center justify-center shrink-0">
           <Video class="w-5 h-5" />
@@ -69,23 +69,23 @@
     </div>
 
     <!-- Key Metrics (Crisp Clean Stats) -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <div class="bg-white border border-slate-300 p-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 animate-fade-up animate-enter-3">
+      <div class="bg-white border border-slate-300 p-4 hover:border-slate-400 transition-colors">
         <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Upcoming Consultations</span>
         <span class="text-2xl font-bold font-mono text-slate-900 mt-1 block">{{ upcomingAppointments.length }}</span>
       </div>
-      <div class="bg-white border border-slate-300 p-4">
+      <div class="bg-white border border-slate-300 p-4 hover:border-slate-400 transition-colors">
         <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Clinical Records</span>
         <span class="text-2xl font-bold font-mono text-slate-900 mt-1 block">{{ recordsCount }}</span>
       </div>
-      <div class="bg-white border border-slate-300 p-4">
+      <div class="bg-white border border-slate-300 p-4 hover:border-slate-400 transition-colors">
         <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">Active Prescriptions</span>
         <span class="text-2xl font-bold font-mono text-slate-900 mt-1 block">{{ prescriptionsCount }}</span>
       </div>
     </div>
 
     <!-- Next Scheduled Appointment -->
-    <div v-if="nextAppointment" class="bg-white border border-slate-300">
+    <div v-if="nextAppointment" class="bg-white border border-slate-300 animate-fade-up animate-enter-4">
       <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold uppercase">
         <span class="text-slate-800">Next Scheduled Visit</span>
         <Badge :variant="nextAppointment.status">{{ nextAppointment.status }}</Badge>
@@ -122,7 +122,7 @@
     </div>
 
     <!-- Two-Column Structured Clinical Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-up animate-enter-5">
       <!-- Recent Appointments Table -->
       <div class="lg:col-span-2 bg-white border border-slate-300">
         <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">

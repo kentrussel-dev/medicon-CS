@@ -24,7 +24,11 @@
 
         <!-- Page Content -->
         <main class="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto">
-          <router-view />
+          <router-view v-slot="{ Component, route }">
+            <transition name="page-fade" mode="out-in">
+              <component :is="Component" :key="route.fullPath" />
+            </transition>
+          </router-view>
         </main>
       </div>
     </div>
