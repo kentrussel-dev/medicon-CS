@@ -902,8 +902,8 @@ const roomCode = ref(
 const appointmentId = computed(() => (/^\d+$/.test(String(rawParam.value)) ? Number(rawParam.value) : 1))
 const appointment = ref(null)
 const connectionState = ref('connected') // connected, reconnecting, disconnected
-const micOn = ref(true)
-const cameraOn = ref(true)
+const micOn = ref(false)
+const cameraOn = ref(false)
 const showSidebar = ref(false)
 const sidebarTab = ref('chat') // 'chat' | 'roster'
 const showAddParticipantModal = ref(false)
@@ -1223,6 +1223,12 @@ const startLocalMedia = async () => {
         audio: true,
       })
       localMediaStream = stream
+      stream.getAudioTracks().forEach((t) => {
+        t.enabled = micOn.value
+      })
+      stream.getVideoTracks().forEach((t) => {
+        t.enabled = cameraOn.value
+      })
       attachStreamToAllVideoEls(stream)
     } else {
       startSimulatedCamera()
@@ -1276,6 +1282,8 @@ const toggleCamera = () => {
     localMediaStream.getVideoTracks().forEach((t) => {
       t.enabled = cameraOn.value
     })
+  } else if (cameraOn.value) {
+    startLocalMedia()
   }
 }
 
@@ -1330,6 +1338,8 @@ const createNewRoom = () => {
   chatMessages.value = []
   isRoomClosed.value = false
   inLobby.value = true
+  micOn.value = false
+  cameraOn.value = false
   router.push(`/telehealth/room/${newCode}`)
 }
 
@@ -1378,8 +1388,8 @@ watch(
 
       // 2. Reset in-room state and controls
       inLobby.value = true
-      micOn.value = true
-      cameraOn.value = true
+      micOn.value = false
+      cameraOn.value = false
       isScreenSharing.value = false
       isRoomClosed.value = false
       showSidebar.value = false
