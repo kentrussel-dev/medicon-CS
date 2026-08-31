@@ -34,63 +34,63 @@ Medicon consolidates these workflows into a single HIPAA-conscious platform:
 ### 1. Hospital Landing Gateway & Instant Telehealth Launcher
 *Public medical portal featuring specialist directory search, clinical leadership profiles, institutional news, inquiries contact form, and instant 3-part code telehealth launcher.*
 
-<img width="100%" alt="Medicon Hospital Landing Gateway" src="https://github.com/user-attachments/assets/09a79237-17e8-4747-93cc-82df70a1c62d" />
+![Medicon Hospital Landing Gateway](docs/screenshots/01_landing_page.png)
 
 ---
 
 ### 2. Clinical Authentication & Fast Role Switcher
 *Institutional identity portal featuring 256-bit encryption at rest, secure session tokens, and 1-click credential auto-fill for testing Patient, Doctor, and Administrator roles.*
 
-<img width="500" alt="Medicon Identity Authentication" src="https://github.com/user-attachments/assets/003b5641-16f4-4f25-9633-74fa4596d199" />
+<img width="500" alt="Medicon Identity Authentication" src="docs/screenshots/02_login_authentication.png" />
 
 ---
 
 ### 3. Patient Electronic Health Record & Dashboard
 *Centralized health workspace featuring upcoming consultation schedules, active electronic prescriptions, past clinical encounter summaries, and 1-click video visit access.*
 
-<img width="100%" alt="Patient Health Record Workspace" src="https://github.com/user-attachments/assets/42968823-7646-4568-9e93-8f9a5178f010" />
+![Patient Health Record Workspace](docs/screenshots/03_patient_dashboard.png)
 
 ---
 
 ### 4. Pre-Consultation Green Room Waiting Lobby
 *Google Meet-style pre-join lobby allowing patients and doctors to test camera/mic settings, verify audio meters, view case summaries, and check active participants before entering.*
 
-<img width="100%" alt="Pre-Consultation Green Room" src="https://github.com/user-attachments/assets/a939a791-a534-48f2-b28c-1a59786410c7" />
+![Pre-Consultation Green Room](docs/screenshots/04_green_room.png)
 
 ---
 
 ### 5. 1080p Encrypted WebRTC Telehealth Consultation Stage
 *HD peer-to-peer clinical consultation stage featuring strict 16:9 widescreen video grids, in-call encrypted chat, SOAP charting, vital signs telemetry, and instant data purge upon room closure.*
 
-<img width="100%" alt="Telehealth WebRTC Consultation Stage" src="https://github.com/user-attachments/assets/c1d1ad8b-6637-4abc-bd54-1e714b41f3ee" />
+![Telehealth WebRTC Consultation Stage](docs/screenshots/05_telehealth_consultation.png)
 
 ---
 
 ### 6. Clinical AI Assistant & Patient Health Navigator
 *24/7 conversational clinical co-pilot capable of answering health inquiries, looking up upcoming appointments, explaining prescriptions, and assisting guests and authenticated patients.*
 
-<img width="100%" alt="Clinical AI Navigator" src="https://github.com/user-attachments/assets/a06c63f0-55da-45a9-9855-cd153d101c88" />
+![Clinical AI Navigator](docs/screenshots/06_clinical_ai_assistant.png)
 
 ---
 
 ### 7. In-Call Encrypted Messaging & Multi-Specialist Chat
 *Real-time peer-to-peer encrypted messaging drawer inside the consultation room for sharing clinical notes, diagnostic updates, and specialist coordination.*
 
-<img width="100%" alt="In-Call Encrypted Chat" src="https://github.com/user-attachments/assets/b1c7fd40-efe7-42fa-a28b-70c091c4e0aa" />
+![In-Call Encrypted Chat](docs/screenshots/07_telehealth_chat_drawer.png)
 
 ---
 
 ### 8. Encrypted Clinical Records & ICD-10 Diagnostic Summaries
 *HIPAA-compliant patient medical chart displaying documented diagnoses (ICD-10), vital signs matrices (BP, HR, SpO2), attending clinician notes, and AES-256 encryption at rest.*
 
-<img width="100%" alt="Clinical Encounters and Notes" src="https://github.com/user-attachments/assets/ca3badf4-9540-4532-a9bb-06c05539120a" />
+![Clinical Encounters and Notes](docs/screenshots/08_clinical_records_ehr.png)
 
 ---
 
 ### 9. Authorized Electronic Prescriptions (e-Rx) Management
 *Structured multi-drug medication orders with exact dosage, route, frequency, refills tracking, and direct consultation linkage.*
 
-<img width="100%" alt="Authorized Prescriptions" src="https://github.com/user-attachments/assets/82006999-2a26-4c99-94cf-680285be311f" />
+![Authorized Prescriptions](docs/screenshots/09_authorized_prescriptions.png)
 
 ---
 
