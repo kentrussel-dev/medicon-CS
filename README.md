@@ -15,6 +15,19 @@
 
 Medicon is a full-stack clinical encounter and telehealth platform built for healthcare providers, outpatient clinics, and hospital networks. It bridges modern telemedicine consultations with institutional electronic medical record (EMR) workflows.
 
+<img width="1410" height="727" alt="Screenshot 2026-08-31 204825" src="https://github.com/user-attachments/assets/82006999-2a26-4c99-94cf-680285be311f" />
+<img width="1413" height="726" alt="Screenshot 2026-08-31 204814" src="https://github.com/user-attachments/assets/ca3badf4-9540-4532-a9bb-06c05539120a" />
+<img width="620" height="635" alt="Screenshot 2026-08-31 204746" src="https://github.com/user-attachments/assets/712a8ab8-b09d-4532-ad15-ccd595ea9501" />
+<img width="938" height="728" alt="Screenshot 2026-08-31 204652" src="https://github.com/user-attachments/assets/b1c7fd40-efe7-42fa-a28b-70c091c4e0aa" />
+<img width="1414" height="731" alt="Screenshot 2026-08-31 204624" src="https://github.com/user-attachments/assets/a06c63f0-55da-45a9-9855-cd153d101c88" />
+<img width="1587" height="535" alt="Screenshot 2026-08-31 204613" src="https://github.com/user-attachments/assets/c1d1ad8b-6637-4abc-bd54-1e714b41f3ee" />
+<img width="1906" height="809" alt="Screenshot 2026-08-31 204553" src="https://github.com/user-attachments/assets/a939a791-a534-48f2-b28c-1a59786410c7" />
+<img width="1905" height="781" alt="Screenshot 2026-08-31 204528" src="https://github.com/user-attachments/assets/42968823-7646-4568-9e93-8f9a5178f010" />
+<img width="653" height="768" alt="Screenshot 2026-08-31 204500" src="https://github.com/user-attachments/assets/003b5641-16f4-4f25-9633-74fa4596d199" />
+<img width="1538" height="784" alt="Screenshot 2026-08-31 204433" src="https://github.com/user-attachments/assets/09a79237-17e8-4747-9d97-38cd7a3adc6a" />
+
+
+
 ### Purpose & Problem Solved
 Traditional clinic management systems frequently suffer from fragmented tooling: video calls occur in disconnected third-party apps, diagnostic notes are documented in outdated desktop software, and missed appointments lead to lost physician utilization and delayed patient care.
 
