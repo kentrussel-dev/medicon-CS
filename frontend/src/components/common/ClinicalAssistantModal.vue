@@ -19,7 +19,7 @@
     <!-- Assistant Chat Modal Window -->
     <div
       v-if="isOpen"
-      class="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[470px] h-[580px] max-h-[85vh] bg-white border-2 border-slate-300 shadow-2xl flex flex-col font-sans"
+      class="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[480px] h-[590px] max-h-[85vh] bg-white border-2 border-slate-300 shadow-2xl flex flex-col font-sans"
     >
       <!-- Top Title Bar -->
       <div class="bg-white text-slate-950 px-4 py-3 border-b-2 border-slate-200 flex items-center justify-between">
@@ -96,7 +96,11 @@
       </div>
 
       <!-- Messages Thread Area -->
-      <div ref="messagesContainer" class="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/60 text-xs">
+      <div
+        ref="messagesContainer"
+        class="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/60 text-xs"
+        @click="handleChatLinkClick"
+      >
         <div
           v-for="(msg, idx) in messages"
           :key="idx"
@@ -115,9 +119,20 @@
                 : 'bg-white text-slate-900 border border-slate-300 shadow-xs'
             "
           >
-            <div class="whitespace-pre-line font-sans select-text">
+            <!-- User Message (Plain Text) -->
+            <div
+              v-if="msg.role === 'user'"
+              class="font-sans select-text whitespace-pre-wrap text-white"
+            >
               {{ msg.content }}
             </div>
+
+            <!-- Assistant Message (Parsed Markdown with GFM & Links) -->
+            <div
+              v-else
+              class="prose-chat select-text"
+              v-html="renderMarkdown(msg.content)"
+            ></div>
 
             <!-- Contextual Quick Action Buttons for Guest Prompts -->
             <div
@@ -187,8 +202,10 @@
 
 <script setup>
 import { ref, computed, nextTick, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
+import { marked } from 'marked'
 import {
   Bot,
   X,
@@ -197,7 +214,22 @@ import {
   Copy,
 } from 'lucide-vue-next'
 
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+})
+
+const renderMarkdown = (content) => {
+  if (!content) return ''
+  try {
+    return marked.parse(content)
+  } catch (e) {
+    return content
+  }
+}
+
 const auth = useAuthStore()
+const router = useRouter()
 
 const isOpen = ref(false)
 const inputQuery = ref('')
@@ -354,6 +386,17 @@ const copyText = async (text) => {
   }
 }
 
+const handleChatLinkClick = (e) => {
+  const anchor = e.target.closest('a')
+  if (!anchor) return
+  const href = anchor.getAttribute('href')
+  if (href && href.startsWith('/')) {
+    e.preventDefault()
+    isOpen.value = false
+    router.push(href)
+  }
+}
+
 watch(isOpen, (val) => {
   if (val) scrollToBottom()
 })
@@ -362,3 +405,65 @@ watch(() => auth.isAuthenticated, () => {
   clearChat()
 })
 </script>
+
+<style scoped>
+:deep(.prose-chat) {
+  font-family: inherit;
+  font-size: 0.775rem;
+  line-height: 1.5;
+  color: #1e293b;
+}
+
+:deep(.prose-chat strong) {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+:deep(.prose-chat p) {
+  margin-bottom: 0.5rem;
+}
+
+:deep(.prose-chat p:last-child) {
+  margin-bottom: 0;
+}
+
+:deep(.prose-chat ul) {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+:deep(.prose-chat ol) {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+:deep(.prose-chat li) {
+  margin-bottom: 0.25rem;
+}
+
+:deep(.prose-chat code) {
+  background-color: #f1f5f9;
+  color: #0f4c81;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.725rem;
+  font-weight: 600;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  border: 1px solid #e2e8f0;
+}
+
+:deep(.prose-chat a) {
+  color: #0f4c81;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+:deep(.prose-chat a:hover) {
+  color: #0a355c;
+}
+</style>
