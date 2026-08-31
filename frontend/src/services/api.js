@@ -416,51 +416,100 @@ const handleMockRoute = (config) => {
         answer = `Hello Dr. ${user?.name || 'Physician'}! I can help draft structured SOAP notes, check pharmacology drug interactions, or summarize patient histories before an appointment.`
       }
     } else {
-      // Patient scope
+      // Patient scope - Personal Clinical Nurse Persona
       const prescriptions = getStoredPrescriptions()
       const appointments = getStoredAppointments()
       const records = getStoredRecords()
+      const firstName = (user?.name || 'Jane').split(' ')[0]
 
-      if (prompt.includes('name') || prompt.includes('who am i') || prompt.includes('my account') || prompt.includes('my profile') || prompt.includes('email')) {
-        answer = `**Your Patient Profile**\n\n` +
-          `- **Name:** ${user?.name || 'Jane Doe'}\n` +
-          `- **Email:** ${user?.email || 'patient@medicon.health'}\n` +
-          `- **Blood Group:** ${user?.patient?.blood_type || 'O+'}\n` +
-          `- **Known Allergies:** ${user?.patient?.allergies || 'Penicillin, Sulfa'}\n` +
-          `- **Active Portal Role:** PATIENT`
-      } else if (prompt.includes('prescription') || prompt.includes('medication') || prompt.includes('drug') || prompt.includes('meds')) {
+      // Natural Greetings
+      if (prompt === 'hello' || prompt === 'hi' || prompt === 'hey' || prompt.startsWith('hello') || prompt.startsWith('hi ') || prompt.includes('good morning') || prompt.includes('good afternoon') || prompt.includes('good evening')) {
+        const nextAppt = appointments[0]
+        if (nextAppt) {
+          answer = `Hi ${firstName}! Good to see you. How are you feeling today?\n\nBy the way, you have an upcoming visit with **${nextAppt.doctor_name}** (${nextAppt.doctor_specialty}) coming up soon. Let me know if you have any questions about it or your medications!`
+        } else {
+          answer = `Hi ${firstName}! Good to see you. I'm here as your personal nurse coordinator. How are you feeling today? Let me know if you'd like to check on appointments, prescriptions, or clinic information.`
+        }
+      }
+      // Conversational inquiries
+      else if (prompt.includes('how do you answer so fast') || prompt.includes('so fast') || prompt.includes('fast reply')) {
+        answer = `I have your patient chart and clinic records right in front of me so you don't have to wait on hold! I'm here whenever you need a quick answer about your care. What's on your mind?`
+      } else if (prompt.includes('how are you') || prompt.includes('how are you doing') || prompt.includes('how r u')) {
+        answer = `I'm doing well, thank you for asking, ${firstName}! Just keeping an eye on your care schedule and health records. How are you doing today? Are you feeling alright?`
+      } else if (prompt.includes('thank') || prompt.includes('thanks') || prompt.includes('appreciate')) {
+        answer = `You're very welcome, ${firstName}! I'm always right here if anything else comes up. Take care of yourself!`
+      } else if (prompt.includes('who are you') || prompt.includes('what are you') || prompt.includes('what can you do') || prompt.includes('help me')) {
+        answer = `Think of me as your personal clinic nurse here at Medicon! I'm here to:\n\n` +
+          `• Keep track of your upcoming doctor appointments and help you prepare\n` +
+          `• Explain what your medications are for and when to take them\n` +
+          `• Walk you through your past lab results and doctor notes in plain language\n` +
+          `• Answer questions about clinic visiting hours and procedures\n\n` +
+          `Is there anything specific you'd like to look at together?`
+      }
+      // Profile & Identity
+      else if (prompt.includes('name') || prompt.includes('who am i') || prompt.includes('my account') || prompt.includes('my profile') || prompt.includes('email')) {
+        answer = `You are logged in as **${user?.name || 'Jane Doe'}**.\n\n` +
+          `• **Email:** ${user?.email || 'patient@medicon.health'}\n` +
+          `• **Blood Type:** ${user?.patient?.blood_type || 'O+'}\n` +
+          `• **Documented Allergies:** ${user?.patient?.allergies || 'Penicillin, Sulfa'}\n\n` +
+          `Everything is up to date in your active chart!`
+      }
+      // Prescriptions
+      else if (prompt.includes('prescription') || prompt.includes('medication') || prompt.includes('drug') || prompt.includes('meds') || prompt.includes('lisinopril')) {
         if (prescriptions.length === 0) {
-          answer = "You have no active prescriptions recorded in your medical profile."
+          answer = `I checked your medical chart, and you don't have any active prescriptions right now. If your doctor recently prescribed something, it will appear here once finalized.`
         } else {
-          answer = `**Your Active Prescriptions (${prescriptions.length} on record)**\n\n` +
-            prescriptions.map((rx, i) => `${i + 1}. **${rx.medication_name} ${rx.dosage}**\n   - Instructions: ${rx.instructions}\n   - Frequency: ${rx.frequency} (${rx.duration})\n   - Refills Remaining: ${rx.refills_remaining}\n   - Status: [${rx.status}]`).join('\n\n')
+          answer = `Here is what we currently have on file for your medications:\n\n` +
+            prescriptions.map((rx, i) => `**${i + 1}. ${rx.medication_name} ${rx.dosage}**\n• ${rx.instructions}\n• Frequency: ${rx.frequency} (${rx.duration})\n• Refills Remaining: **${rx.refills_remaining}**`).join('\n\n') +
+            `\n\nBe sure to take them consistently, and let your doctor know if you notice any unusual side effects!`
         }
-      } else if (prompt.includes('appointment') || prompt.includes('schedule') || prompt.includes('visit') || prompt.includes('next')) {
+      }
+      // Appointments
+      else if (prompt.includes('appointment') || prompt.includes('schedule') || prompt.includes('visit') || prompt.includes('next')) {
         if (appointments.length === 0) {
-          answer = "You have no upcoming consultations scheduled. You can book an appointment using the **'Book Consultation'** button on your dashboard."
+          answer = `You don't have any upcoming appointments scheduled right now. If you'd like to see a specialist, you can click **'Book Appointment'** right from your dashboard!`
         } else {
-          answer = `**Your Medical Appointments (${appointments.length} on file)**\n\n` +
-            appointments.map((a, i) => `${i + 1}. **${a.doctor_name}** (${a.doctor_specialty})\n   - Time: ${new Date(a.scheduled_start).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}\n   - Type: ${a.type} | Status: [${a.status}]\n   - Reason: ${a.reason}`).join('\n\n')
+          const next = appointments[0]
+          answer = `Your next visit is coming up with **${next.doctor_name}** (${next.doctor_specialty}) on **${new Date(next.scheduled_start).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}**.\n\n` +
+            `• **Format:** ${next.type === 'TELEHEALTH' ? 'Encrypted HD Video Call (link will be ready on your dashboard)' : 'In-Person Clinic Visit'}\n` +
+            `• **Reason for visit:** ${next.reason}\n\n` +
+            `Would you like instructions on how to prepare for this visit?`
         }
-      } else if (prompt.includes('record') || prompt.includes('diagnos') || prompt.includes('ehr') || prompt.includes('vital') || prompt.includes('history')) {
+      }
+      // Records & Vitals
+      else if (prompt.includes('record') || prompt.includes('diagnos') || prompt.includes('ehr') || prompt.includes('vital') || prompt.includes('history') || prompt.includes('blood pressure')) {
         if (records.length === 0) {
-          answer = "No clinical encounter notes have been filed for your record yet."
+          answer = `No clinical encounter summaries have been filed yet. After your upcoming consultation, your doctor's diagnostic notes and vitals will be saved here.`
         } else {
-          answer = `**Your Encrypted Medical Records**\n\n` +
-            records.map((r, i) => `${i + 1}. **${r.diagnosis}**\n   - Doctor: ${r.doctor_name} (${r.doctor_specialty})\n   - Date: ${new Date(r.created_at).toLocaleDateString()}\n   - Vital Signs: BP ${r.vital_signs?.blood_pressure || '120/80'}, HR ${r.vital_signs?.heart_rate || '72 bpm'}\n   - Clinical Summary: ${r.clinical_notes}`).join('\n\n')
+          const recent = records[0]
+          answer = `Here is the summary from your most recent visit on **${new Date(recent.created_at).toLocaleDateString()}** with **${recent.doctor_name}**:\n\n` +
+            `• **Diagnosis:** ${recent.diagnosis}\n` +
+            `• **Vitals Recorded:** Blood Pressure ${recent.vital_signs?.blood_pressure || '120/80'}, Heart Rate ${recent.vital_signs?.heart_rate || '72 bpm'}\n` +
+            `• **Doctor's Note:** ${recent.clinical_notes}\n\n` +
+            `Let me know if there are specific medical terms you'd like me to explain in plain language!`
         }
-      } else if (prompt.includes('allergy') || prompt.includes('allergies')) {
-        answer = `Your medical record indicates the following documented allergies: **${user?.patient?.allergies || 'Penicillin, Sulfa'}**. All prescribing doctors will be alerted before issuing new medication orders.`
-      } else if (prompt.includes('hour') || prompt.includes('open') || prompt.includes('time')) {
-        answer = "Medicon Outpatient Clinics are open **Monday through Friday, 8:00 AM to 5:00 PM**. Emergency and Telehealth video services are available 24/7."
+      }
+      // Allergies
+      else if (prompt.includes('allergy') || prompt.includes('allergies')) {
+        answer = `Your chart clearly lists **${user?.patient?.allergies || 'Penicillin, Sulfa'}** under your allergy alerts. All doctors you consult with are automatically notified so they choose safe alternative medications for you.`
+      }
+      // Clinic Hours
+      else if (prompt.includes('hour') || prompt.includes('open') || prompt.includes('time') || prompt.includes('when')) {
+        answer = `Our outpatient clinics are open **Monday through Friday, 8:00 AM to 5:00 PM**. If you have an urgent question outside those hours, telehealth video consultations are available based on your physician's schedule.`
         isCached = true
-      } else if (prompt.includes('blood test') || prompt.includes('prepare') || prompt.includes('fasting')) {
-        answer = "For routine fasting blood glucose and lipid panels, please avoid eating or drinking (water is permitted) for **8 to 12 hours** prior to your lab draw. Take your routine medications unless instructed otherwise."
+      }
+      // Lab Prep
+      else if (prompt.includes('blood test') || prompt.includes('prepare') || prompt.includes('fasting') || prompt.includes('lab')) {
+        answer = `For standard fasting blood tests (like lipid panels or fasting glucose), it's best to avoid eating or drinking anything other than plain water for **8 to 12 hours** before your appointment. You can still take your normal morning medications with water unless your doctor said otherwise!`
         isCached = true
-      } else if (prompt.includes('symptom') || prompt.includes('pain') || prompt.includes('sick')) {
-        answer = "⚠️ **Clinical Safety Notice:** I am an AI assistant and cannot provide a medical diagnosis. If you are experiencing severe pain, difficulty breathing, chest tightness, or other acute symptoms, please call emergency services (911) or contact our urgent clinic triage desk immediately."
-      } else {
-        answer = `Hello, ${user?.name || 'Patient'}! I am your Medicon Healthcare Assistant. I can help explain your active prescriptions, upcoming appointments, or general clinic procedures.`
+      }
+      // Symptoms / Emergency Safety
+      else if (prompt.includes('symptom') || prompt.includes('pain') || prompt.includes('sick') || prompt.includes('hurt') || prompt.includes('fever')) {
+        answer = `⚠️ **Important Nurse Note:** I want to make sure you stay safe! While I can explain your records and medications, I cannot evaluate new symptoms or give a medical diagnosis. If you are having severe pain, chest discomfort, shortness of breath, or feel very sick, please call **911** or contact our urgent triage desk at **+63-2-8521-0020** right away.`
+      }
+      // Conversational Default
+      else {
+        answer = `I hear you, ${firstName}! How can I help you today? Whether you want to check your upcoming appointments, go over your medications, or look up clinic info, I'm here for you.`
       }
     }
 
