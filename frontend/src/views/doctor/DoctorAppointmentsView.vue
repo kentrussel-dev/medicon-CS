@@ -69,15 +69,14 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-100 font-mono text-xs">
-          <a
-            v-if="appt.type === 'TELEHEALTH' && appt.meeting_link"
-            :href="appt.meeting_link"
-            target="_blank"
+          <router-link
+            v-if="appt.type === 'TELEHEALTH'"
+            :to="'/telehealth/room/' + appt.id"
             class="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold uppercase text-[11px] border border-emerald-800 flex items-center space-x-1"
           >
             <Video class="w-3 h-3" />
             <span>Join Video</span>
-          </a>
+          </router-link>
 
           <select
             :value="appt.status"

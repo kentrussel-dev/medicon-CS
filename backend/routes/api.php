@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\MedicalRecordController;
 use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\PrescriptionController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\TelehealthRoomController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,6 +73,12 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::post('/{id}/reschedule', [AppointmentController::class, 'reschedule']);
         Route::post('/{id}/cancel', [AppointmentController::class, 'cancel']);
         Route::patch('/{id}/status', [AppointmentController::class, 'updateStatus']);
+
+        // LiveKit Telehealth Multi-Participant Video Room
+        Route::get('/{id}/telehealth/token', [TelehealthRoomController::class, 'getToken']);
+        Route::get('/{id}/telehealth/participants', [TelehealthRoomController::class, 'getParticipants']);
+        Route::post('/{id}/telehealth/participants', [TelehealthRoomController::class, 'addParticipant']);
+        Route::post('/{id}/telehealth/events', [TelehealthRoomController::class, 'logEvent']);
     });
 
     // Medical Records (Encrypted Clinical Data)

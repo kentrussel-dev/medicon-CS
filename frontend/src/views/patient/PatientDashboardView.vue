@@ -64,15 +64,14 @@
         </div>
 
         <div class="flex items-center space-x-2">
-          <a
-            v-if="nextAppointment.type === 'TELEHEALTH' && nextAppointment.meeting_link"
-            :href="nextAppointment.meeting_link"
-            target="_blank"
+          <router-link
+            v-if="nextAppointment.type === 'TELEHEALTH'"
+            :to="'/telehealth/room/' + nextAppointment.id"
             class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold uppercase text-[11px] border border-emerald-800 flex items-center space-x-1"
           >
             <Video class="w-3.5 h-3.5" />
             <span>Join Room</span>
-          </a>
+          </router-link>
           <button
             @click="openReschedule(nextAppointment)"
             class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-bold uppercase text-[11px]"

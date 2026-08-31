@@ -73,6 +73,11 @@ class Appointment extends Model
         return $this->morphMany(Attachment::class, 'attachable');
     }
 
+    public function participants(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(AppointmentParticipant::class);
+    }
+
     public function isPast(): bool
     {
         return $this->scheduled_start->isPast();

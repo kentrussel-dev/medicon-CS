@@ -86,15 +86,14 @@
             </div>
 
             <div class="flex items-center space-x-2">
-              <a
-                v-if="appt.type === 'TELEHEALTH' && appt.meeting_link"
-                :href="appt.meeting_link"
-                target="_blank"
+              <router-link
+                v-if="appt.type === 'TELEHEALTH'"
+                :to="'/telehealth/room/' + appt.id"
                 class="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white font-mono font-bold uppercase text-[11px] border border-emerald-800 flex items-center space-x-1"
               >
                 <Video class="w-3 h-3" />
                 <span>Join</span>
-              </a>
+              </router-link>
               <button
                 @click="openQuickDocument(appt)"
                 class="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-mono font-bold uppercase text-[11px]"

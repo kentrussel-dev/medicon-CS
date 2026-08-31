@@ -229,6 +229,87 @@ const handleMockRoute = (config) => {
     return { status: 200, data: { appointment: item } }
   }
 
+  // Telehealth WebRTC Room Endpoints
+  if (url.match(/^\/appointments\/\d+\/telehealth\/token$/) && method === 'get') {
+    const id = Number(url.split('/')[2])
+    const appt = getStoredAppointments().find((a) => a.id === id) || {
+      id: id,
+      doctor_name: 'Dr. Sarah Jenkins, MD, FACC',
+      doctor_specialty: 'Cardiology',
+      patient_name: 'Jane Doe',
+      scheduled_start: new Date().toISOString(),
+      type: 'TELEHEALTH',
+      status: 'CONFIRMED',
+      reason: 'Cardiology Multi-Party Consultation',
+    }
+    const user = JSON.parse(localStorage.getItem('medicon_user') || 'null')
+    const role = (user?.role || 'patient').toUpperCase()
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        appointment: appt,
+        session: {
+          token: `lk_mock_jwt_token_${id}_${Date.now()}`,
+          room_name: `medicon_room_appt_${id}`,
+          livekit_url: 'ws://localhost:7880',
+          identity: `user_${user?.id || 1}_${role.toLowerCase()}`,
+          participant_name: user?.name || 'Jane Doe',
+          role: role,
+          is_host: role === 'DOCTOR' || role === 'ADMIN',
+          expires_at: new Date(Date.now() + 7200000).toISOString(),
+        },
+      },
+    }
+  }
+
+  if (url.match(/^\/appointments\/\d+\/telehealth\/participants$/) && method === 'get') {
+    return {
+      status: 200,
+      data: {
+        success: true,
+        participants: [
+          { id: 1, name: 'Dr. Marcus Chen (Neurology Specialist)', role: 'specialist' },
+          { id: 2, name: 'Carlos Silva (Medical Translator)', role: 'translator' },
+        ],
+      },
+    }
+  }
+
+  if (url.match(/^\/appointments\/\d+\/telehealth\/participants$/) && method === 'post') {
+    const id = Number(url.split('/')[2])
+    const newParticipant = {
+      id: Date.now(),
+      appointment_id: id,
+      name: body.name || 'Invited Specialist',
+      role: body.role || 'specialist',
+      email: body.email || null,
+      created_at: new Date().toISOString(),
+    }
+    return {
+      status: 201,
+      data: {
+        success: true,
+        participant: newParticipant,
+        session: {
+          token: `lk_mock_participant_token_${newParticipant.id}`,
+          room_name: `medicon_room_appt_${id}`,
+          livekit_url: 'ws://localhost:7880',
+          identity: `participant_${newParticipant.id}_${newParticipant.role}`,
+          participant_name: newParticipant.name,
+          role: newParticipant.role.toUpperCase(),
+          is_host: false,
+          expires_at: new Date(Date.now() + 7200000).toISOString(),
+        },
+      },
+    }
+  }
+
+  if (url.match(/^\/appointments\/\d+\/telehealth\/events$/) && method === 'post') {
+    return { status: 200, data: { success: true } }
+  }
+
   // 4. Doctors
   if (url === '/doctors' && method === 'get') {
     let list = defaultDoctors

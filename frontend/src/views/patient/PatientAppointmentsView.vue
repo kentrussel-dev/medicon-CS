@@ -71,15 +71,14 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2 self-start md:self-auto border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
-          <a
-            v-if="appt.type === 'TELEHEALTH' && appt.status === 'CONFIRMED' && appt.meeting_link"
-            :href="appt.meeting_link"
-            target="_blank"
+          <router-link
+            v-if="appt.type === 'TELEHEALTH' && appt.status === 'CONFIRMED'"
+            :to="'/telehealth/room/' + appt.id"
             class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold uppercase tracking-wider border border-emerald-800 transition-colors flex items-center space-x-1"
           >
             <Video class="w-3.5 h-3.5" />
             <span>Join Room</span>
-          </a>
+          </router-link>
 
           <button
             v-if="appt.status === 'CONFIRMED' || appt.status === 'PENDING'"

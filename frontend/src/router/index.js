@@ -35,6 +35,7 @@ import AdminAuditLogsView from '@/views/admin/AdminAuditLogsView.vue'
 import ProfileView from '@/views/common/ProfileView.vue'
 import ForbiddenView from '@/views/common/ForbiddenView.vue'
 import NotFoundView from '@/views/common/NotFoundView.vue'
+import TelehealthRoomView from '@/views/telehealth/TelehealthRoomView.vue'
 
 const routes = [
   // Public Landing Page
@@ -145,6 +146,14 @@ const routes = [
       },
     ],
   },
+  // Telehealth Multi-Party Consultation Room (Dedicated full screen)
+  {
+    path: '/telehealth/room/:id',
+    name: 'telehealth-room',
+    component: TelehealthRoomView,
+    meta: { requiresAuth: true },
+  },
+  // 404 Catch-All
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',

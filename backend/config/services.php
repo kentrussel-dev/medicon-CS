@@ -40,4 +40,12 @@ return [
         'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
         'cache_ttl' => (int) env('GEMINI_CACHE_TTL_SECONDS', 86400),
     ],
+
+    'livekit' => [
+        'url' => env('LIVEKIT_URL', 'http://livekit:7880'),
+        'public_url' => env('LIVEKIT_PUBLIC_URL', 'ws://localhost:7880'),
+        'api_key' => env('LIVEKIT_API_KEY', 'devkey'),
+        'api_secret' => env('LIVEKIT_API_SECRET', 'secret'),
+        'token_ttl_minutes' => (int) env('LIVEKIT_TOKEN_TTL_MINUTES', 120),
+    ],
 ];

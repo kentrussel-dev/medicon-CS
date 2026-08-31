@@ -52,9 +52,14 @@ services:
       AWS_USE_PATH_STYLE_ENDPOINT: "true"
       ML_SERVICE_URL: http://ml-service:8000
       ML_SERVICE_TIMEOUT: 2.5
+      LIVEKIT_URL: http://livekit:7880
+      LIVEKIT_PUBLIC_URL: ws://localhost:7880
+      LIVEKIT_API_KEY: devkey
+      LIVEKIT_API_SECRET: secret
     depends_on:
       - db
       - redis
+      - livekit
     networks:
       - medicon-network
 
@@ -167,6 +172,21 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - medicon-minio-data:/data
+    networks:
+      - medicon-network
+
+  # LiveKit Self-Hosted WebRTC Media Server for Telehealth Consultations
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: medicon-livekit
+    restart: unless-stopped
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "7882:7882/udp"
+    volumes:
+      - ./docker/livekit/livekit.yaml:/etc/livekit.yaml
+    command: --config /etc/livekit.yaml
     networks:
       - medicon-network
 
