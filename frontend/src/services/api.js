@@ -592,12 +592,54 @@ const handleMockRoute = (config) => {
   if (url === '/ai/chat' && method === 'post') {
     const prompt = (body.message || '').toLowerCase()
     const user = JSON.parse(localStorage.getItem('medicon_user') || 'null')
-    const role = user?.role || 'patient'
-    let answer = ''
-    let isCached = false
-
-    // General "What is this website about?" across all roles
-    if (prompt.includes('website') || prompt.includes('about') || prompt.includes('what is medicon') || prompt.includes('purpose')) {
+    // 0. Guest User Context Handling
+    if (!user) {
+      if (prompt.includes('login') || prompt.includes('sign in') || prompt.includes('account') || prompt.includes('register') || prompt.includes('signup')) {
+        answer = "**Medicon Portal Access**\n\n" +
+          "To access your clinical charts, schedule appointments, or join private consultations:\n\n" +
+          "• **Sign In:** Go to [/login](/login) to access your Patient or Doctor portal.\n" +
+          "• **Create Account:** Register as a new patient at [/register](/register).\n\n" +
+          "Demo accounts with 1-click login are available on the sign-in screen!"
+      } else if (prompt.includes('book') || prompt.includes('schedule') || prompt.includes('appointment')) {
+        answer = "**How to Book an Appointment at Medicon**\n\n" +
+          "1. **Sign In or Register:** Please sign in at [/login](/login) or create an account at [/register](/register).\n" +
+          "2. **Select a Specialist:** Choose from Cardiology, Neurology, Dermatology, Primary Care, Psychiatry, or Orthopedics.\n" +
+          "3. **Choose Format:** Select Telehealth HD Video or In-Person Clinic Visit.\n" +
+          "4. **Select Time:** Pick your preferred consultation slot.\n\n" +
+          "Once booked, you will receive real-time SMS and email confirmations with your room code!"
+      } else if (prompt.includes('doctor') || prompt.includes('specialist') || prompt.includes('fee') || prompt.includes('rate') || prompt.includes('cardio') || prompt.includes('neuro') || prompt.includes('derma')) {
+        answer = "**Featured Medical Specialists**\n\n" +
+          "• **Cardiology:** Dr. Sarah Jenkins, MD, FACC (Harvard Alumna, $120)\n" +
+          "• **Neurology:** Dr. Marcus Chen, MD, PhD (Cognitive & Stroke Specialist, $115)\n" +
+          "• **Dermatology:** Dr. Elena Rostova, MD (Clinical Teledermatology, $95)\n" +
+          "• **General Practice:** Dr. James Wilson, MD (Primary Care & Wellness, $75)\n" +
+          "• **Psychiatry:** Dr. Aisha Patel, MD (Clinical Mental Health, $130)\n" +
+          "• **Orthopedics:** Dr. Robert Taylor, MD (Sports & Joint Rehabilitation, $125)\n\n" +
+          "You can browse and book doctors directly on our homepage or after signing in."
+      } else if (prompt.includes('telehealth') || prompt.includes('video') || prompt.includes('room') || prompt.includes('code') || prompt.includes('green room')) {
+        answer = "**Medicon Telehealth Consultations**\n\n" +
+          "• **WebRTC HD Video:** Encrypted 1080p video calls directly in your browser without software installations.\n" +
+          "• **Pre-Join Green Room:** Test your camera, microphone, and view attendance before entering.\n" +
+          "• **Unique Room Codes:** Every consultation uses a 3-part code (e.g. `k9x-yqp2-481`).\n" +
+          "• **Data Privacy:** In-room chat and media credentials are wiped upon consultation end."
+      } else if (prompt.includes('hour') || prompt.includes('open') || prompt.includes('location') || prompt.includes('hotline') || prompt.includes('phone') || prompt.includes('contact')) {
+        answer = "**Clinic Hours & Hotlines**\n\n" +
+          "• **Outpatient Clinics:** Monday – Friday, 8:00 AM – 5:00 PM\n" +
+          "• **Quezon City Main:** +63-2-8723-0101\n" +
+          "• **Global City Center:** +63-2-8789-7700\n" +
+          "• **24/7 Emergency Triage:** +63-2-8521-0020\n" +
+          "• **Telehealth Video Consults:** Available 24/7 based on doctor schedule."
+      } else if (prompt.includes('prescription') || prompt.includes('record') || prompt.includes('history') || prompt.includes('result') || prompt.includes('ehr')) {
+        answer = "**Accessing Medical Records & Prescriptions**\n\n" +
+          "For patient privacy and HIPAA compliance, medical charts and electronic prescriptions require authentication.\n\n" +
+          "Please **Sign In** to your Patient Portal at [/login](/login) to access your diagnostic summaries and active medication courses."
+      } else {
+        answer = "Hello! I am your Medicon Virtual Clinical Navigator.\n\n" +
+          "Since you are currently browsing as a **Guest**, I can answer questions about our hospital specialties, doctors, appointment booking, or telehealth video visits.\n\n" +
+          "To schedule an appointment or view your health records, please **Sign In** or **Create an Account**!"
+      }
+      isCached = true
+    } else if (prompt.includes('website') || prompt.includes('about') || prompt.includes('what is medicon') || prompt.includes('purpose')) {
       if (role === 'admin') {
         answer = "**Medicon Clinical Operations Platform**\n\n" +
           "Medicon is an enterprise hospital management and telehealth platform. As an **Operations Administrator**, your portal allows you to:\n\n" +

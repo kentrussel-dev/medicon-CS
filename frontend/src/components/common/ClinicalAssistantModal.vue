@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- Floating Launcher Badge (Bottom Right) -->
+    <!-- Floating Launcher Button (Bottom Right) -->
     <div class="fixed bottom-6 right-6 z-40">
       <button
         @click="isOpen = !isOpen"
@@ -19,17 +19,20 @@
     <!-- Assistant Chat Modal Window -->
     <div
       v-if="isOpen"
-      class="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[460px] h-[580px] max-h-[85vh] bg-white border-2 border-slate-300 shadow-2xl flex flex-col font-sans"
+      class="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[470px] h-[580px] max-h-[85vh] bg-white border-2 border-slate-300 shadow-2xl flex flex-col font-sans"
     >
       <!-- Top Title Bar -->
       <div class="bg-white text-slate-950 px-4 py-3 border-b-2 border-slate-200 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2.5">
           <div class="w-6 h-6 bg-brand-700 text-white flex items-center justify-center font-bold text-xs border border-brand-800">
             M
           </div>
           <div>
-            <div class="font-bold text-xs uppercase tracking-wider leading-none text-slate-950">
-              Clinical Assistant
+            <div class="font-bold text-xs uppercase tracking-wider leading-none text-slate-950 flex items-center space-x-1.5">
+              <span>Medicon AI Navigator</span>
+              <span class="px-1.5 py-0.2 bg-emerald-50 text-emerald-800 border border-emerald-300 text-[9px] font-mono font-bold uppercase">
+                Online
+              </span>
             </div>
           </div>
         </div>
@@ -44,10 +47,38 @@
           </button>
           <button
             @click="isOpen = false"
+            title="Close Assistant"
             class="p-1 text-slate-400 hover:text-slate-900 transition-colors"
           >
             <X class="w-4 h-4" />
           </button>
+        </div>
+      </div>
+
+      <!-- Guest Account Notice Strip -->
+      <div
+        v-if="!auth.isAuthenticated"
+        class="bg-amber-50 border-b border-amber-200 px-3.5 py-2 flex items-center justify-between text-xs font-mono"
+      >
+        <div class="flex items-center space-x-1.5 text-amber-900 text-[11px]">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          <span>Browsing as <strong>Guest</strong></span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <router-link
+            to="/login"
+            @click="isOpen = false"
+            class="px-2.5 py-0.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-[10px] uppercase transition-colors"
+          >
+            Sign In
+          </router-link>
+          <router-link
+            to="/register"
+            @click="isOpen = false"
+            class="px-2 py-0.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 font-bold text-[10px] uppercase transition-colors"
+          >
+            Register
+          </router-link>
         </div>
       </div>
 
@@ -77,7 +108,7 @@
           </span>
 
           <div
-            class="p-3.5 max-w-[90%] leading-relaxed"
+            class="p-3.5 max-w-[92%] leading-relaxed"
             :class="
               msg.role === 'user'
                 ? 'bg-brand-700 text-white border border-brand-800 shadow-xs'
@@ -88,8 +119,29 @@
               {{ msg.content }}
             </div>
 
+            <!-- Contextual Quick Action Buttons for Guest Prompts -->
+            <div
+              v-if="msg.role === 'assistant' && !auth.isAuthenticated && msg.hasAuthNotice"
+              class="mt-3 pt-2.5 border-t border-slate-200 flex flex-wrap gap-1.5"
+            >
+              <router-link
+                to="/login"
+                @click="isOpen = false"
+                class="px-2.5 py-1 bg-brand-700 hover:bg-brand-800 text-white font-mono text-[10px] font-bold uppercase transition-colors"
+              >
+                Sign In to Portal
+              </router-link>
+              <router-link
+                to="/register"
+                @click="isOpen = false"
+                class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-mono text-[10px] font-bold uppercase transition-colors"
+              >
+                Create Account
+              </router-link>
+            </div>
+
             <!-- Assistant Message Actions -->
-            <div v-if="msg.role === 'assistant'" class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-end text-[10px] font-mono text-slate-400">
+            <div v-if="msg.role === 'assistant'" class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-end text-[10px] font-mono text-slate-400">
               <button
                 @click="copyText(msg.content)"
                 class="hover:text-slate-900 transition-colors uppercase font-bold flex items-center space-x-1"
@@ -105,7 +157,7 @@
         <div v-if="loading" class="flex items-start space-x-2">
           <div class="bg-white border border-slate-300 p-3 flex items-center space-x-2 text-xs font-mono text-slate-500">
             <span class="inline-block w-1.5 h-1.5 bg-brand-700 animate-ping"></span>
-            <span>Consulting clinical reference...</span>
+            <span>Consulting clinical gateway...</span>
           </div>
         </div>
       </div>
@@ -154,6 +206,15 @@ const copiedIdx = ref(null)
 const messagesContainer = ref(null)
 
 const roleChips = computed(() => {
+  if (!auth.isAuthenticated) {
+    return [
+      'How to book an appointment',
+      'Browse doctors & fees',
+      'How does Telehealth work?',
+      'Clinic hours & hotlines',
+      'Sign In / Create Account',
+    ]
+  }
   if (auth.isDoctor) {
     return [
       'Draft SOAP encounter note',
@@ -169,7 +230,6 @@ const roleChips = computed(() => {
       'Physician utilization parameters',
     ]
   }
-  // Patient chips
   return [
     'Explain my active prescriptions',
     'What is my next appointment?',
@@ -179,12 +239,16 @@ const roleChips = computed(() => {
 })
 
 const inputPlaceholder = computed(() => {
+  if (!auth.isAuthenticated) return 'Ask about appointments, doctors, clinic hours...'
   if (auth.isDoctor) return 'Ask clinical reference, pharmacology, or draft notes...'
   if (auth.isAdmin) return 'Ask operations, utilization, or audit policy questions...'
   return 'Ask about appointments, prescriptions, or clinic hours...'
 })
 
 const initialGreeting = computed(() => {
+  if (!auth.isAuthenticated) {
+    return `Welcome to Medicon Medical Center! I am your Virtual Clinical Navigator.\n\nSince you are browsing as a Guest, I can help you explore our specialties, find doctors, explain how telehealth works, and check clinic hours.\n\nTo schedule appointments, view personal medical charts, or access e-prescriptions, please Sign In or Register!`
+  }
   if (auth.isDoctor) {
     return `Hello, ${auth.user?.name}! I am your Medicon Clinical Co-Pilot. I can assist in drafting SOAP encounter notes, summarizing patient histories, and retrieving pharmacology interaction references.`
   }
@@ -199,7 +263,7 @@ const messages = ref([
     role: 'assistant',
     content: initialGreeting.value,
     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    cached: false,
+    hasAuthNotice: !auth.isAuthenticated,
   },
 ])
 
@@ -243,18 +307,23 @@ const sendMessage = async () => {
       conversation_history: history,
     })
 
+    const ans = response.data.message || 'I have received your request.'
+    const mentionsAuth = ans.toLowerCase().includes('sign in') || ans.toLowerCase().includes('login') || ans.toLowerCase().includes('register') || ans.toLowerCase().includes('account')
+
     messages.value.push({
       role: 'assistant',
-      content: response.data.message || 'I have received your request.',
+      content: ans,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      cached: response.data.cached || false,
+      hasAuthNotice: !auth.isAuthenticated && mentionsAuth,
     })
   } catch (err) {
     messages.value.push({
       role: 'assistant',
-      content: 'Medicon Clinical Assistant is online. Your consultation details have been verified with our clinical portal.',
+      content: !auth.isAuthenticated
+        ? 'Medicon Assistant: To book appointments or access medical records, please Sign In or Register. For general clinic hours, our outpatient desk is open Mon-Fri 8am-5pm.'
+        : 'Medicon Clinical Assistant is online. Your consultation details have been verified with our clinical portal.',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      cached: false,
+      hasAuthNotice: !auth.isAuthenticated,
     })
   } finally {
     loading.value = false
@@ -268,7 +337,7 @@ const clearChat = () => {
       role: 'assistant',
       content: initialGreeting.value,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      cached: false,
+      hasAuthNotice: !auth.isAuthenticated,
     },
   ]
 }
@@ -287,5 +356,9 @@ const copyText = async (text) => {
 
 watch(isOpen, (val) => {
   if (val) scrollToBottom()
+})
+
+watch(() => auth.isAuthenticated, () => {
+  clearChat()
 })
 </script>

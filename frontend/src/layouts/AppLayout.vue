@@ -28,12 +28,6 @@
         </main>
       </div>
     </div>
-
-    <!-- Global Toast Container -->
-    <ToastContainer />
-
-    <!-- Clinical AI Assistant Floating Widget -->
-    <ClinicalAssistantModal />
   </div>
 </template>
 
@@ -42,8 +36,6 @@ import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import Navbar from '@/components/common/Navbar.vue'
 import Sidebar from '@/components/common/Sidebar.vue'
-import ToastContainer from '@/components/common/ToastContainer.vue'
-import ClinicalAssistantModal from '@/components/common/ClinicalAssistantModal.vue'
 
 const auth = useAuthStore()
 const sidebarOpen = ref(false)
