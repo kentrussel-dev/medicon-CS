@@ -26,11 +26,13 @@
   @apply bg-slate-400 hover:bg-slate-500;
 }
 
-/* Crisp Institutional Panel */
-.gov-card {
-  @apply bg-white border border-slate-300 shadow-crisp;
-}
+@layer components {
+  /* Crisp Institutional Panel */
+  .gov-card {
+    @apply bg-white border border-slate-300 shadow-sm;
+  }
 
-.gov-card-header {
-  @apply px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-700;
+  .gov-card-header {
+    @apply px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-700;
+  }
 }

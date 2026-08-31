@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Header Banner -->
-    <div class="p-5 bg-white border border-slate-300 shadow-crisp flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="p-5 bg-white border border-slate-300 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <div class="flex items-center space-x-2">
           <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-100 bg-slate-900 px-2 py-0.5 border border-slate-800">
@@ -58,7 +58,7 @@
     </div>
 
     <!-- Attendance Risk Triage Section -->
-    <div class="bg-white border border-slate-300 shadow-crisp">
+    <div class="bg-white border border-slate-300 shadow-sm">
       <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900">Attendance Risk Stratification Triage</h3>
@@ -110,7 +110,7 @@
     <!-- Doctor Utilization & Risk Distribution -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <!-- Doctor Utilization -->
-      <div class="bg-white border border-slate-300 shadow-crisp">
+      <div class="bg-white border border-slate-300 shadow-sm">
         <div class="px-4 py-3 bg-slate-50 border-b border-slate-200">
           <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900">Physician Utilization Registry</h3>
         </div>
@@ -133,7 +133,7 @@
       </div>
 
       <!-- Risk Stratification Summary -->
-      <div class="bg-white border border-slate-300 shadow-crisp">
+      <div class="bg-white border border-slate-300 shadow-sm">
         <div class="px-4 py-3 bg-slate-50 border-b border-slate-200">
           <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900">Patient Risk Tier Stratification</h3>
         </div>

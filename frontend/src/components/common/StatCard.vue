@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white border border-slate-300 p-5 shadow-crisp relative">
+  <div class="bg-white border border-slate-300 p-5 shadow-sm relative">
     <div class="absolute top-0 left-0 right-0 h-1" :class="accentClass"></div>
     <div class="flex items-start justify-between">
       <div>

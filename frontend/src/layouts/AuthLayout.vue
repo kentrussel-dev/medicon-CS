@@ -22,7 +22,7 @@
     </div>
 
     <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-      <div class="bg-white py-8 px-6 sm:px-8 border-2 border-slate-300 shadow-panel">
+      <div class="bg-white py-8 px-6 sm:px-8 border-2 border-slate-300 shadow-sm">
         <router-view />
       </div>
 

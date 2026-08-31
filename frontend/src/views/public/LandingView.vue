@@ -83,7 +83,7 @@
             </p>
 
             <!-- Structured Appointment Request Card -->
-            <div class="bg-white border-2 border-slate-300 shadow-panel">
+            <div class="bg-white border-2 border-slate-300 shadow-sm">
               <div class="bg-slate-900 text-white px-5 py-3 border-b border-slate-800 flex items-center justify-between">
                 <div class="flex items-center space-x-2">
                   <Calendar class="w-4 h-4 text-brand-400" />
@@ -143,7 +143,7 @@
           <!-- Right Column: Institutional Verification & Physician Registry -->
           <div class="lg:col-span-5 space-y-4">
             <!-- Medical Officer Profile Card -->
-            <div class="bg-white border border-slate-300 shadow-crisp p-5 space-y-4">
+            <div class="bg-white border border-slate-300 shadow-sm p-5 space-y-4">
               <div class="flex items-center space-x-4">
                 <img
                   src="https://images.unsplash.com/photo-1594824813593-9c8df6cbeeb0?w=600&auto=format&fit=crop&q=80"

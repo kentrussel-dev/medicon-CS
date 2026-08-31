@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Header Banner Strip -->
-    <div class="p-5 bg-white border border-slate-300 shadow-crisp flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="p-5 bg-white border border-slate-300 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <div class="flex items-center space-x-2">
           <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-600 bg-slate-100 px-2 py-0.5 border border-slate-300">
@@ -58,7 +58,7 @@
     </div>
 
     <!-- Next Upcoming Consultation Card -->
-    <div v-if="nextAppointment" class="bg-white border border-slate-300 shadow-crisp">
+    <div v-if="nextAppointment" class="bg-white border border-slate-300 shadow-sm">
       <div class="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold uppercase">
         <div class="flex items-center space-x-2 text-brand-600">
           <Clock class="w-4 h-4" />
@@ -101,7 +101,7 @@
     <!-- Two-Column Structured Clinical Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <!-- Recent Encounters Table -->
-      <div class="lg:col-span-2 bg-white border border-slate-300 shadow-crisp">
+      <div class="lg:col-span-2 bg-white border border-slate-300 shadow-sm">
         <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900">Encounter History</h3>
           <router-link to="/patient/appointments" class="text-xs font-mono font-bold text-brand-600 hover:underline uppercase">
@@ -137,7 +137,7 @@
       </div>
 
       <!-- Medical Profile & Allergies Card -->
-      <div class="bg-white border border-slate-300 shadow-crisp">
+      <div class="bg-white border border-slate-300 shadow-sm">
         <div class="px-4 py-3 bg-slate-50 border-b border-slate-200">
           <h3 class="font-bold text-xs uppercase tracking-wider text-slate-900">Patient Health Profile</h3>
         </div>
