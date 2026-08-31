@@ -92,15 +92,7 @@ graph TB
     AuditService --> DB
 
     ApptService --> RedisCache
-    EHRService --> Storage
 ```
-
-<details>
-<summary>Click to view High-Resolution Architecture Graphic</summary>
-
-![Medicon System Architecture](docs/images/architecture.png)
-
-</details>
 
 ---
 
@@ -142,13 +134,6 @@ graph LR
    - Screen sharing with 80% spotlight stage.
 3. **Session Closure & Ephemeral Data Purge**:
    - Instant chat messages and ephemeral media tokens are permanently wiped from the database upon consultation closure.
-
-<details>
-<summary>Click to view High-Resolution Telehealth Protocol Graphic</summary>
-
-![Medicon Telehealth Protocol](docs/images/telehealth_workflow.png)
-
-</details>
 
 ---
 
@@ -199,13 +184,6 @@ graph LR
    - **Moderate Risk (35% - 64%)**: Standard reminder queue.
    - **High Risk (>=65%)**: Flagged in Active Triage Queue for targeted confirmation calls and overbooking adjustments.
 4. **Automated Clinical Actions**: Real-time triage dashboards for Chief Medical Officers and Clinic Administrators.
-
-<details>
-<summary>Click to view High-Resolution ML Pipeline Graphic</summary>
-
-![Medicon AI Attendance Risk Pipeline](docs/images/ml_risk_pipeline.png)
-
-</details>
 
 ---
 
@@ -551,8 +529,7 @@ medicon/
 │   ├── tests/                # Pytest Test Suite
 │   └── train.py              # ML Training & Evaluation Pipeline
 │
-├── docs/                     # Architecture & Technical Documentation
-│   └── images/               # High-Resolution Architectural & Protocol Diagrams
+├── docs/                     # Architecture & Technical Specifications
 ├── docker/                   # Hardened Nginx & PHP Container Configs
 ├── .gitignore                # Strict Git Exclusion Policy
 └── docker-compose.yml        # Multi-Container Development Orchestration
