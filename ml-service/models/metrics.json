@@ -1,0 +1,43 @@
+{
+  "model_version": "v1.0.0",
+  "algorithm": "GradientBoostingClassifier",
+  "dataset_samples": 20000,
+  "test_samples": 4000,
+  "metrics": {
+    "accuracy": 0.7485,
+    "precision": 0.5911,
+    "recall": 0.211,
+    "f1_score": 0.311,
+    "roc_auc": 0.6969
+  },
+  "confusion_matrix": [
+    [
+      2767,
+      157
+    ],
+    [
+      849,
+      227
+    ]
+  ],
+  "features": {
+    "numeric": [
+      "lead_time_days",
+      "age",
+      "prior_appointments",
+      "prior_no_shows",
+      "prior_no_show_ratio",
+      "appointment_hour"
+    ],
+    "categorical": [
+      "gender",
+      "scholarship",
+      "hypertension",
+      "diabetes",
+      "alcoholism",
+      "handicap",
+      "sms_received",
+      "day_of_week"
+    ]
+  }
+}
