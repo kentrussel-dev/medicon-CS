@@ -1,5 +1,5 @@
 <template>
-  <Modal :is-open="isOpen" title="High-Risk No-Show Triage" subtitle="Machine learning attendance probability assessment" size="lg" @close="$emit('close')">
+  <Modal :is-open="isOpen" title="Attendance Risk Triage" subtitle="Attendance probability and clinical schedule assessment" size="lg" @close="$emit('close')">
     <div v-if="appointment" class="space-y-5">
       <!-- Risk Score Hero Card -->
       <div class="p-5 bg-gradient-to-br from-rose-50 to-amber-50 rounded-2xl border border-rose-200/80 flex items-center justify-between">

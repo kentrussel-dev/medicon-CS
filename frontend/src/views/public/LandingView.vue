@@ -69,14 +69,14 @@
             </h1>
 
             <p class="text-sm sm:text-base text-slate-500 font-normal leading-relaxed max-w-lg">
-              Connect directly with verified board-certified physicians, schedule instant encrypted telehealth visits, and leverage machine learning attendance predictions for seamless healthcare.
+              Connect directly with verified board-certified physicians, schedule instant encrypted telehealth visits, and access complete medical records with automated reminders.
             </p>
 
             <!-- Floating Quick Booking Widget Card -->
             <div class="mt-8 bg-white rounded-3xl p-6 sm:p-7 shadow-hero-card border border-slate-100/80 space-y-5">
               <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="font-extrabold text-base text-slate-900 flex items-center">
-                  Book An Appointment <span class="ml-1.5 text-lg">🫀</span>
+                <h3 class="font-extrabold text-base text-slate-900 flex items-center space-x-2">
+                  <span>Book An Appointment</span>
                 </h3>
                 <span class="text-[11px] font-semibold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full">
                   Instant Confirmation
@@ -87,7 +87,7 @@
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <!-- Location / Mode selector -->
                 <div
-                  @click="selectedMode = selectedMode === 'Telehealth Video' ? 'In-Clinic Clinic' : 'Telehealth Video'"
+                  @click="selectedMode = selectedMode === 'Telehealth Video' ? 'In-Clinic Visit' : 'Telehealth Video'"
                   class="p-3.5 rounded-2xl bg-slate-50 hover:bg-brand-50/50 border border-slate-100 hover:border-brand-200 transition-all cursor-pointer flex items-center space-x-3 group"
                 >
                   <div class="w-10 h-10 rounded-xl bg-white shadow-xs border border-slate-100 flex items-center justify-center text-rose-500 group-hover:scale-105 transition-transform flex-shrink-0">
@@ -123,7 +123,7 @@
                   </div>
                   <div>
                     <span class="text-[11px] font-bold text-slate-400 uppercase block">Top Rated</span>
-                    <span class="text-xs font-bold text-slate-800">4.9★ Specialists</span>
+                    <span class="text-xs font-bold text-slate-800">4.9/5 Specialists</span>
                   </div>
                 </div>
               </div>
@@ -198,8 +198,8 @@
             class="p-5 rounded-3xl border transition-all cursor-pointer hover:shadow-card hover:-translate-y-1 group flex flex-col justify-between"
             :class="spec.highlighted ? 'bg-[#fff5f8] border-pink-200/80 shadow-sm' : 'bg-white border-slate-100 hover:border-brand-200'"
           >
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform" :class="spec.bgClass">
-              {{ spec.icon }}
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform" :class="spec.bgClass">
+              <component :is="spec.icon" class="w-6 h-6" />
             </div>
             <div>
               <h4 class="font-extrabold text-sm text-slate-900 group-hover:text-brand-600 transition-colors">
@@ -249,18 +249,18 @@
       </div>
     </section>
 
-    <!-- Feature Highlights Section (Telehealth & AI Triage) -->
+    <!-- Feature Highlights Section (Telehealth & Reminders) -->
     <section id="features" class="py-20 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <!-- Left Content -->
           <div class="lg:col-span-5 space-y-6">
-            <span class="text-xs font-extrabold uppercase tracking-wider text-brand-600">Advanced Technologies</span>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-brand-600">Clinical Standards</span>
             <h2 class="text-3xl sm:text-4xl font-black text-slate-950 leading-tight">
               Hospital-Grade Telemedicine & Encrypted Health Records
             </h2>
             <p class="text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
-              Medicon combines encrypted electronic health records, automated clinical reminders, and a scikit-learn machine learning microservice that predicts appointment no-show probabilities to keep clinical operations flowing smoothly.
+              Medicon combines encrypted electronic health records, automated clinical reminders, and seamless physician scheduling to ensure smooth, continuous patient care.
             </p>
 
             <div class="pt-2">
@@ -274,12 +274,12 @@
             </div>
           </div>
 
-          <!-- Right Feature Cards Stack (Matching mockup layout) -->
+          <!-- Right Feature Cards Stack (Matching mockup layout with SVG icons) -->
           <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5">
             <!-- Feature 1: Instant video consultation -->
             <div class="p-6 rounded-3xl bg-slate-50/70 border border-slate-100 hover:bg-white hover:shadow-card hover:border-brand-100 transition-all space-y-3">
-              <div class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-600 flex items-center justify-center text-xl">
-                💻
+              <div class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-600 flex items-center justify-center">
+                <Video class="w-6 h-6" />
               </div>
               <h4 class="font-extrabold text-base text-slate-900">Instant Video Consultation</h4>
               <p class="text-xs text-slate-500 leading-relaxed font-normal">
@@ -289,8 +289,8 @@
 
             <!-- Feature 2: Easy payment options -->
             <div class="p-6 rounded-3xl bg-slate-50/70 border border-slate-100 hover:bg-white hover:shadow-card hover:border-brand-100 transition-all space-y-3">
-              <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl">
-                💳
+              <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                <CreditCard class="w-6 h-6" />
               </div>
               <h4 class="font-extrabold text-base text-slate-900">Transparent Pricing</h4>
               <p class="text-xs text-slate-500 leading-relaxed font-normal">
@@ -300,8 +300,8 @@
 
             <!-- Feature 3: Health history & encryption -->
             <div class="p-6 rounded-3xl bg-slate-50/70 border border-slate-100 hover:bg-white hover:shadow-card hover:border-brand-100 transition-all space-y-3">
-              <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl">
-                📁
+              <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                <FileText class="w-6 h-6" />
               </div>
               <h4 class="font-extrabold text-base text-slate-900">Encrypted Health Records</h4>
               <p class="text-xs text-slate-500 leading-relaxed font-normal">
@@ -309,14 +309,14 @@
               </p>
             </div>
 
-            <!-- Feature 4: ML Attendance Triage -->
+            <!-- Feature 4: Automated Visit Reminders -->
             <div class="p-6 rounded-3xl bg-slate-50/70 border border-slate-100 hover:bg-white hover:shadow-card hover:border-brand-100 transition-all space-y-3">
-              <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl">
-                🤖
+              <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center">
+                <BellRing class="w-6 h-6" />
               </div>
-              <h4 class="font-extrabold text-base text-slate-900">Predictive AI No-Show Triage</h4>
+              <h4 class="font-extrabold text-base text-slate-900">Automated Visit Reminders</h4>
               <p class="text-xs text-slate-500 leading-relaxed font-normal">
-                Scikit-Learn Gradient Boosting model automatically identifies high-risk appointments to trigger timely SMS reminders.
+                Automated SMS notifications and calendar integrations ensure patients and doctors never miss a consultation.
               </p>
             </div>
           </div>
@@ -373,7 +373,7 @@
               </span>
             </div>
             <p class="text-xs text-slate-400 max-w-sm leading-relaxed">
-              Enterprise telehealth and clinical encounter management platform providing secure virtual visits, encrypted EHR, and predictive scheduling.
+              Enterprise telehealth and clinical encounter management platform providing secure virtual visits, encrypted EHR, and seamless scheduling.
             </p>
             <div class="flex items-center space-x-2 text-xs font-semibold text-emerald-400">
               <ShieldCheck class="w-4 h-4" />
@@ -387,7 +387,7 @@
             <ul class="space-y-2 text-slate-400">
               <li><router-link to="/patient/dashboard" class="hover:text-white transition-colors">Patient Portal</router-link></li>
               <li><router-link to="/doctor/dashboard" class="hover:text-white transition-colors">Physician Workspace</router-link></li>
-              <li><router-link to="/admin/dashboard" class="hover:text-white transition-colors">Admin & ML Analytics</router-link></li>
+              <li><router-link to="/admin/dashboard" class="hover:text-white transition-colors">Admin Analytics</router-link></li>
               <li><router-link to="/login" class="hover:text-white transition-colors">Account Sign In</router-link></li>
             </ul>
           </div>
@@ -432,10 +432,17 @@ import {
   ShieldCheck,
   Star,
   LayoutDashboard,
-  UserCheck,
   Video,
   FileText,
   Pill,
+  CreditCard,
+  BellRing,
+  HeartPulse,
+  Activity,
+  Shield,
+  Sparkles,
+  Stethoscope,
+  Smile,
 } from 'lucide-vue-next'
 
 const auth = useAuthStore()
@@ -451,12 +458,12 @@ const dashboardRoute = computed(() => {
 })
 
 const specialtiesList = [
-  { name: 'Cardiology', doctorCount: 24, icon: '🫀', bgClass: 'bg-rose-50 text-rose-600', highlighted: false },
-  { name: 'Neurology', doctorCount: 18, icon: '🧠', bgClass: 'bg-indigo-50 text-indigo-600', highlighted: false },
-  { name: 'Orthopedic', doctorCount: 21, icon: '🦴', bgClass: 'bg-pink-50 text-pink-600', highlighted: true },
-  { name: 'Pediatrics', doctorCount: 19, icon: '👶', bgClass: 'bg-sky-50 text-sky-600', highlighted: false },
-  { name: 'Dermatology', doctorCount: 15, icon: '🧴', bgClass: 'bg-amber-50 text-amber-600', highlighted: false },
-  { name: 'General Practice', doctorCount: 35, icon: '🩺', bgClass: 'bg-emerald-50 text-emerald-600', highlighted: false },
+  { name: 'Cardiology', doctorCount: 24, icon: HeartPulse, bgClass: 'bg-rose-50 text-rose-600', highlighted: false },
+  { name: 'Neurology', doctorCount: 18, icon: Activity, bgClass: 'bg-indigo-50 text-indigo-600', highlighted: false },
+  { name: 'Orthopedic', doctorCount: 21, icon: Shield, bgClass: 'bg-pink-50 text-pink-600', highlighted: true },
+  { name: 'Pediatrics', doctorCount: 19, icon: Smile, bgClass: 'bg-sky-50 text-sky-600', highlighted: false },
+  { name: 'Dermatology', doctorCount: 15, icon: Sparkles, bgClass: 'bg-amber-50 text-amber-600', highlighted: false },
+  { name: 'General Practice', doctorCount: 35, icon: Stethoscope, bgClass: 'bg-emerald-50 text-emerald-600', highlighted: false },
 ]
 
 const steps = [
@@ -490,7 +497,7 @@ const reviews = [
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
   },
   {
-    text: 'The predictive AI no-show triage has significantly improved our clinical attendance rates. Our physicians love the intuitive schedule customizer and encrypted encounter notes.',
+    text: 'The automated scheduling and reminders have significantly improved our clinical attendance rates. Our physicians love the intuitive schedule customizer and encrypted encounter notes.',
     author: 'Dr. Marcus Chen',
     role: 'Chief Medical Officer',
     avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&auto=format&fit=crop&q=80',

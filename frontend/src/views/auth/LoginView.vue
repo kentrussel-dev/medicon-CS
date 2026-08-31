@@ -8,7 +8,7 @@
     <!-- Quick Demo Logins Pill Strip -->
     <div class="mb-6 p-3.5 bg-slate-50 border border-slate-100 rounded-2xl">
       <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2 text-center">
-        ⚡ 1-Click Demo Role Login
+        Demo Role Quick Access
       </p>
       <div class="grid grid-cols-3 gap-2">
         <button

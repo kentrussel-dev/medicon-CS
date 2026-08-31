@@ -4,11 +4,11 @@
     <div class="p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 rounded-3xl text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div>
         <span class="px-3 py-1 bg-purple-500/20 border border-purple-400/30 rounded-full text-xs font-bold uppercase tracking-wider text-purple-300">
-          Executive Administration & ML Analytics
+          Executive Administration & Operations
         </span>
         <h2 class="text-2xl sm:text-3xl font-black mt-2">Clinic Operations & Utilization</h2>
         <p class="text-xs sm:text-sm text-slate-300 mt-1">
-          Predictive attendance models, doctor utilization rates, and compliance monitoring
+          Attendance risk analytics, doctor utilization rates, and compliance monitoring
         </p>
       </div>
 
@@ -47,22 +47,22 @@
         color="amber"
       />
       <StatCard
-        title="Flagged High Risk"
+        title="Flagged Attendance Risk"
         :value="highRiskList.length || 1"
-        subtitle="ML predicted no-show risk >= 65%"
+        subtitle="Predicted attendance risk >= 65%"
         :icon="ShieldAlert"
         color="rose"
       />
     </div>
 
-    <!-- ML Attendance Risk Triage Section -->
+    <!-- Attendance Risk Triage Section -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div class="flex items-center space-x-2">
-            <h3 class="font-black text-lg text-slate-900">Machine Learning No-Show Risk Triage</h3>
+            <h3 class="font-black text-lg text-slate-900">Attendance Risk Triage</h3>
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-800">
-              Active Scikit-Learn Model
+              Active Risk Assessment
             </span>
           </div>
           <p class="text-xs text-slate-500 mt-0.5">
