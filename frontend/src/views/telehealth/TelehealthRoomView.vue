@@ -1,51 +1,235 @@
 <template>
   <div v-if="!isRoomClosed" class="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans select-none">
-    <!-- Top Telehealth Clinical Header -->
-    <header class="bg-white border-b-2 border-slate-200 px-4 py-3 flex items-center justify-between z-30 shadow-xs">
-      <div class="flex items-center space-x-3">
-        <div class="w-8 h-8 bg-brand-700 text-white flex items-center justify-center font-bold text-sm border border-brand-800">
-          M
-        </div>
-        <div>
-          <div class="flex items-center space-x-2 text-[11px] font-mono">
-            <span class="text-brand-800 font-bold uppercase">Medicon Telehealth</span>
-            <span class="text-slate-300">/</span>
-            <!-- Unique Room Code Badge with 1-Click Copy -->
-            <button
-              @click="copyRoomLink"
-              title="Click to copy consultation link"
-              class="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded text-slate-800 font-mono font-bold flex items-center space-x-1 transition-colors"
-            >
-              <span class="text-brand-700 font-bold">#{{ roomCode }}</span>
-              <Copy class="w-3 h-3 text-slate-500" />
-              <span v-if="copiedLink" class="text-[9px] text-emerald-600 font-bold ml-1">COPIED!</span>
-            </button>
-            <span class="px-1.5 py-0.2 bg-emerald-50 text-emerald-800 border border-emerald-300 text-[9px] uppercase font-bold">
-              ENCRYPTED WEBRTC HD
-            </span>
+    <!-- 1. GOOGLE MEET PRE-JOIN GREEN ROOM / WAITING LOBBY -->
+    <div v-if="inLobby" class="flex-1 flex flex-col justify-between min-h-screen">
+      <!-- Lobby Header -->
+      <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-2xs">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-brand-700 text-white flex items-center justify-center font-bold text-sm border border-brand-800 rounded">
+            M
           </div>
-          <h1 class="text-sm font-bold uppercase text-slate-950 mt-0.5 tracking-tight">
-            {{ appointment?.reason || 'Multi-Party Clinical Consultation' }}
-          </h1>
-        </div>
-      </div>
-
-      <div class="flex items-center space-x-3 font-mono text-xs">
-        <!-- Reconnecting Banner Alert -->
-        <div v-if="connectionState === 'reconnecting'" class="flex items-center space-x-1.5 px-3 py-1 bg-amber-50 border border-amber-300 text-amber-800 text-[11px] animate-pulse">
-          <RefreshCw class="w-3.5 h-3.5 animate-spin text-amber-600" />
-          <span class="font-bold">RECONNECTING MEDIA GATEWAY...</span>
+          <div>
+            <span class="text-xs font-mono font-bold text-brand-800 uppercase block">Medicon Telehealth Gateway</span>
+            <span class="text-sm font-bold text-slate-900">Pre-Consultation Green Room</span>
+          </div>
         </div>
 
-        <button
-          @click="showSidebar = !showSidebar"
-          class="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold uppercase flex items-center space-x-1"
-        >
-          <Users class="w-3.5 h-3.5 text-slate-500" />
-          <span class="hidden sm:inline">Roster ({{ participants.length }})</span>
-        </button>
-      </div>
-    </header>
+        <div class="flex items-center space-x-3 text-xs font-mono">
+          <button
+            @click="copyRoomLink"
+            class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded text-slate-800 font-bold flex items-center space-x-1.5 transition-colors"
+          >
+            <span class="text-brand-700">#{{ roomCode }}</span>
+            <Copy class="w-3.5 h-3.5 text-slate-500" />
+            <span v-if="copiedLink" class="text-[9px] text-emerald-600 font-bold">COPIED!</span>
+          </button>
+          <span class="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] uppercase font-bold rounded">
+            256-BIT ENCRYPTED
+          </span>
+        </div>
+      </header>
+
+      <!-- Main Green Room Lobby Stage (Split 2 Columns) -->
+      <main class="flex-1 flex items-center justify-center p-4 sm:p-8">
+        <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <!-- Left Column: 16:9 Video Self-Check & Audio Controls -->
+          <div class="lg:col-span-7 flex flex-col items-center">
+            <div class="relative aspect-video w-full max-w-xl bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center">
+              <video
+                v-if="cameraOn"
+                :ref="setVideoRef"
+                autoplay
+                playsinline
+                muted
+                class="w-full h-full object-cover mirror"
+              ></video>
+              <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-center p-4">
+                <div class="w-20 h-20 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-3xl uppercase shadow-xl border-2 border-slate-700 mb-2">
+                  {{ auth.user?.name?.charAt(0) || 'J' }}
+                </div>
+                <span class="text-sm font-bold text-white uppercase">{{ auth.user?.name || 'Jane Doe' }}</span>
+                <span class="text-xs font-mono text-slate-400 mt-0.5">Camera is turned off</span>
+              </div>
+
+              <!-- Bottom Floating Audio & Video Device Toggle Controls -->
+              <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-3 z-30 bg-slate-950/85 backdrop-blur-md px-4 py-2 rounded-full border border-slate-800 shadow-xl">
+                <!-- Mic Toggle Button -->
+                <button
+                  @click="toggleMic"
+                  :title="micOn ? 'Turn off microphone' : 'Turn on microphone'"
+                  class="w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-xs border"
+                  :class="micOn ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-emerald-400' : 'bg-rose-600 hover:bg-rose-700 border-rose-500 text-white'"
+                >
+                  <component :is="micOn ? Mic : MicOff" class="w-4 h-4" />
+                </button>
+
+                <!-- Camera Toggle Button -->
+                <button
+                  @click="toggleCamera"
+                  :title="cameraOn ? 'Turn off camera' : 'Turn on camera'"
+                  class="w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-xs border"
+                  :class="cameraOn ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-white' : 'bg-rose-600 hover:bg-rose-700 border-rose-500 text-white'"
+                >
+                  <component :is="cameraOn ? Video : VideoOff" class="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Audio & Video Status -->
+            <div class="mt-3 flex items-center space-x-4 text-xs font-mono">
+              <span v-if="micOn" class="flex items-center space-x-1.5 text-emerald-600 font-bold">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Microphone active</span>
+              </span>
+              <span v-else class="text-rose-600 font-bold">
+                Microphone muted
+              </span>
+
+              <span class="text-slate-300">|</span>
+
+              <span v-if="cameraOn" class="text-slate-600">
+                HD 16:9 Camera Active
+              </span>
+              <span v-else class="text-slate-400">
+                Camera Disabled
+              </span>
+            </div>
+          </div>
+
+          <!-- Right Column: Room Details, Who's in the Call, and Join Now Button -->
+          <div class="lg:col-span-5 bg-white border border-slate-300 rounded-2xl p-6 shadow-xl space-y-5">
+            <div>
+              <div class="flex items-center space-x-2 mb-1.5">
+                <span class="px-2 py-0.5 bg-brand-50 border border-brand-200 text-brand-700 rounded text-[10px] font-mono font-bold uppercase">
+                  Room #{{ roomCode }}
+                </span>
+                <button
+                  @click="copyRoomLink"
+                  class="text-xs text-slate-500 hover:text-brand-700 flex items-center space-x-1"
+                >
+                  <Copy class="w-3 h-3" />
+                  <span v-if="copiedLink" class="text-emerald-600 font-bold text-[10px]">COPIED</span>
+                  <span v-else class="text-[10px]">Copy link</span>
+                </button>
+              </div>
+              <h2 class="text-xl font-bold text-slate-900 tracking-tight">Ready to join?</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Adjust your camera and microphone before entering.</p>
+            </div>
+
+            <!-- Clinical Consultation Summary Card -->
+            <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+              <div class="flex justify-between items-start">
+                <span class="text-slate-500 font-mono text-[10px] uppercase font-bold">Clinical Case</span>
+                <span class="px-1.5 py-0.2 bg-emerald-50 text-emerald-700 border border-emerald-300 text-[9px] font-bold uppercase rounded">CONFIRMED</span>
+              </div>
+              <h4 class="font-bold text-slate-900 uppercase text-xs">
+                {{ appointment?.reason || 'Multi-Party Clinical Consultation' }}
+              </h4>
+              <div class="pt-2 border-t border-slate-200 grid grid-cols-2 gap-2 text-[11px]">
+                <div>
+                  <span class="text-slate-400 block text-[10px] uppercase">Patient</span>
+                  <span class="font-bold text-slate-800">{{ appointment?.patient_name || auth.user?.name || 'Jane Doe' }}</span>
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[10px] uppercase">Physician</span>
+                  <span class="font-bold text-slate-800">{{ appointment?.doctor_name || 'Dr. Sarah Jenkins, MD' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Who's Already in the Call -->
+            <div>
+              <span class="text-xs font-mono font-bold text-slate-700 block uppercase mb-2">
+                Already in this consultation ({{ otherParticipants.length }}):
+              </span>
+              <div class="space-y-2">
+                <div
+                  v-for="p in otherParticipants"
+                  :key="p.id"
+                  class="flex items-center space-x-3 p-2 rounded-lg bg-slate-50 border border-slate-200"
+                >
+                  <div class="w-7 h-7 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-xs">
+                    {{ p.name.charAt(0) }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <span class="font-bold text-xs text-slate-900 block truncate">{{ p.name }}</span>
+                    <span class="text-[10px] font-mono text-slate-500">{{ p.role }}</span>
+                  </div>
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2 pt-2">
+              <button
+                @click="joinCall"
+                class="w-full py-3 bg-brand-700 hover:bg-brand-800 text-white font-mono text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center space-x-2"
+              >
+                <Video class="w-4 h-4" />
+                <span>Join Now</span>
+              </button>
+
+              <button
+                @click="goToDashboard"
+                class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase rounded-xl transition-colors border border-slate-300"
+              >
+                Back to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- 2. ACTIVE LIVE MULTI-PARTY IN-CALL STAGE (When inLobby === false) -->
+    <div v-else class="flex-1 flex flex-col font-sans select-none">
+      <!-- Top Telehealth Clinical Header -->
+      <header class="bg-white border-b-2 border-slate-200 px-4 py-3 flex items-center justify-between z-30 shadow-xs">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-brand-700 text-white flex items-center justify-center font-bold text-sm border border-brand-800">
+            M
+          </div>
+          <div>
+            <div class="flex items-center space-x-2 text-[11px] font-mono">
+              <span class="text-brand-800 font-bold uppercase">Medicon Telehealth</span>
+              <span class="text-slate-300">/</span>
+              <!-- Unique Room Code Badge with 1-Click Copy -->
+              <button
+                @click="copyRoomLink"
+                title="Click to copy consultation link"
+                class="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded text-slate-800 font-mono font-bold flex items-center space-x-1 transition-colors"
+              >
+                <span class="text-brand-700 font-bold">#{{ roomCode }}</span>
+                <Copy class="w-3 h-3 text-slate-500" />
+                <span v-if="copiedLink" class="text-[9px] text-emerald-600 font-bold ml-1">COPIED!</span>
+              </button>
+              <span class="px-1.5 py-0.2 bg-emerald-50 text-emerald-800 border border-emerald-300 text-[9px] uppercase font-bold">
+                ENCRYPTED WEBRTC HD
+              </span>
+            </div>
+            <h1 class="text-sm font-bold uppercase text-slate-950 mt-0.5 tracking-tight">
+              {{ appointment?.reason || 'Multi-Party Clinical Consultation' }}
+            </h1>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3 font-mono text-xs">
+          <!-- Reconnecting Banner Alert -->
+          <div v-if="connectionState === 'reconnecting'" class="flex items-center space-x-1.5 px-3 py-1 bg-amber-50 border border-amber-300 text-amber-800 text-[11px] animate-pulse">
+            <RefreshCw class="w-3.5 h-3.5 animate-spin text-amber-600" />
+            <span class="font-bold">RECONNECTING MEDIA GATEWAY...</span>
+          </div>
+
+          <button
+            @click="showSidebar = !showSidebar"
+            class="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold uppercase flex items-center space-x-1"
+          >
+            <Users class="w-3.5 h-3.5 text-slate-500" />
+            <span class="hidden sm:inline">Roster ({{ participants.length }})</span>
+          </button>
+        </div>
+      </header>
 
     <!-- Main Workspace (Google Meet Widescreen Fit-to-Screen Stage) -->
     <div class="flex-1 flex overflow-hidden relative h-[calc(100vh-125px)]">
@@ -636,6 +820,7 @@
       @close="showAddParticipantModal = false"
       @participant-added="handleParticipantAdded"
     />
+    </div>
   </div>
 
   <!-- Room Closed & Data Purged Full Screen State -->
@@ -708,6 +893,7 @@ const rawParam = computed(() => route.params.code || route.params.id || '')
 const isAlphanumericCode = (val) => /^[a-z0-9]{3}-[a-z0-9]{4}-[0-9]{3}$/i.test(String(val))
 
 // Dynamic unique room code (e.g. k9x-yqp2-481)
+const inLobby = ref(true)
 const roomCode = ref(
   isAlphanumericCode(rawParam.value)
     ? String(rawParam.value)
@@ -897,6 +1083,17 @@ const participants = ref([
     audioActive: true,
   },
 ])
+
+const otherParticipants = computed(() => participants.value.filter((p) => !p.isLocal))
+
+const joinCall = () => {
+  inLobby.value = false
+  setTimeout(() => {
+    if (localMediaStream) {
+      attachStreamToAllVideoEls(localMediaStream)
+    }
+  }, 100)
+}
 
 const getRoleBadgeClass = (role) => {
   const r = (role || '').toUpperCase()
@@ -1132,6 +1329,7 @@ const createNewRoom = () => {
   roomCode.value = newCode
   chatMessages.value = []
   isRoomClosed.value = false
+  inLobby.value = true
   router.push(`/telehealth/room/${newCode}`)
 }
 
@@ -1179,6 +1377,7 @@ watch(
       videoElements.clear()
 
       // 2. Reset in-room state and controls
+      inLobby.value = true
       micOn.value = true
       cameraOn.value = true
       isScreenSharing.value = false
