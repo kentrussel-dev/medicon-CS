@@ -61,14 +61,14 @@
           </div>
         </div>
 
-        <!-- Google Meet Signature Grid Layout -->
-        <div class="w-full h-full max-h-[calc(100vh-140px)] mx-auto flex items-center justify-center">
-          <!-- 1 Participant -->
+        <!-- Google Meet Signature Grid Layout (Full Space Adaptive Canvas) -->
+        <div class="w-full h-full mx-auto flex items-center justify-center p-1 sm:p-2">
+          <!-- 1 Participant Layout -->
           <div
             v-if="participants.length === 1"
-            class="w-full max-w-3xl aspect-video max-h-[calc(100vh-160px)]"
+            class="w-full h-full max-w-5xl flex items-center justify-center"
           >
-            <div class="relative w-full h-full aspect-video bg-slate-200 border border-slate-300 rounded-2xl overflow-hidden shadow-md flex items-center justify-center">
+            <div class="relative w-full aspect-video max-h-full bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center">
               <video
                 v-if="participants[0].isLocal && cameraOn"
                 ref="localVideoEl"
@@ -77,19 +77,19 @@
                 muted
                 class="w-full h-full object-cover mirror"
               ></video>
-              <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-100/95 p-3 text-center">
-                <div class="w-16 h-16 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-2xl uppercase shadow-md border-2 border-white mb-1.5">
+              <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-900 p-4 text-center">
+                <div class="w-20 h-20 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-3xl uppercase shadow-xl border-2 border-slate-700 mb-2">
                   {{ participants[0].name.charAt(0) }}
                 </div>
-                <span class="text-sm font-bold text-slate-800 uppercase">{{ participants[0].name }}</span>
-                <span class="text-[10px] font-mono text-slate-500 mt-0.5">{{ participants[0].role }}</span>
+                <span class="text-base font-bold text-white uppercase tracking-tight">{{ participants[0].name }}</span>
+                <span class="text-xs font-mono text-slate-400 mt-0.5">{{ participants[0].role }}</span>
               </div>
-              <div class="absolute top-2.5 right-2.5 z-20">
-                <div class="p-1.5 rounded-full backdrop-blur-md shadow-xs border" :class="(participants[0].isLocal ? micOn : participants[0].audioActive) ? 'bg-slate-900/70 border-slate-700/60 text-emerald-400' : 'bg-rose-600/90 border-rose-500 text-white'">
-                  <component :is="(participants[0].isLocal ? micOn : participants[0].audioActive) ? Mic : MicOff" class="w-3.5 h-3.5" />
+              <div class="absolute top-3 right-3 z-20">
+                <div class="p-2 rounded-full backdrop-blur-md shadow-md border" :class="(participants[0].isLocal ? micOn : participants[0].audioActive) ? 'bg-slate-950/80 border-slate-800 text-emerald-400' : 'bg-rose-600 border-rose-500 text-white'">
+                  <component :is="(participants[0].isLocal ? micOn : participants[0].audioActive) ? Mic : MicOff" class="w-4 h-4" />
                 </div>
               </div>
-              <div class="absolute bottom-2.5 left-2.5 z-20 flex items-center space-x-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-white text-[11px] font-mono border border-slate-800/60 shadow-md">
+              <div class="absolute bottom-3 left-3 z-20 flex items-center space-x-2 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-mono border border-slate-800 shadow-md">
                 <span class="px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase rounded" :class="getRoleBadgeClass(participants[0].role)">{{ participants[0].role }}</span>
                 <span class="font-bold text-white">{{ participants[0].name }}</span>
                 <span v-if="participants[0].isLocal" class="text-slate-400 font-normal">(You)</span>
@@ -97,15 +97,15 @@
             </div>
           </div>
 
-          <!-- 2 Participants (1 Row of 2) -->
+          <!-- 2 Participants (Full-Height 2-Column Grid) -->
           <div
             v-else-if="participants.length === 2"
-            class="grid grid-cols-2 gap-3.5 w-full max-w-5xl max-h-[calc(100vh-160px)] items-center"
+            class="grid grid-cols-2 gap-3 sm:gap-4 w-full h-full items-center"
           >
             <div
               v-for="p in participants"
               :key="p.id"
-              class="relative w-full aspect-video bg-slate-200 border border-slate-300 rounded-2xl overflow-hidden shadow-md flex items-center justify-center"
+              class="relative w-full h-full max-h-full aspect-video bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center my-auto"
             >
               <video
                 v-if="p.isLocal && cameraOn"
@@ -115,19 +115,19 @@
                 muted
                 class="w-full h-full object-cover mirror"
               ></video>
-              <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-100/95 p-3 text-center">
-                <div class="w-16 h-16 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-2xl uppercase shadow-md border-2 border-white mb-1.5">
+              <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-900 p-4 text-center">
+                <div class="w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-2xl sm:text-3xl uppercase shadow-xl border-2 border-slate-700 mb-2">
                   {{ p.name.charAt(0) }}
                 </div>
-                <span class="text-sm font-bold text-slate-800 uppercase truncate max-w-[90%]">{{ p.name }}</span>
-                <span class="text-[10px] font-mono text-slate-500 mt-0.5">{{ p.role }}</span>
+                <span class="text-sm sm:text-base font-bold text-white uppercase truncate max-w-[90%]">{{ p.name }}</span>
+                <span class="text-xs font-mono text-slate-400 mt-0.5">{{ p.role }}</span>
               </div>
-              <div class="absolute top-2.5 right-2.5 z-20">
-                <div class="p-1.5 rounded-full backdrop-blur-md shadow-xs border" :class="(p.isLocal ? micOn : p.audioActive) ? 'bg-slate-900/70 border-slate-700/60 text-emerald-400' : 'bg-rose-600/90 border-rose-500 text-white'">
-                  <component :is="(p.isLocal ? micOn : p.audioActive) ? Mic : MicOff" class="w-3.5 h-3.5" />
+              <div class="absolute top-3 right-3 z-20">
+                <div class="p-2 rounded-full backdrop-blur-md shadow-md border" :class="(p.isLocal ? micOn : p.audioActive) ? 'bg-slate-950/80 border-slate-800 text-emerald-400' : 'bg-rose-600 border-rose-500 text-white'">
+                  <component :is="(p.isLocal ? micOn : p.audioActive) ? Mic : MicOff" class="w-4 h-4" />
                 </div>
               </div>
-              <div class="absolute bottom-2.5 left-2.5 z-20 flex items-center space-x-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-white text-[11px] font-mono border border-slate-800/60 shadow-md max-w-[88%]">
+              <div class="absolute bottom-3 left-3 z-20 flex items-center space-x-2 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-mono border border-slate-800 shadow-md max-w-[88%]">
                 <span class="px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase rounded" :class="getRoleBadgeClass(p.role)">{{ p.role }}</span>
                 <span class="font-bold text-white truncate">{{ p.name }}</span>
                 <span v-if="p.isLocal" class="text-slate-400 font-normal hidden sm:inline">(You)</span>
@@ -135,17 +135,17 @@
             </div>
           </div>
 
-          <!-- 3 Participants (Google Meet Signature: 2 on Top Row, 1 Centered on Bottom Row) -->
+          <!-- 3 Participants (Full Space: Row 1 has 2 Cards, Row 2 has Centered 3rd Card) -->
           <div
             v-else-if="participants.length === 3"
-            class="flex flex-col gap-3 w-full max-w-4xl max-h-[calc(100vh-145px)] items-center justify-center my-auto"
+            class="flex flex-col gap-3 w-full h-full justify-center items-center my-auto"
           >
-            <!-- Top Row: 2 Participants -->
-            <div class="grid grid-cols-2 gap-3 w-full">
+            <!-- Top Row (2 Cards taking full top half) -->
+            <div class="grid grid-cols-2 gap-3 w-full flex-1 min-h-0">
               <div
                 v-for="p in participants.slice(0, 2)"
                 :key="p.id"
-                class="relative w-full aspect-video max-h-[calc(40vh-20px)] bg-slate-200 border border-slate-300 rounded-2xl overflow-hidden shadow-md flex items-center justify-center"
+                class="relative w-full h-full bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
               >
                 <video
                   v-if="p.isLocal && cameraOn"
@@ -155,19 +155,19 @@
                   muted
                   class="w-full h-full object-cover mirror"
                 ></video>
-                <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-100/95 p-3 text-center">
-                  <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-xl uppercase shadow-md border-2 border-white mb-1">
+                <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-900 p-3 text-center">
+                  <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-xl sm:text-2xl uppercase shadow-xl border-2 border-slate-700 mb-1.5">
                     {{ p.name.charAt(0) }}
                   </div>
-                  <span class="text-xs sm:text-sm font-bold text-slate-800 uppercase truncate max-w-[90%]">{{ p.name }}</span>
-                  <span class="text-[10px] font-mono text-slate-500">{{ p.role }}</span>
+                  <span class="text-xs sm:text-sm font-bold text-white uppercase truncate max-w-[90%]">{{ p.name }}</span>
+                  <span class="text-[11px] font-mono text-slate-400">{{ p.role }}</span>
                 </div>
-                <div class="absolute top-2.5 right-2.5 z-20">
-                  <div class="p-1.5 rounded-full backdrop-blur-md shadow-xs border" :class="(p.isLocal ? micOn : p.audioActive) ? 'bg-slate-900/70 border-slate-700/60 text-emerald-400' : 'bg-rose-600/90 border-rose-500 text-white'">
-                    <component :is="(p.isLocal ? micOn : p.audioActive) ? Mic : MicOff" class="w-3.5 h-3.5" />
+                <div class="absolute top-3 right-3 z-20">
+                  <div class="p-1.5 sm:p-2 rounded-full backdrop-blur-md shadow-md border" :class="(p.isLocal ? micOn : p.audioActive) ? 'bg-slate-950/80 border-slate-800 text-emerald-400' : 'bg-rose-600 border-rose-500 text-white'">
+                    <component :is="(p.isLocal ? micOn : p.audioActive) ? Mic : MicOff" class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                 </div>
-                <div class="absolute bottom-2.5 left-2.5 z-20 flex items-center space-x-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-white text-[11px] font-mono border border-slate-800/60 shadow-md max-w-[88%]">
+                <div class="absolute bottom-3 left-3 z-20 flex items-center space-x-2 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-mono border border-slate-800 shadow-md max-w-[88%]">
                   <span class="px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase rounded" :class="getRoleBadgeClass(p.role)">{{ p.role }}</span>
                   <span class="font-bold text-white truncate">{{ p.name }}</span>
                   <span v-if="p.isLocal" class="text-slate-400 font-normal hidden sm:inline">(You)</span>
@@ -175,10 +175,10 @@
               </div>
             </div>
 
-            <!-- Bottom Row: 1 Participant Centered -->
-            <div class="w-full max-w-[calc(50%-6px)] flex justify-center">
+            <!-- Bottom Row (Centered 3rd Card taking bottom half) -->
+            <div class="w-full flex justify-center flex-1 min-h-0">
               <div
-                class="relative w-full aspect-video max-h-[calc(40vh-20px)] bg-slate-200 border border-slate-300 rounded-2xl overflow-hidden shadow-md flex items-center justify-center"
+                class="relative w-full max-w-[calc(50%-6px)] h-full bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
               >
                 <video
                   v-if="participants[2].isLocal && cameraOn"
@@ -188,19 +188,19 @@
                   muted
                   class="w-full h-full object-cover mirror"
                 ></video>
-                <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-100/95 p-3 text-center">
-                  <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-xl uppercase shadow-md border-2 border-white mb-1">
+                <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-900 p-3 text-center">
+                  <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-xl sm:text-2xl uppercase shadow-xl border-2 border-slate-700 mb-1.5">
                     {{ participants[2].name.charAt(0) }}
                   </div>
-                  <span class="text-xs sm:text-sm font-bold text-slate-800 uppercase truncate max-w-[90%]">{{ participants[2].name }}</span>
-                  <span class="text-[10px] font-mono text-slate-500">{{ participants[2].role }}</span>
+                  <span class="text-xs sm:text-sm font-bold text-white uppercase truncate max-w-[90%]">{{ participants[2].name }}</span>
+                  <span class="text-[11px] font-mono text-slate-400">{{ participants[2].role }}</span>
                 </div>
-                <div class="absolute top-2.5 right-2.5 z-20">
-                  <div class="p-1.5 rounded-full backdrop-blur-md shadow-xs border" :class="(participants[2].isLocal ? micOn : participants[2].audioActive) ? 'bg-slate-900/70 border-slate-700/60 text-emerald-400' : 'bg-rose-600/90 border-rose-500 text-white'">
-                    <component :is="(participants[2].isLocal ? micOn : participants[2].audioActive) ? Mic : MicOff" class="w-3.5 h-3.5" />
+                <div class="absolute top-3 right-3 z-20">
+                  <div class="p-1.5 sm:p-2 rounded-full backdrop-blur-md shadow-md border" :class="(participants[2].isLocal ? micOn : participants[2].audioActive) ? 'bg-slate-950/80 border-slate-800 text-emerald-400' : 'bg-rose-600 border-rose-500 text-white'">
+                    <component :is="(participants[2].isLocal ? micOn : participants[2].audioActive) ? Mic : MicOff" class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                 </div>
-                <div class="absolute bottom-2.5 left-2.5 z-20 flex items-center space-x-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-white text-[11px] font-mono border border-slate-800/60 shadow-md max-w-[88%]">
+                <div class="absolute bottom-3 left-3 z-20 flex items-center space-x-2 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-mono border border-slate-800 shadow-md max-w-[88%]">
                   <span class="px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase rounded" :class="getRoleBadgeClass(participants[2].role)">{{ participants[2].role }}</span>
                   <span class="font-bold text-white truncate">{{ participants[2].name }}</span>
                   <span v-if="participants[2].isLocal" class="text-slate-400 font-normal hidden sm:inline">(You)</span>
@@ -209,15 +209,15 @@
             </div>
           </div>
 
-          <!-- 4+ Participants (2x2 Grid) -->
+          <!-- 4+ Participants (Full-Space 2x2 Grid) -->
           <div
             v-else
-            class="grid grid-cols-2 gap-3 w-full max-w-5xl max-h-[calc(100vh-145px)] items-center my-auto"
+            class="grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4 w-full h-full items-center my-auto"
           >
             <div
               v-for="p in participants"
               :key="p.id"
-              class="relative w-full aspect-video max-h-[calc(40vh-20px)] bg-slate-200 border border-slate-300 rounded-2xl overflow-hidden shadow-md flex items-center justify-center"
+              class="relative w-full h-full bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
             >
               <video
                 v-if="p.isLocal && cameraOn"
@@ -227,19 +227,19 @@
                 muted
                 class="w-full h-full object-cover mirror"
               ></video>
-              <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-100/95 p-3 text-center">
-                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-xl uppercase shadow-md border-2 border-white mb-1">
+              <div v-else class="w-full h-full flex flex-col items-center justify-center bg-slate-900 p-3 text-center">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-xl sm:text-2xl uppercase shadow-xl border-2 border-slate-700 mb-1.5">
                   {{ p.name.charAt(0) }}
                 </div>
-                <span class="text-xs sm:text-sm font-bold text-slate-800 uppercase truncate max-w-[90%]">{{ p.name }}</span>
-                <span class="text-[10px] font-mono text-slate-500">{{ p.role }}</span>
+                <span class="text-xs sm:text-sm font-bold text-white uppercase truncate max-w-[90%]">{{ p.name }}</span>
+                <span class="text-[11px] font-mono text-slate-400">{{ p.role }}</span>
               </div>
-              <div class="absolute top-2.5 right-2.5 z-20">
-                <div class="p-1.5 rounded-full backdrop-blur-md shadow-xs border" :class="(p.isLocal ? micOn : p.audioActive) ? 'bg-slate-900/70 border-slate-700/60 text-emerald-400' : 'bg-rose-600/90 border-rose-500 text-white'">
-                  <component :is="(p.isLocal ? micOn : p.audioActive) ? Mic : MicOff" class="w-3.5 h-3.5" />
+              <div class="absolute top-3 right-3 z-20">
+                <div class="p-1.5 sm:p-2 rounded-full backdrop-blur-md shadow-md border" :class="(p.isLocal ? micOn : p.audioActive) ? 'bg-slate-950/80 border-slate-800 text-emerald-400' : 'bg-rose-600 border-rose-500 text-white'">
+                  <component :is="(p.isLocal ? micOn : p.audioActive) ? Mic : MicOff" class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
               </div>
-              <div class="absolute bottom-2.5 left-2.5 z-20 flex items-center space-x-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-white text-[11px] font-mono border border-slate-800/60 shadow-md max-w-[88%]">
+              <div class="absolute bottom-3 left-3 z-20 flex items-center space-x-2 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-mono border border-slate-800 shadow-md max-w-[88%]">
                 <span class="px-1.5 py-0.2 text-[9px] font-mono font-bold uppercase rounded" :class="getRoleBadgeClass(p.role)">{{ p.role }}</span>
                 <span class="font-bold text-white truncate">{{ p.name }}</span>
                 <span v-if="p.isLocal" class="text-slate-400 font-normal hidden sm:inline">(You)</span>
