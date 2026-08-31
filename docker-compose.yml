@@ -1,0 +1,180 @@
+version: '3.8'
+
+services:
+  # Nginx Web Server & Gateway
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: medicon-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./backend:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+      - ml-service
+    networks:
+      - medicon-network
+
+  # Laravel 11 Backend (PHP-FPM)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: medicon-backend
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./backend:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    environment:
+      APP_NAME: "Medicon"
+      APP_ENV: local
+      APP_KEY: base64:d2ZkaXN3b2Vmd2VpaWZ3ZTlyMjl3cmllc2pmbHNkZms=
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8080
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: medicon
+      DB_USERNAME: medicon_user
+      DB_PASSWORD: medicon_secret
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      QUEUE_CONNECTION: redis
+      CACHE_STORE: redis
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_BUCKET: medicon-records
+      AWS_ENDPOINT: http://minio:9000
+      AWS_USE_PATH_STYLE_ENDPOINT: "true"
+      ML_SERVICE_URL: http://ml-service:8000
+      ML_SERVICE_TIMEOUT: 2.5
+    depends_on:
+      - db
+      - redis
+    networks:
+      - medicon-network
+
+  # Queue Worker Container for Appointment Reminders & Risk Notification Jobs
+  queue:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: medicon-queue
+    restart: unless-stopped
+    working_dir: /var/www/html
+    command: php artisan queue:work redis --sleep=3 --tries=3 --timeout=90
+    volumes:
+      - ./backend:/var/www/html
+    environment:
+      APP_NAME: "Medicon"
+      APP_ENV: local
+      APP_KEY: base64:d2ZkaXN3b2Vmd2VpaWZ3ZTlyMjl3cmllc2pmbHNkZms=
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: medicon
+      DB_USERNAME: medicon_user
+      DB_PASSWORD: medicon_secret
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      QUEUE_CONNECTION: redis
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - medicon-network
+
+  # Python FastAPI Machine Learning Microservice
+  ml-service:
+    build:
+      context: ./ml-service
+      dockerfile: Dockerfile
+    container_name: medicon-ml-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_PATH: "/app/models/noshow_model_v1.joblib"
+      METRICS_PATH: "/app/models/metrics.json"
+      HIGH_RISK_THRESHOLD: "0.65"
+      MEDIUM_RISK_THRESHOLD: "0.35"
+      PORT: 8000
+    networks:
+      - medicon-network
+
+  # Vue 3 Frontend Dev Server
+  frontend:
+    image: node:20-alpine
+    container_name: medicon-frontend
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080/api
+    depends_on:
+      - nginx
+    networks:
+      - medicon-network
+
+  # MySQL 8.0 Primary Database
+  db:
+    image: mysql:8.0
+    container_name: medicon-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_secret
+      MYSQL_DATABASE: medicon
+      MYSQL_USER: medicon_user
+      MYSQL_PASSWORD: medicon_secret
+    volumes:
+      - medicon-db-data:/var/lib/mysql
+    networks:
+      - medicon-network
+
+  # Redis 7.2 Cache & Queues
+  redis:
+    image: redis:7.2-alpine
+    container_name: medicon-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - medicon-redis-data:/data
+    networks:
+      - medicon-network
+
+  # MinIO S3 Object Storage for Encrypted Lab Results & Attachments
+  minio:
+    image: minio/minio:latest
+    container_name: medicon-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - medicon-minio-data:/data
+    networks:
+      - medicon-network
+
+networks:
+  medicon-network:
+    driver: bridge
+
+volumes:
+  medicon-db-data:
+  medicon-redis-data:
+  medicon-minio-data:

@@ -1,0 +1,141 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Medicon Telehealth REST API",
+    "description": "Production grade HIPAA compliant REST API for Medicon Telehealth & Clinical Management Platform",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api",
+      "description": "Local Development Gateway"
+    },
+    {
+      "url": "https://api.medicon.health/api",
+      "description": "Production Cloud Gateway"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Authenticate user and issue Sanctum token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Authenticated successfully" },
+          "422": { "description": "Validation error" }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Register new patient account",
+        "responses": {
+          "201": { "description": "Patient account registered" }
+        }
+      }
+    },
+    "/doctors": {
+      "get": {
+        "summary": "Browse doctors directory with specialty and search filters",
+        "parameters": [
+          { "name": "specialty", "in": "query", "schema": { "type": "string" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "List of active physicians" }
+        }
+      }
+    },
+    "/appointments": {
+      "get": {
+        "summary": "List appointments for current user context",
+        "responses": {
+          "200": { "description": "Paginated appointments list" }
+        }
+      },
+      "post": {
+        "summary": "Book a new appointment with slot conflict validation",
+        "responses": {
+          "201": { "description": "Appointment booked" },
+          "422": { "description": "Slot collision or invalid hours" }
+        }
+      }
+    },
+    "/appointments/{id}/reschedule": {
+      "post": {
+        "summary": "Reschedule appointment to a new slot",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": { "description": "Appointment rescheduled" }
+        }
+      }
+    },
+    "/appointments/{id}/cancel": {
+      "post": {
+        "summary": "Cancel appointment with reason",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": {
+          "200": { "description": "Appointment cancelled" }
+        }
+      }
+    },
+    "/medical-records": {
+      "get": {
+        "summary": "List clinical medical records",
+        "responses": {
+          "200": { "description": "Decrypted clinical records" }
+        }
+      },
+      "post": {
+        "summary": "Create clinical medical record (Doctor only)",
+        "responses": {
+          "201": { "description": "Medical record encrypted and saved" }
+        }
+      }
+    },
+    "/prescriptions": {
+      "get": {
+        "summary": "List prescriptions",
+        "responses": {
+          "200": { "description": "Prescriptions list" }
+        }
+      },
+      "post": {
+        "summary": "Issue new electronic prescription (Doctor only)",
+        "responses": {
+          "201": { "description": "Prescription issued" }
+        }
+      }
+    },
+    "/admin/analytics/dashboard": {
+      "get": {
+        "summary": "Executive overview analytics, attendance rates, doctor utilization (Admin only)",
+        "responses": {
+          "200": { "description": "Analytics dashboard payload" }
+        }
+      }
+    },
+    "/admin/audit-logs": {
+      "get": {
+        "summary": "Query immutable HIPAA audit log records (Admin only)",
+        "responses": {
+          "200": { "description": "Audit logs list" }
+        }
+      }
+    }
+  }
+}
