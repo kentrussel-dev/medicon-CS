@@ -33,4 +33,11 @@ return [
         'audit_log_days' => (int) env('RETENTION_AUDIT_LOG_DAYS', 2555), // 7 years HIPAA compliance
         'soft_deleted_days' => (int) env('RETENTION_SOFT_DELETED_DAYS', 365),
     ],
+
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-1.5-flash'),
+        'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
+        'cache_ttl' => (int) env('GEMINI_CACHE_TTL_SECONDS', 86400),
+    ],
 ];

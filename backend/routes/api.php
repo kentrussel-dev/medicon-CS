@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AdminAnalyticsController;
 use App\Http\Controllers\Api\AdminUserController;
+use App\Http\Controllers\Api\AiChatController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\AttachmentController;
 use App\Http\Controllers\Api\AuditLogController;
@@ -96,6 +97,9 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::get('/{id}', [AttachmentController::class, 'show']);
         Route::delete('/{id}', [AttachmentController::class, 'destroy']);
     });
+
+    // Google Gemini AI Clinical Assistant
+    Route::post('/ai/chat', [AiChatController::class, 'chat']);
 
     // Admin & Operational Endpoints
     Route::prefix('admin')->middleware('role:admin')->group(function () {

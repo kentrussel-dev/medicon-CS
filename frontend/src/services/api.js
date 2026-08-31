@@ -341,6 +341,60 @@ const handleMockRoute = (config) => {
     return { status: 200, data: { prescription: item } }
   }
 
+  // 7. AI Clinical Assistant (Gemini Flash Model)
+  if (url === '/ai/chat' && method === 'post') {
+    const prompt = (body.message || '').toLowerCase()
+    const user = JSON.parse(localStorage.getItem('medicon_user') || 'null')
+    const role = user?.role || 'patient'
+    let answer = ''
+    let isCached = false
+
+    if (role === 'doctor') {
+      if (prompt.includes('soap') || prompt.includes('draft') || prompt.includes('note')) {
+        answer = "**Draft SOAP Clinical Encounter Note**\n\n" +
+          "**S (Subjective):** Patient presents for routine cardiology follow-up. Reports strict adherence to Lisinopril 10mg. Denies chest pain, palpitations, or lightheadedness.\n" +
+          "**O (Objective):** BP 124/80 mmHg, HR 68 bpm regular, SpO2 99%. S1/S2 present, no murmurs. Lungs clear to auscultation bilaterally.\n" +
+          "**A (Assessment):** Primary Essential Hypertension (ICD-10 I10) - well-controlled under current monotherapy.\n" +
+          "**P (Plan):** Maintain Lisinopril 10mg daily. Routine comprehensive metabolic panel in 6 months. Follow-up clinic visit in 6 months."
+      } else if (prompt.includes('interaction') || prompt.includes('potassium') || prompt.includes('nsaid') || prompt.includes('lisinopril')) {
+        answer = "**Pharmacology Clinical Reference: ACE Inhibitors + NSAIDs / Potassium**\n\n" +
+          "- **NSAIDs Interaction:** Co-administration may diminish the antihypertensive effect of ACE inhibitors and increase the risk of acute renal functional deterioration.\n" +
+          "- **Potassium Interaction:** ACE inhibitors reduce aldosterone secretion. Concomitant potassium-sparing agents or potassium supplements elevate hyperkalemia risks.\n" +
+          "- **Clinical Guidance:** Monitor serum potassium and renal function (BUN/Creatinine) periodically."
+      } else {
+        answer = `Hello Dr. ${user?.name || 'Physician'}! I can help draft structured SOAP notes, check pharmacology drug interactions, or summarize patient histories before an appointment.`
+      }
+    } else {
+      // Patient scope
+      if (prompt.includes('hour') || prompt.includes('open') || prompt.includes('time')) {
+        answer = "Medicon Outpatient Clinics are open **Monday through Friday, 8:00 AM to 5:00 PM**. Emergency and Telehealth video services are available 24/7."
+        isCached = true
+      } else if (prompt.includes('prescription') || prompt.includes('medication') || prompt.includes('lisinopril')) {
+        answer = "You have an active prescription for **Lisinopril 10mg** (take once daily in the morning). It is prescribed to help maintain healthy blood pressure. You have 3 refills remaining."
+      } else if (prompt.includes('appointment') || prompt.includes('next') || prompt.includes('schedule')) {
+        answer = "Your next scheduled consultation is with **Dr. Sarah Jenkins, MD** (Cardiology) via Telehealth Video. You can join the room directly from your dashboard when your slot begins."
+      } else if (prompt.includes('blood test') || prompt.includes('prepare') || prompt.includes('fasting')) {
+        answer = "For routine fasting blood glucose and lipid panels, please avoid eating or drinking (water is permitted) for **8 to 12 hours** prior to your lab draw. Take your routine medications unless instructed otherwise."
+        isCached = true
+      } else if (prompt.includes('symptom') || prompt.includes('pain') || prompt.includes('diagnos') || prompt.includes('sick')) {
+        answer = "⚠️ **Clinical Safety Notice:** I am an AI assistant and cannot provide a medical diagnosis. If you are experiencing severe pain, difficulty breathing, chest tightness, or other acute symptoms, please call emergency services (911) or contact our urgent clinic triage desk immediately."
+      } else {
+        answer = `Hello, ${user?.name || 'Patient'}! I am your Medicon Healthcare Assistant. I can help explain your active prescriptions, upcoming appointments, or general clinic procedures.`
+      }
+    }
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: answer,
+        role: role,
+        cached: isCached,
+        timestamp: new Date().toISOString(),
+      },
+    }
+  }
+
   // Fallback 200 OK
   return { status: 200, data: { message: 'Success' } }
 }

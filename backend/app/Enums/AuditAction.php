@@ -10,4 +10,5 @@ enum AuditAction: string
     case DELETE = 'DELETE';
     case EXPORT = 'EXPORT';
     case DOWNLOAD = 'DOWNLOAD';
+    case AI_QUERY = 'AI_QUERY';
 }
