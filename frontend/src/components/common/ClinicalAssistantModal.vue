@@ -29,10 +29,10 @@
           </div>
           <div>
             <div class="font-bold text-xs uppercase tracking-wider leading-none">
-              Medicon Clinical AI Assistant
+              Clinical Assistant
             </div>
-            <div class="text-[9px] font-mono text-emerald-400 uppercase tracking-widest leading-none mt-1">
-              Powered by Google Gemini Flash &bull; {{ auth.role?.toUpperCase() }} MODE
+            <div class="text-[9px] font-mono text-slate-400 uppercase tracking-widest leading-none mt-1">
+              Encrypted Clinical Portal
             </div>
           </div>
         </div>
@@ -76,7 +76,7 @@
           :class="msg.role === 'user' ? 'items-end' : 'items-start'"
         >
           <span class="text-[9px] font-mono uppercase text-slate-400">
-            {{ msg.role === 'user' ? 'You' : 'Medicon AI (' + auth.role?.toUpperCase() + ')' }} &bull; {{ msg.time }}
+            {{ msg.role === 'user' ? 'You' : 'Medicon Clinical Assistant' }} &bull; {{ msg.time }}
           </span>
 
           <div
@@ -92,10 +92,7 @@
             </div>
 
             <!-- Assistant Message Actions -->
-            <div v-if="msg.role === 'assistant'" class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
-              <span v-if="msg.cached" class="text-emerald-700 font-bold">[CACHED FAQ]</span>
-              <span v-else>Gemini 1.5 Flash</span>
-
+            <div v-if="msg.role === 'assistant'" class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-end text-[10px] font-mono text-slate-400">
               <button
                 @click="copyText(msg.content)"
                 class="hover:text-slate-900 transition-colors uppercase font-bold flex items-center space-x-1"
@@ -111,7 +108,7 @@
         <div v-if="loading" class="flex items-start space-x-2">
           <div class="bg-white border border-slate-300 p-3 flex items-center space-x-2 text-xs font-mono text-slate-500">
             <span class="inline-block w-1.5 h-1.5 bg-brand-600 animate-ping"></span>
-            <span>Querying Gemini Flash model...</span>
+            <span>Consulting clinical reference...</span>
           </div>
         </div>
       </div>
