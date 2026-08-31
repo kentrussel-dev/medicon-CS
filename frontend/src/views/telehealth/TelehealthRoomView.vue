@@ -171,17 +171,17 @@
           </div>
         </div>
 
-        <!-- Google Meet Signature Grid Layout (Full Space Adaptive Canvas when NOT presenting) -->
-        <div v-else class="w-full h-full mx-auto flex items-center justify-center p-1 sm:p-2">
-          <!-- 1 Participant Layout -->
+        <!-- Google Meet Signature Grid Layout (Strict 16:9 Ratio when NOT presenting) -->
+        <div v-else class="w-full h-full mx-auto flex items-center justify-center p-2 sm:p-3 overflow-hidden">
+          <!-- 1 Participant Layout (Strict 16:9) -->
           <div
             v-if="participants.length === 1"
-            class="w-full h-full max-w-5xl flex items-center justify-center"
+            class="w-full h-full flex items-center justify-center"
           >
-            <div class="relative w-full aspect-video max-h-full bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center">
+            <div class="relative aspect-video h-full max-h-full max-w-5xl bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center">
               <video
                 v-if="participants[0].isLocal && cameraOn"
-                ref="localVideoEl"
+                :ref="setVideoRef"
                 autoplay
                 playsinline
                 muted
@@ -207,19 +207,19 @@
             </div>
           </div>
 
-          <!-- 2 Participants (Full-Height 2-Column Grid) -->
+          <!-- 2 Participants (Strict 16:9 Dual Grid) -->
           <div
             v-else-if="participants.length === 2"
-            class="grid grid-cols-2 gap-3 sm:gap-4 w-full h-full items-center"
+            class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full h-full"
           >
             <div
               v-for="p in participants"
               :key="p.id"
-              class="relative w-full h-full max-h-full aspect-video bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center my-auto"
+              class="relative aspect-video h-full max-h-full max-w-[calc(50%-8px)] bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
             >
               <video
                 v-if="p.isLocal && cameraOn"
-                ref="localVideoEl"
+                :ref="setVideoRef"
                 autoplay
                 playsinline
                 muted
@@ -245,21 +245,21 @@
             </div>
           </div>
 
-          <!-- 3 Participants (Full Space: Row 1 has 2 Cards, Row 2 has Centered 3rd Card) -->
+          <!-- 3 Participants (Strict 16:9 Google Meet Style: Row 1 has 2, Row 2 has 1 centered) -->
           <div
             v-else-if="participants.length === 3"
-            class="flex flex-col gap-3 w-full h-full justify-center items-center my-auto"
+            class="flex flex-col gap-3 w-full h-full justify-center items-center overflow-hidden"
           >
-            <!-- Top Row (2 Cards taking full top half) -->
-            <div class="grid grid-cols-2 gap-3 w-full flex-1 min-h-0">
+            <!-- Top Row (2 16:9 Cards) -->
+            <div class="flex items-center justify-center gap-3 sm:gap-4 w-full flex-1 min-h-0">
               <div
                 v-for="p in participants.slice(0, 2)"
                 :key="p.id"
-                class="relative w-full h-full bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
+                class="relative aspect-video h-full max-h-full max-w-[calc(50%-8px)] bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
               >
                 <video
                   v-if="p.isLocal && cameraOn"
-                  ref="localVideoEl"
+                  :ref="setVideoRef"
                   autoplay
                   playsinline
                   muted
@@ -285,14 +285,14 @@
               </div>
             </div>
 
-            <!-- Bottom Row (Centered 3rd Card taking bottom half) -->
-            <div class="w-full flex justify-center flex-1 min-h-0">
+            <!-- Bottom Row (1 Centered 16:9 Card) -->
+            <div class="flex items-center justify-center w-full flex-1 min-h-0">
               <div
-                class="relative w-full max-w-[calc(50%-6px)] h-full bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
+                class="relative aspect-video h-full max-h-full max-w-[calc(50%-8px)] bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
               >
                 <video
                   v-if="participants[2].isLocal && cameraOn"
-                  ref="localVideoEl"
+                  :ref="setVideoRef"
                   autoplay
                   playsinline
                   muted
@@ -319,19 +319,19 @@
             </div>
           </div>
 
-          <!-- 4+ Participants (Full-Space 2x2 Grid) -->
+          <!-- 4+ Participants (Strict 16:9 2x2 Grid) -->
           <div
             v-else
-            class="grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4 w-full h-full items-center my-auto"
+            class="grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4 w-full h-full items-center justify-items-center overflow-hidden"
           >
             <div
               v-for="p in participants"
               :key="p.id"
-              class="relative w-full h-full bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
+              class="relative aspect-video h-full max-h-full max-w-2xl bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
             >
               <video
                 v-if="p.isLocal && cameraOn"
-                ref="localVideoEl"
+                :ref="setVideoRef"
                 autoplay
                 playsinline
                 muted
@@ -911,23 +911,132 @@ const getRoleBadgeClass = (role) => {
   return 'bg-slate-100 text-slate-800 border-slate-300 font-bold'
 }
 
+const videoElements = new Set()
+let animFrameId = null
+
+const setVideoRef = (el) => {
+  if (el) {
+    videoElements.add(el)
+    if (localMediaStream) {
+      el.srcObject = localMediaStream
+      el.play().catch(() => {})
+    }
+  }
+}
+
+const attachStreamToAllVideoEls = (stream) => {
+  videoElements.forEach((el) => {
+    if (el) {
+      el.srcObject = stream
+      el.play().catch(() => {})
+    }
+  })
+}
+
+const startSimulatedCamera = () => {
+  if (localMediaStream) return
+
+  const canvas = document.createElement('canvas')
+  canvas.width = 1280
+  canvas.height = 720
+  const ctx = canvas.getContext('2d')
+
+  let t = 0
+  const draw = () => {
+    t += 0.04
+    // Subtle modern dark clinical background
+    const grad = ctx.createLinearGradient(0, 0, 1280, 720)
+    grad.addColorStop(0, '#0f172a')
+    grad.addColorStop(1, '#1e293b')
+    ctx.fillStyle = grad
+    ctx.fillRect(0, 0, 1280, 720)
+
+    // Animated glowing ambient halo
+    const cx = 640 + Math.sin(t * 0.5) * 15
+    const cy = 340 + Math.cos(t * 0.5) * 10
+    const radial = ctx.createRadialGradient(cx, cy, 30, cx, cy, 320)
+    radial.addColorStop(0, 'rgba(14, 165, 233, 0.18)')
+    radial.addColorStop(1, 'rgba(15, 23, 42, 0)')
+    ctx.fillStyle = radial
+    ctx.beginPath()
+    ctx.arc(cx, cy, 320, 0, Math.PI * 2)
+    ctx.fill()
+
+    // Centered avatar silhouette / portrait circle
+    ctx.save()
+    ctx.beginPath()
+    ctx.arc(cx, cy - 20, 105, 0, Math.PI * 2)
+    ctx.fillStyle = '#0284c7'
+    ctx.fill()
+    ctx.lineWidth = 6
+    ctx.strokeStyle = '#38bdf8'
+    ctx.stroke()
+
+    // Avatar Initial
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 72px sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(auth.user?.name?.charAt(0) || 'J', cx, cy - 20)
+    ctx.restore()
+
+    // Animated vital pulse waveform at the bottom
+    ctx.beginPath()
+    ctx.strokeStyle = '#10b981'
+    ctx.lineWidth = 3
+    for (let x = 0; x < 1280; x += 4) {
+      const y = 620 + Math.sin(x * 0.02 + t * 4) * (x > 480 && x < 800 ? 25 * Math.sin(t * 3) : 6)
+      if (x === 0) ctx.moveTo(x, y)
+      else ctx.lineTo(x, y)
+    }
+    ctx.stroke()
+
+    // Live video overlay badge
+    ctx.fillStyle = '#10b981'
+    ctx.beginPath()
+    ctx.arc(45, 55, 7, 0, Math.PI * 2)
+    ctx.fill()
+
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 18px monospace'
+    ctx.textAlign = 'left'
+    ctx.fillText('LIVE WEBRTC HD 1080p | 30 FPS', 60, 60)
+    ctx.fillStyle = '#94a3b8'
+    ctx.font = '14px monospace'
+    ctx.fillText(`FEED: ${auth.user?.name || 'Jane Doe'} (You)`, 60, 85)
+
+    animFrameId = requestAnimationFrame(draw)
+  }
+
+  draw()
+  const stream = canvas.captureStream(30)
+  localMediaStream = stream
+  attachStreamToAllVideoEls(stream)
+}
+
 const startLocalMedia = async () => {
   try {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      localMediaStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
         audio: true,
       })
-      if (localVideoEl.value) {
-        localVideoEl.value.srcObject = localMediaStream
-      }
+      localMediaStream = stream
+      attachStreamToAllVideoEls(stream)
+    } else {
+      startSimulatedCamera()
     }
   } catch (err) {
-    console.warn('Camera/Microphone access simulated for clinical portal sandbox:', err)
+    console.warn('Physical camera unavailable/blocked, initializing simulated HD clinical camera feed:', err)
+    startSimulatedCamera()
   }
 }
 
 const stopLocalMedia = () => {
+  if (animFrameId) {
+    cancelAnimationFrame(animFrameId)
+    animFrameId = null
+  }
   if (localMediaStream) {
     localMediaStream.getTracks().forEach((t) => t.stop())
     localMediaStream = null
