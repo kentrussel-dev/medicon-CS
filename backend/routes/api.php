@@ -74,11 +74,13 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::post('/{id}/cancel', [AppointmentController::class, 'cancel']);
         Route::patch('/{id}/status', [AppointmentController::class, 'updateStatus']);
 
-        // LiveKit Telehealth Multi-Participant Video Room
+        // LiveKit Telehealth Multi-Participant Video Room & In-Call Chat
         Route::get('/{id}/telehealth/token', [TelehealthRoomController::class, 'getToken']);
         Route::get('/{id}/telehealth/participants', [TelehealthRoomController::class, 'getParticipants']);
         Route::post('/{id}/telehealth/participants', [TelehealthRoomController::class, 'addParticipant']);
         Route::post('/{id}/telehealth/events', [TelehealthRoomController::class, 'logEvent']);
+        Route::get('/{id}/telehealth/messages', [TelehealthRoomController::class, 'getMessages']);
+        Route::post('/{id}/telehealth/messages', [TelehealthRoomController::class, 'sendMessage']);
     });
 
     // Medical Records (Encrypted Clinical Data)

@@ -310,6 +310,45 @@ const handleMockRoute = (config) => {
     return { status: 200, data: { success: true } }
   }
 
+  if (url.match(/^\/appointments\/\d+\/telehealth\/messages$/) && method === 'get') {
+    const id = Number(url.split('/')[2])
+    const stored = JSON.parse(localStorage.getItem(`medicon_chat_room_${id}`) || 'null') || [
+      {
+        id: 1,
+        sender_name: 'Dr. Sarah Jenkins, MD, FACC',
+        sender_role: 'DOCTOR',
+        message: 'Hello! Welcome to our telehealth room. Dr. Marcus Chen has joined us as well for your consultation.',
+        time: '6:30 PM',
+      },
+      {
+        id: 2,
+        sender_name: 'Dr. Marcus Chen',
+        sender_role: 'SPECIALIST',
+        message: 'Good day! I have your diagnostic timeline and vital logs ready.',
+        time: '6:31 PM',
+      },
+    ]
+    return { status: 200, data: { success: true, messages: stored } }
+  }
+
+  if (url.match(/^\/appointments\/\d+\/telehealth\/messages$/) && method === 'post') {
+    const id = Number(url.split('/')[2])
+    const user = JSON.parse(localStorage.getItem('medicon_user') || 'null')
+    const key = `medicon_chat_room_${id}`
+    const stored = JSON.parse(localStorage.getItem(key) || 'null') || []
+    const newMsg = {
+      id: Date.now(),
+      appointment_id: id,
+      sender_name: user?.name || 'Jane Doe',
+      sender_role: (user?.role || 'patient').toUpperCase(),
+      message: body.message,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    }
+    stored.push(newMsg)
+    localStorage.setItem(key, JSON.stringify(stored))
+    return { status: 201, data: { success: true, message: newMsg } }
+  }
+
   // 4. Doctors
   if (url === '/doctors' && method === 'get') {
     let list = defaultDoctors

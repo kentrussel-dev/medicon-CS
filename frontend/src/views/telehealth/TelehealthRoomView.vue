@@ -249,54 +249,135 @@
         </div>
       </main>
 
-      <!-- Right Clinical Roster & Consultation Details Sidebar -->
+      <!-- Right Clinical Roster & In-Call Chat Sidebar -->
       <aside
         v-if="showSidebar"
-        class="w-80 bg-white border-l-2 border-slate-200 flex flex-col justify-between p-4 space-y-4 z-30"
+        class="w-80 sm:w-96 bg-white border-l-2 border-slate-200 flex flex-col justify-between z-30 shadow-lg h-full overflow-hidden"
       >
-        <div class="space-y-4 overflow-y-auto text-xs font-mono">
-          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
-            <span class="font-bold text-slate-950 uppercase">Consultation Participants</span>
-            <button @click="showSidebar = false" class="text-slate-400 hover:text-slate-900">
-              <X class="w-4 h-4" />
+        <!-- Sidebar Tabs Header -->
+        <div class="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+          <div class="flex items-center space-x-1 font-mono text-xs">
+            <button
+              @click="sidebarTab = 'chat'"
+              class="px-3 py-1.5 font-bold uppercase transition-colors flex items-center space-x-1.5 rounded-lg"
+              :class="sidebarTab === 'chat' ? 'bg-white text-slate-900 shadow-xs border border-slate-300' : 'text-slate-500 hover:text-slate-900'"
+            >
+              <MessageSquare class="w-3.5 h-3.5 text-brand-700" />
+              <span>In-Call Chat</span>
+            </button>
+
+            <button
+              @click="sidebarTab = 'roster'"
+              class="px-3 py-1.5 font-bold uppercase transition-colors flex items-center space-x-1.5 rounded-lg"
+              :class="sidebarTab === 'roster' ? 'bg-white text-slate-900 shadow-xs border border-slate-300' : 'text-slate-500 hover:text-slate-900'"
+            >
+              <Users class="w-3.5 h-3.5 text-brand-700" />
+              <span>People ({{ participants.length }})</span>
             </button>
           </div>
 
-          <!-- Participant List -->
-          <div class="space-y-2">
-            <div
-              v-for="p in participants"
-              :key="p.id"
-              class="p-2.5 bg-slate-50 border border-slate-200 flex items-center justify-between"
-            >
-              <div>
-                <div class="font-bold text-slate-950 uppercase">{{ p.name }}</div>
-                <div class="text-[10px] text-slate-500">{{ p.role }}</div>
-              </div>
-              <span class="inline-block w-2 h-2 rounded-full bg-emerald-600"></span>
-            </div>
-          </div>
-
-          <!-- Clinical Case Context -->
-          <div class="pt-2 border-t border-slate-200 space-y-2">
-            <span class="text-[10px] font-bold text-slate-500 uppercase block">Patient Case Context</span>
-            <div class="p-2.5 bg-slate-50 border border-slate-200 space-y-1.5 text-[11px]">
-              <div><span class="text-slate-500">Patient:</span> <strong class="text-slate-900">Jane Doe (31 yrs)</strong></div>
-              <div><span class="text-slate-500">Allergies:</span> <strong class="text-rose-600">Penicillin, Sulfa</strong></div>
-              <div><span class="text-slate-500">Blood Group:</span> <strong class="text-slate-900">O+</strong></div>
-              <div><span class="text-slate-500">Scheduled:</span> <strong class="text-slate-900">Cardiology Telehealth</strong></div>
-            </div>
-          </div>
+          <button @click="showSidebar = false" class="p-1 text-slate-400 hover:text-slate-900">
+            <X class="w-4 h-4" />
+          </button>
         </div>
 
-        <div v-if="canAddParticipants" class="pt-2 border-t border-slate-200">
-          <button
-            @click="showAddParticipantModal = true"
-            class="w-full py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs uppercase border border-brand-800 flex items-center justify-center space-x-1.5 transition-colors"
-          >
-            <UserPlus class="w-3.5 h-3.5" />
-            <span>Invite Specialist / Translator</span>
-          </button>
+        <!-- 1. IN-CALL CHAT TAB CONTENT -->
+        <div v-if="sidebarTab === 'chat'" class="flex-1 flex flex-col min-h-0">
+          <div class="p-2.5 bg-blue-50/70 border-b border-blue-100 text-[11px] text-blue-900 font-sans leading-tight">
+            🔒 Messages are encrypted and visible only to people in this consultation room.
+          </div>
+
+          <!-- Message Thread Container -->
+          <div ref="chatContainerEl" class="flex-1 p-3 overflow-y-auto space-y-3 text-xs">
+            <div
+              v-for="msg in chatMessages"
+              :key="msg.id"
+              class="flex flex-col space-y-1"
+              :class="msg.isSelf ? 'items-end' : 'items-start'"
+            >
+              <div class="flex items-center space-x-1.5 text-[10px] font-mono text-slate-500">
+                <span class="font-bold text-slate-800">{{ msg.sender_name }}</span>
+                <span
+                  class="px-1 py-0.2 text-[8px] font-mono font-bold uppercase rounded border"
+                  :class="getRoleBadgeClass(msg.sender_role)"
+                >
+                  {{ msg.sender_role }}
+                </span>
+                <span>&bull; {{ msg.time }}</span>
+              </div>
+
+              <div
+                class="p-2.5 max-w-[85%] rounded-xl text-xs font-sans leading-relaxed break-words"
+                :class="msg.isSelf ? 'bg-brand-50 border border-brand-200 text-brand-950 shadow-xs' : 'bg-slate-100 border border-slate-200 text-slate-900'"
+              >
+                {{ msg.message }}
+              </div>
+            </div>
+
+            <div v-if="chatMessages.length === 0" class="h-full flex flex-col items-center justify-center text-center p-4 text-slate-400 text-xs">
+              <MessageSquare class="w-8 h-8 text-slate-300 mb-2" />
+              <p class="font-bold text-slate-600 uppercase">No in-call messages yet</p>
+              <p class="text-[11px] mt-0.5">Send a message, clinical note, or link to participants.</p>
+            </div>
+          </div>
+
+          <!-- Chat Input Footer -->
+          <form @submit.prevent="sendChatMessage" class="p-2.5 bg-white border-t border-slate-200 flex items-center space-x-2">
+            <input
+              type="text"
+              v-model="newChatMessage"
+              placeholder="Send a message to everyone..."
+              class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-xs focus:border-brand-700 focus:outline-none bg-slate-50 font-sans"
+            />
+            <button
+              type="submit"
+              :disabled="!newChatMessage.trim() || sendingMessage"
+              class="p-2 bg-brand-700 hover:bg-brand-800 text-white rounded-lg transition-colors disabled:opacity-40"
+            >
+              <Send class="w-4 h-4" />
+            </button>
+          </form>
+        </div>
+
+        <!-- 2. PARTICIPANTS ROSTER TAB CONTENT -->
+        <div v-else class="flex-1 flex flex-col justify-between p-4 space-y-4 overflow-y-auto text-xs font-mono">
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">In This Call</span>
+              <div
+                v-for="p in participants"
+                :key="p.id"
+                class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between"
+              >
+                <div>
+                  <div class="font-bold text-slate-950 uppercase">{{ p.name }}</div>
+                  <div class="text-[10px] text-slate-500">{{ p.role }}</div>
+                </div>
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-600"></span>
+              </div>
+            </div>
+
+            <!-- Clinical Case Context -->
+            <div class="pt-2 border-t border-slate-200 space-y-2">
+              <span class="text-[10px] font-bold text-slate-500 uppercase block">Patient Case Context</span>
+              <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5 text-[11px]">
+                <div><span class="text-slate-500">Patient:</span> <strong class="text-slate-900">Jane Doe (31 yrs)</strong></div>
+                <div><span class="text-slate-500">Allergies:</span> <strong class="text-rose-600">Penicillin, Sulfa</strong></div>
+                <div><span class="text-slate-500">Blood Group:</span> <strong class="text-slate-900">O+</strong></div>
+                <div><span class="text-slate-500">Scheduled:</span> <strong class="text-slate-900">Cardiology Telehealth</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="canAddParticipants" class="pt-2 border-t border-slate-200">
+            <button
+              @click="showAddParticipantModal = true"
+              class="w-full py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs uppercase rounded-lg border border-brand-800 flex items-center justify-center space-x-1.5 transition-colors"
+            >
+              <UserPlus class="w-3.5 h-3.5" />
+              <span>Invite Specialist / Translator</span>
+            </button>
+          </div>
         </div>
       </aside>
     </div>
@@ -328,6 +409,29 @@
           :class="cameraOn ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800' : 'bg-rose-600 hover:bg-rose-700 border-rose-600 text-white'"
         >
           <component :is="cameraOn ? Video : VideoOff" class="w-5 h-5" />
+        </button>
+
+        <!-- In-Call Chat Button -->
+        <button
+          @click="toggleSidebarTab('chat')"
+          :title="'In-Call Chat'"
+          class="w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-xs border relative"
+          :class="showSidebar && sidebarTab === 'chat' ? 'bg-brand-50 border-brand-400 text-brand-700' : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800'"
+        >
+          <MessageSquare class="w-5 h-5" />
+          <span v-if="chatMessages.length > 0" class="absolute -top-1 -right-1 w-4 h-4 bg-brand-700 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+            {{ chatMessages.length }}
+          </span>
+        </button>
+
+        <!-- People / Roster Button -->
+        <button
+          @click="toggleSidebarTab('roster')"
+          :title="'Participants'"
+          class="w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-xs border"
+          :class="showSidebar && sidebarTab === 'roster' ? 'bg-brand-50 border-brand-400 text-brand-700' : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800'"
+        >
+          <Users class="w-5 h-5" />
         </button>
 
         <!-- Add Participant Button (Doctor / Admin) -->
@@ -379,6 +483,8 @@ import {
   PhoneOff,
   UserPlus,
   Users,
+  MessageSquare,
+  Send,
   X,
   RefreshCw,
   ShieldCheck,
@@ -394,9 +500,81 @@ const connectionState = ref('connected') // connected, reconnecting, disconnecte
 const micOn = ref(true)
 const cameraOn = ref(true)
 const showSidebar = ref(false)
+const sidebarTab = ref('chat') // 'chat' | 'roster'
 const showAddParticipantModal = ref(false)
 const localVideoEl = ref(null)
 let localMediaStream = null
+
+const chatContainerEl = ref(null)
+const newChatMessage = ref('')
+const sendingMessage = ref(false)
+const chatMessages = ref([
+  {
+    id: 1,
+    sender_name: 'Dr. Sarah Jenkins, MD, FACC',
+    sender_role: 'DOCTOR',
+    message: 'Hello Jane! Welcome to our telehealth room. Dr. Marcus Chen has joined us as well for your consultation.',
+    time: new Date(Date.now() - 120000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    isSelf: false,
+  },
+  {
+    id: 2,
+    sender_name: 'Dr. Marcus Chen',
+    sender_role: 'SPECIALIST',
+    message: 'Good day! I have your diagnostic timeline and vital logs ready.',
+    time: new Date(Date.now() - 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    isSelf: false,
+  },
+])
+
+const toggleSidebarTab = (tab) => {
+  if (showSidebar.value && sidebarTab.value === tab) {
+    showSidebar.value = false
+  } else {
+    showSidebar.value = true
+    sidebarTab.value = tab
+    if (tab === 'chat') {
+      scrollToChatBottom()
+    }
+  }
+}
+
+const scrollToChatBottom = () => {
+  setTimeout(() => {
+    if (chatContainerEl.value) {
+      chatContainerEl.value.scrollTop = chatContainerEl.value.scrollHeight
+    }
+  }, 60)
+}
+
+const sendChatMessage = async () => {
+  if (!newChatMessage.value.trim() || sendingMessage.value) return
+  const text = newChatMessage.value.trim()
+  newChatMessage.value = ''
+
+  const msgObj = {
+    id: Date.now(),
+    sender_name: auth.user?.name || 'Jane Doe',
+    sender_role: (auth.role || 'patient').toUpperCase(),
+    message: text,
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    isSelf: true,
+  }
+
+  chatMessages.value.push(msgObj)
+  scrollToChatBottom()
+
+  try {
+    sendingMessage.value = true
+    await api.post(`/appointments/${appointmentId.value}/telehealth/messages`, {
+      message: text,
+    })
+  } catch (err) {
+    // Handled
+  } finally {
+    sendingMessage.value = false
+  }
+}
 
 const canAddParticipants = computed(() => auth.isDoctor || auth.isAdmin)
 

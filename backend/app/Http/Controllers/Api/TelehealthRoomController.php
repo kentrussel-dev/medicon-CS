@@ -147,4 +147,49 @@ class TelehealthRoomController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    /**
+     * Get in-room messages for an active consultation room.
+     */
+    public function getMessages(Request $request, int $id): JsonResponse
+    {
+        $appointment = Appointment::findOrFail($id);
+        $this->authorize('joinTelehealth', $appointment);
+
+        $messages = \App\Models\TelehealthMessage::where('appointment_id', $appointment->id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'messages' => $messages,
+        ]);
+    }
+
+    /**
+     * Broadcast / save a message inside the consultation room.
+     */
+    public function sendMessage(Request $request, int $id): JsonResponse
+    {
+        $appointment = Appointment::findOrFail($id);
+        $this->authorize('joinTelehealth', $appointment);
+
+        $validated = $request->validate([
+            'message' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $user = $request->user();
+        $message = \App\Models\TelehealthMessage::create([
+            'appointment_id' => $appointment->id,
+            'user_id' => $user->id,
+            'sender_name' => $user->name,
+            'sender_role' => strtoupper($user->role?->value ?? 'patient'),
+            'message' => $validated['message'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+        ], 201);
+    }
 }
