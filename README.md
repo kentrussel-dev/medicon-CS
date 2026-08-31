@@ -1,12 +1,13 @@
 # Medicon - Clinical Encounter & Telehealth Management Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
+[![Branch: master](https://img.shields.io/badge/Branch-master-blue.svg)](https://github.com/kentrussel-dev/medicon-CS/tree/master)
 [![PHP: 8.2](https://img.shields.io/badge/PHP-8.2-blue.svg)](https://php.net)
 [![Laravel: 11](https://img.shields.io/badge/Laravel-11-red.svg)](https://laravel.com)
 [![Vue: 3.5](https://img.shields.io/badge/Vue-3.5-brightgreen.svg)](https://vuejs.org)
 [![FastAPI: 0.115](https://img.shields.io/badge/FastAPI-0.115-teal.svg)](https://fastapi.tiangolo.com)
 [![Tailwind CSS: 3.4](https://img.shields.io/badge/Tailwind-3.4-38bdf8.svg)](https://tailwindcss.com)
-[![HIPAA Compliance](https://img.shields.io/badge/HIPAA-AES--256--Encrypted-blueviolet.svg)](docs/ARCHITECTURE.md)
+[![HIPAA Compliance](https://img.shields.io/badge/HIPAA-AES--256--Encrypted-blueviolet.svg)](LICENSE)
 
 ---
 
@@ -14,15 +15,55 @@
 
 Medicon is a full-stack clinical encounter and telehealth platform built for healthcare providers, outpatient clinics, and hospital networks. It bridges modern telemedicine consultations with institutional electronic medical record (EMR) workflows.
 
+### System Architecture Overview
+
+![Medicon System Architecture](docs/images/architecture.png)
+
 ### Purpose & Problem Solved
 Traditional clinic management systems frequently suffer from fragmented tooling: video calls occur in disconnected third-party apps, diagnostic notes are documented in outdated desktop software, and missed appointments lead to lost physician utilization and delayed patient care.
 
 Medicon consolidates these workflows into a single HIPAA-conscious platform:
 - **Integrated Telemedicine**: Conduct multi-party video consultations directly inside the portal without external software installations.
+- **Pre-Join Green Room**: Test camera and microphone devices, check audio meters, and preview attendee presence before entering.
 - **Structured Clinical Documentation**: Create standardized SOAP notes (Subjective, Objective, Assessment, Plan), record vital signs, and assign ICD-10 diagnostic codes during or after visits.
 - **Electronic Prescriptions (e-Rx)**: Formulate multi-drug prescriptions with exact dosage, route, frequency, and refill instructions.
 - **Predictive Attendance Triage**: Utilize a machine learning microservice to score patient no-show risks at the moment of booking, allowing clinical staff to perform targeted outreach before appointments occur.
+- **Global Conversational AI Assistant**: 24/7 intelligent health assistant supporting guest navigators and authenticated clinicians alike.
 - **Privacy & Security First**: Sensitive medical fields are encrypted with AES-256 at rest, all record access is immutably logged in HIPAA audit trails, and in-room consultation data is purged upon session termination.
+
+---
+
+## Telehealth Consultation Protocol & Green Room
+
+![Medicon Telehealth Protocol](docs/images/telehealth_workflow.png)
+
+### Telehealth Workflow Stages:
+1. **Pre-Join Green Room Lobby**:
+   - Live 16:9 mirror self-check preview with floating circular mic/camera toggles.
+   - Microphone and camera start muted/off by default for patient privacy.
+   - Clinical consultation case summary with unique 3-part consultation code (e.g. `#k9x-yqp2-481`).
+   - Real-time attendance list displaying participants already in the consultation with empty-room notice if you are first.
+2. **1080p Encrypted Video Visit**:
+   - Strict 16:9 widescreen video stage supporting 1, 2, 3 (centered pyramid), and 4+ participant grids.
+   - Multi-party capabilities: Doctors can invite secondary specialists or medical interpreters.
+   - Screen sharing with 80% spotlight stage.
+3. **Session Closure & Ephemeral Data Purge**:
+   - Instant chat messages and ephemeral media tokens are permanently wiped from the database upon consultation closure.
+
+---
+
+## Machine Learning Attendance Risk Pipeline
+
+![Medicon AI Attendance Risk Pipeline](docs/images/ml_risk_pipeline.png)
+
+### Predictive Triage Architecture:
+1. **Clinical Feature Inputs**: Lead time (days), prior no-show frequency, age group, appointment specialty, day of week, and time slot.
+2. **FastAPI Scikit-Learn Pipeline**: Feature vectorizer, StandardScaler normalization, and Random Forest classification.
+3. **Risk Stratification Tiers**:
+   - **Low Risk (<35%)**: Standard appointment processing.
+   - **Moderate Risk (35% - 64%)**: Standard reminder queue.
+   - **High Risk (>=65%)**: Flagged in Active Triage Queue for targeted confirmation calls and overbooking adjustments.
+4. **Automated Clinical Actions**: Real-time triage dashboards for Chief Medical Officers and Clinic Administrators.
 
 ---
 
@@ -55,7 +96,7 @@ Medicon consolidates these workflows into a single HIPAA-conscious platform:
 
 - **Frontend**: Vue 3 (Composition API, `<script setup>`), Vite 6, Tailwind CSS 3.4, Pinia 2 (State Management), Vue Router 4, Lucide Icons.
 - **Backend REST API**: Laravel 11 (PHP 8.2), Laravel Sanctum Authentication, Eloquent ORM with Encrypted Casts, Form Requests, Policies, and Seeders.
-- **Machine Learning Service**: Python 3.11, FastAPI, Scikit-Learn (Gradient Boosting Classifier), Pydantic v2, Uvicorn.
+- **Machine Learning Service**: Python 3.11, FastAPI, Scikit-Learn (Random Forest & Gradient Boosting Classifiers), Pydantic v2, Uvicorn.
 - **Database & Cache**: MySQL 8.0 (Primary Storage), Redis 7.2 (Sessions, Cache, Queues).
 - **Object Storage**: S3-compatible storage (MinIO) for encrypted medical attachments.
 - **Deployment**: Docker, Docker Compose, Multi-stage production builds.
@@ -74,9 +115,9 @@ You can run Medicon using either Docker (recommended for a full-stack experience
 - Docker Engine 24.0+ ([Install Docker](https://docs.docker.com/engine/install/))
 - Docker Compose v2.0+
 
-#### Step 1: Clone the Repository
+#### Step 1: Clone the Repository (Master Branch)
 ```bash
-git clone https://github.com/kentrussel-dev/medicon-CS.git
+git clone -b master https://github.com/kentrussel-dev/medicon-CS.git
 cd medicon-CS
 ```
 
@@ -225,7 +266,7 @@ docker compose exec backend php artisan migrate --seed
 
 ## Seeded Clinical Accounts & Credentials
 
-The application is pre-seeded with clean, realistic clinical accounts for all roles:
+The application is pre-seeded with realistic clinical accounts for all roles:
 
 | Role | Name / Title | Specialty / Focus | Email | Password |
 |---|---|---|---|---|
@@ -273,26 +314,6 @@ npm run build
 
 ---
 
-## Telehealth Usage Walkthrough
-
-1. **Starting or Joining a Consultation**:
-   - Navigate to the Doctor or Patient dashboard.
-   - Click "Join Call" on any scheduled appointment, click "New Room" to generate an ad-hoc session, or enter an existing 3-part code (e.g. `k9x-yqp2-481`).
-2. **Pre-Join Green Room / Waiting Lobby**:
-   - The camera and microphone start muted/off by default for privacy.
-   - Toggle camera and microphone buttons on the 16:9 preview tile to verify your audio and video.
-   - Check the clinical case summary and review who is already in the call.
-   - Click "Join Now" to enter the active stage.
-3. **In-Call Controls**:
-   - Microphone and camera toggles.
-   - Screen Sharing: Click "Present Screen" to share diagnostic scans, clinical reports, or browser tabs in an 80% spotlight stage.
-   - In-Call Chat: Click the chat button to open the real-time encrypted messaging drawer.
-   - Roster / Add Participants: Doctors can invite secondary specialists or medical interpreters.
-4. **Ending the Consultation**:
-   - Click "Leave Call" to exit the room while keeping it active for others, or select "End Call for Everyone & Purge Data" (Doctor/Admin) to wipe all in-room messages and tokens from the database.
-
----
-
 ## Project Structure
 
 ```
@@ -313,7 +334,7 @@ medicon/
 ├── frontend/                 # Vue 3 SPA
 │   ├── src/
 │   │   ├── components/       # UI Modals, Badges, Header & Navigation
-│   │   ├── layouts/          # AppLayout & AuthLayout
+│   │   ├── layouts/          # AppLayout & AuthLayout with page transitions
 │   │   ├── router/           # Navigation Guards & RBAC Routes
 │   │   ├── stores/           # Pinia State Stores (Auth, Appointments, Records, etc.)
 │   │   ├── views/            # TelehealthRoomView, Doctor, Patient, & Admin Views
@@ -326,8 +347,9 @@ medicon/
 │   ├── tests/                # Pytest Test Suite
 │   └── train.py              # ML Training & Evaluation Pipeline
 │
-├── docker/                   # Hardened Nginx & PHP Container Configs
 ├── docs/                     # Architecture & Technical Documentation
+│   └── images/               # High-Resolution Architectural & Protocol Diagrams
+├── docker/                   # Hardened Nginx & PHP Container Configs
 ├── .gitignore                # Strict Git Exclusion Policy
 └── docker-compose.yml        # Multi-Container Development Orchestration
 ```
