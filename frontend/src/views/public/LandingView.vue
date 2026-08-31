@@ -1,230 +1,330 @@
 <template>
-  <div class="min-h-screen bg-slate-100 text-slate-900 font-sans antialiased">
-    <!-- Top Official Banner Strip -->
-    <div class="bg-slate-900 text-slate-300 text-[11px] font-mono px-4 sm:px-8 py-1.5 border-b border-slate-800 flex items-center justify-between">
-      <div class="flex items-center space-x-2">
-        <span class="inline-block w-2 h-2 bg-emerald-500 rounded-none"></span>
-        <span class="font-bold uppercase tracking-wider text-slate-100">Official Clinical Healthcare Platform</span>
-        <span class="hidden md:inline text-slate-500">|</span>
-        <span class="hidden md:inline text-slate-400">HIPAA & EHR Certified Infrastructure</span>
-      </div>
-      <div class="flex items-center space-x-4">
-        <span class="text-slate-400 hidden sm:inline">System Status: <span class="text-emerald-400 font-bold">ONLINE</span></span>
-        <a href="#security" class="underline hover:text-white">Compliance Standard</a>
-      </div>
-    </div>
-
-    <!-- Official Header -->
-    <header class="bg-white border-b-2 border-slate-300 sticky top-0 z-40">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
-        <!-- Agency Brand -->
+  <div class="min-h-screen bg-white text-slate-900 font-sans antialiased">
+    <!-- Top Location & Hotline Utility Bar (Matching St. Luke's Header Structure) -->
+    <div class="border-b border-slate-200 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Hospital Brand Logo -->
         <router-link to="/" class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-brand-600 text-white flex items-center justify-center font-bold text-lg border border-brand-700">
+          <div class="w-11 h-11 bg-slate-900 text-white flex items-center justify-center font-black text-xl border border-slate-800">
             M
           </div>
           <div>
             <div class="text-lg font-black tracking-tight text-slate-950 uppercase leading-none">
-              Medicon Clinical Systems
+              Medicon Medical Center
             </div>
-            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
-              Telehealth & Patient Encounter Network
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">
+              Quezon City &bull; Global City &bull; Extension Clinics
             </div>
           </div>
         </router-link>
 
-        <!-- Navigation Menu -->
-        <nav class="hidden lg:flex items-center space-x-1 text-xs font-bold uppercase tracking-wider text-slate-700">
-          <a href="#directory" class="px-3 py-2 hover:bg-slate-100 hover:text-brand-600 border-b-2 border-transparent hover:border-brand-600 transition-all">Specialist Directory</a>
-          <a href="#procedures" class="px-3 py-2 hover:bg-slate-100 hover:text-brand-600 border-b-2 border-transparent hover:border-brand-600 transition-all">Operating Protocols</a>
-          <a href="#standards" class="px-3 py-2 hover:bg-slate-100 hover:text-brand-600 border-b-2 border-transparent hover:border-brand-600 transition-all">Clinical Standards</a>
-          <a href="#security" class="px-3 py-2 hover:bg-slate-100 hover:text-brand-600 border-b-2 border-transparent hover:border-brand-600 transition-all">HIPAA & Security</a>
-        </nav>
+        <!-- Location Phone Hotlines -->
+        <div class="hidden lg:flex items-center space-x-8 text-center text-xs">
+          <div>
+            <span class="block font-bold uppercase text-slate-800 tracking-wider">QUEZON CITY</span>
+            <a href="tel:+63287230101" class="text-brand-600 font-mono font-bold hover:underline">+63-2-8723-0101</a>
+          </div>
+          <div>
+            <span class="block font-bold uppercase text-slate-800 tracking-wider">GLOBAL CITY</span>
+            <a href="tel:+63287897700" class="text-brand-600 font-mono font-bold hover:underline">+63-2-8789-7700</a>
+          </div>
+          <div>
+            <span class="block font-bold uppercase text-slate-800 tracking-wider">EXTENSION CLINIC</span>
+            <span class="text-brand-600 font-mono font-bold">+63-2-8521-0020 / +63-2-8521-8647</span>
+          </div>
+        </div>
 
-        <!-- Right User Actions -->
+        <!-- Search Bar & Direct Login -->
         <div class="flex items-center space-x-3">
+          <div class="relative w-48 sm:w-56">
+            <input
+              type="text"
+              v-model="searchQuery"
+              placeholder="Search specialists, services..."
+              class="w-full pl-3 pr-8 py-1.5 border border-slate-300 text-xs focus:border-slate-800 focus:outline-none bg-white rounded-none placeholder:text-slate-400"
+            />
+            <Search class="w-4 h-4 text-slate-400 absolute right-2.5 top-2" />
+          </div>
+
           <template v-if="auth.isAuthenticated">
             <router-link
               :to="dashboardRoute"
-              class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold uppercase tracking-wider border border-brand-700 flex items-center space-x-2"
+              class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider border border-slate-900"
             >
-              <LayoutDashboard class="w-4 h-4" />
-              <span>Enter {{ auth.role.toUpperCase() }} Workspace</span>
+              {{ auth.role.toUpperCase() }}
             </router-link>
           </template>
           <template v-else>
             <router-link
               to="/login"
-              class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold uppercase tracking-wider border border-brand-700"
+              class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider border border-slate-900"
             >
               Portal Login
             </router-link>
           </template>
         </div>
       </div>
-    </header>
+    </div>
 
-    <!-- Main Hero Section (Crisp Government Architecture) -->
-    <section class="py-10 lg:py-14 bg-slate-50 border-b border-slate-300">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <!-- Left Main Column: Mandate & Booking System -->
-          <div class="lg:col-span-7 space-y-6">
-            <div class="border-l-4 border-brand-600 pl-4 py-1">
-              <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-600 block">
-                Healthcare Directive &bull; Encrypted Telehealth Services
-              </span>
-              <h1 class="text-3xl sm:text-4xl lg:text-4xl font-extrabold text-slate-950 tracking-tight mt-1 uppercase leading-tight">
-                National Clinical Telehealth & Patient Management Infrastructure
-              </h1>
+    <!-- Main Solid Full-Width Navigation Bar (Matching St. Luke's Blue Menu Bar) -->
+    <nav class="bg-slate-900 text-white border-b-2 border-brand-600 sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between overflow-x-auto scrollbar-none">
+        <div class="flex items-center text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
+          <a href="#specialties" class="px-3 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+            Health Specialties & Services
+          </a>
+          <router-link to="/patient/doctors" class="px-3 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+            Our Doctors
+          </router-link>
+          <a href="#procedures" class="px-3 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+            Patients & Visitors
+          </a>
+          <a href="#telehealth" class="px-3 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+            Telehealth & International
+          </a>
+          <router-link to="/login" class="px-3 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+            Online Portals
+          </router-link>
+          <a href="#news" class="px-3 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+            News & Events
+          </a>
+          <a href="#articles" class="px-3 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+            Health Library
+          </a>
+          <router-link to="/doctor/dashboard" class="px-3 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+            Healthcare Professionals (HCP)
+          </router-link>
+          <a href="#about" class="px-3 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+            About Us
+          </a>
+          <a href="#contact" class="px-3 py-3.5 hover:bg-brand-700 transition-colors border-b-2 border-transparent hover:border-white">
+            Contact Us
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Announcement Slider Section (Matching St. Luke's Scanner Hero) -->
+    <section class="relative bg-white border-b border-slate-300">
+      <div class="max-w-7xl mx-auto px-4 sm:px-8 py-8 lg:py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative">
+          <!-- Left: Hero Medical Facility / Scanner Image With Carousel Arrows -->
+          <div class="lg:col-span-6 relative group">
+            <div class="w-full aspect-[4/3] bg-slate-100 border border-slate-300 overflow-hidden relative">
+              <img
+                :src="heroSlides[currentHeroIndex].image"
+                :alt="heroSlides[currentHeroIndex].title"
+                class="w-full h-full object-cover transition-all duration-500"
+              />
             </div>
 
-            <p class="text-sm text-slate-700 leading-relaxed">
-              Official healthcare portal facilitating verified board-certified virtual visits, encrypted electronic medical records (EHR), automated appointment dispatching, and secure electronic prescriptions.
-            </p>
-
-            <!-- Structured Appointment Request Card -->
-            <div class="bg-white border-2 border-slate-300 shadow-sm">
-              <div class="bg-slate-900 text-white px-5 py-3 border-b border-slate-800 flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                  <Calendar class="w-4 h-4 text-brand-400" />
-                  <span class="font-bold text-xs uppercase tracking-wider">Schedule Clinical Consultation</span>
-                </div>
-                <span class="text-[10px] font-mono font-bold bg-slate-800 text-slate-300 px-2 py-0.5 border border-slate-700 uppercase">
-                  Direct Queue Dispatch
-                </span>
-              </div>
-
-              <div class="p-6 space-y-4">
-                <!-- 3 Sharp Form Columns -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <!-- Consultation Mode -->
-                  <div
-                    @click="selectedMode = selectedMode === 'Telehealth Video' ? 'In-Clinic Facility' : 'Telehealth Video'"
-                    class="p-3.5 bg-slate-50 border border-slate-300 hover:border-brand-600 cursor-pointer transition-colors"
-                  >
-                    <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">01. Service Mode</span>
-                    <span class="text-xs font-bold text-slate-900 mt-1 block">{{ selectedMode }}</span>
-                    <span class="text-[10px] text-slate-500 block mt-0.5">Click to toggle</span>
-                  </div>
-
-                  <!-- Slot Length -->
-                  <div
-                    @click="openBookingModal"
-                    class="p-3.5 bg-slate-50 border border-slate-300 hover:border-brand-600 cursor-pointer transition-colors"
-                  >
-                    <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">02. Time Allocation</span>
-                    <span class="text-xs font-bold text-slate-900 mt-1 block">30-Minute Schedule</span>
-                    <span class="text-[10px] text-slate-500 block mt-0.5">Standard clinical block</span>
-                  </div>
-
-                  <!-- Physician Tier -->
-                  <div
-                    @click="openBookingModal"
-                    class="p-3.5 bg-slate-50 border border-slate-300 hover:border-brand-600 cursor-pointer transition-colors"
-                  >
-                    <span class="text-[10px] font-mono font-bold uppercase text-slate-500 block">03. Staff Verification</span>
-                    <span class="text-xs font-bold text-slate-900 mt-1 block">Board-Certified</span>
-                    <span class="text-[10px] text-slate-500 block mt-0.5">Verified state license</span>
-                  </div>
-                </div>
-
-                <!-- Submit Button -->
-                <button
-                  @click="openBookingModal"
-                  class="w-full py-3.5 px-6 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs uppercase tracking-wider border border-brand-700 transition-colors flex items-center justify-center space-x-2"
-                >
-                  <span>Request Patient Consultation</span>
-                  <ArrowRight class="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+            <!-- Left / Right Carousel Controls -->
+            <button
+              @click="prevHero"
+              class="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-slate-900/60 hover:bg-slate-900 text-white border border-white/20 transition-colors"
+            >
+              <ChevronLeft class="w-5 h-5" />
+            </button>
+            <button
+              @click="nextHero"
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-slate-900/60 hover:bg-slate-900 text-white border border-white/20 transition-colors"
+            >
+              <ChevronRight class="w-5 h-5" />
+            </button>
           </div>
 
-          <!-- Right Column: Institutional Verification & Physician Registry -->
-          <div class="lg:col-span-5 space-y-4">
-            <!-- Medical Officer Profile Card -->
-            <div class="bg-white border border-slate-300 shadow-sm p-5 space-y-4">
-              <div class="flex items-center space-x-4">
-                <img
-                  src="https://images.unsplash.com/photo-1594824813593-9c8df6cbeeb0?w=600&auto=format&fit=crop&q=80"
-                  alt="Attending Physician"
-                  class="w-20 h-20 object-cover border border-slate-300"
-                />
-                <div>
-                  <span class="text-[10px] font-mono font-bold text-brand-600 uppercase tracking-wider block">
-                    Chief of Clinical Medicine
-                  </span>
-                  <h4 class="text-base font-bold text-slate-950 uppercase">Dr. Sarah Jenkins, MD, FACC</h4>
-                  <p class="text-xs text-slate-600 mt-0.5 font-mono">License: MD-99281-STATE</p>
-                  <p class="text-xs text-slate-600 font-mono">Specialty: Cardiovascular Medicine</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-2 pt-3 border-t border-slate-200 text-xs font-mono">
-                <div class="p-2 bg-slate-50 border border-slate-200">
-                  <span class="text-slate-500 block text-[10px] uppercase">Encounter Mode</span>
-                  <span class="font-bold text-slate-900">Virtual / Telehealth</span>
-                </div>
-                <div class="p-2 bg-slate-50 border border-slate-200">
-                  <span class="text-slate-500 block text-[10px] uppercase">Audit Protocol</span>
-                  <span class="font-bold text-emerald-700">HIPAA Verified</span>
-                </div>
-              </div>
+          <!-- Right: Hero Headline, Subtitle & Read More Button -->
+          <div class="lg:col-span-6 space-y-6">
+            <div class="space-y-3">
+              <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-600">
+                {{ heroSlides[currentHeroIndex].category }}
+              </span>
+              <h1 class="text-3xl sm:text-4xl lg:text-4xl font-extrabold text-slate-950 tracking-tight leading-tight">
+                {{ heroSlides[currentHeroIndex].title }}
+              </h1>
+              <p class="text-sm text-slate-600 leading-relaxed">
+                {{ heroSlides[currentHeroIndex].description }}
+              </p>
             </div>
 
-            <!-- Certified Standards Callout -->
-            <div class="bg-slate-900 text-white p-5 border border-slate-800 space-y-3">
-              <div class="text-xs font-bold uppercase tracking-wider flex items-center space-x-2 text-brand-400">
-                <ShieldCheck class="w-4 h-4" />
-                <span>Security & Regulatory Assurances</span>
-              </div>
-              <ul class="space-y-2 text-xs text-slate-300 font-mono">
-                <li class="flex items-center space-x-2">
-                  <span class="text-emerald-400 font-bold">[✓]</span>
-                  <span>AES-256 Encrypted Patient Record Store</span>
-                </li>
-                <li class="flex items-center space-x-2">
-                  <span class="text-emerald-400 font-bold">[✓]</span>
-                  <span>Immutable Append-Only Access Audit Log</span>
-                </li>
-                <li class="flex items-center space-x-2">
-                  <span class="text-emerald-400 font-bold">[✓]</span>
-                  <span>Role-Based Access Control Policies (RBAC)</span>
-                </li>
-              </ul>
+            <div class="flex items-center space-x-3 pt-2">
+              <button
+                @click="openBookingModal"
+                class="px-6 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs uppercase tracking-wider border border-brand-800 transition-colors"
+              >
+                Read More
+              </button>
+              <button
+                @click="openBookingModal"
+                class="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider border border-slate-950 transition-colors"
+              >
+                Schedule Appointment
+              </button>
+            </div>
+
+            <!-- Pagination Indicator Dots -->
+            <div class="flex items-center space-x-2 pt-4">
+              <button
+                v-for="(_, idx) in heroSlides"
+                :key="idx"
+                @click="currentHeroIndex = idx"
+                class="w-2.5 h-2.5 transition-colors border border-slate-400"
+                :class="currentHeroIndex === idx ? 'bg-brand-600' : 'bg-slate-200 hover:bg-slate-300'"
+              ></button>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Section 2: Clinical Specialties Directory -->
-    <section id="directory" class="py-12 bg-white border-b border-slate-300">
+    <!-- Latest News Section (2-Column Underlined List Matching Image 1) -->
+    <section id="news" class="py-12 bg-white border-b border-slate-300">
       <div class="max-w-7xl mx-auto px-4 sm:px-8">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
-          <div>
-            <span class="text-xs font-mono font-bold uppercase tracking-wider text-brand-600">Section 01 // Directory</span>
-            <h2 class="text-2xl font-black text-slate-950 uppercase tracking-tight mt-0.5">
-              Certified Clinical Departments
-            </h2>
-            <p class="text-xs text-slate-600 mt-1">Select a department to view available specialist physicians and schedule consultations</p>
+        <div class="text-center mb-8">
+          <h2 class="text-xl font-black uppercase tracking-wider text-slate-950">
+            Latest News
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+          <!-- News Column 1 & 2 Items -->
+          <div
+            v-for="item in latestNews"
+            :key="item.title"
+            class="border-b border-slate-300 pb-4 hover:border-brand-600 transition-colors cursor-pointer group"
+            @click="openBookingModal"
+          >
+            <h4 class="text-sm font-bold text-brand-700 group-hover:text-brand-800 group-hover:underline leading-snug">
+              {{ item.title }}
+            </h4>
+            <span class="text-xs text-slate-500 font-mono mt-1.5 block">
+              {{ item.date }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Events Strip Section (4-Column Image Cards with Carousel Controls Matching Image 2) -->
+    <section class="py-12 bg-slate-100 border-b border-slate-300">
+      <div class="max-w-7xl mx-auto px-4 sm:px-8">
+        <div class="text-center mb-6">
+          <h2 class="text-xl font-black uppercase tracking-wider text-slate-950">
+            Events
+          </h2>
+        </div>
+
+        <!-- Carousel Gallery Row with Outer Left/Right Arrows -->
+        <div class="relative flex items-center">
+          <button
+            @click="prevEvents"
+            class="p-2 border border-slate-300 bg-white text-slate-700 hover:bg-slate-200 transition-colors mr-3 flex-shrink-0"
+          >
+            <ChevronLeft class="w-5 h-5" />
+          </button>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 flex-1">
+            <div
+              v-for="event in visibleEvents"
+              :key="event.title"
+              class="bg-white border border-slate-300 overflow-hidden cursor-pointer hover:border-brand-600 transition-all group"
+              @click="openBookingModal"
+            >
+              <div class="aspect-[16/9] bg-slate-200 overflow-hidden">
+                <img
+                  :src="event.image"
+                  :alt="event.title"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div class="p-3">
+                <span class="text-[10px] font-mono font-bold text-brand-600 uppercase">{{ event.date }}</span>
+                <h5 class="font-bold text-xs text-slate-900 mt-0.5 line-clamp-1 group-hover:text-brand-600">
+                  {{ event.title }}
+                </h5>
+              </div>
+            </div>
           </div>
 
           <button
-            @click="openBookingModal"
-            class="px-4 py-2 border border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold uppercase tracking-wider transition-colors self-start sm:self-auto"
+            @click="nextEvents"
+            class="p-2 border border-slate-300 bg-white text-slate-700 hover:bg-slate-200 transition-colors ml-3 flex-shrink-0"
           >
-            Browse Full Registry
+            <ChevronRight class="w-5 h-5" />
           </button>
         </div>
 
-        <!-- 6-Column Grid of Crisp Specialty Panels -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <!-- Carousel Pagination Dots -->
+        <div class="flex items-center justify-center space-x-2 mt-6">
+          <span class="w-2.5 h-2.5 bg-brand-700 border border-slate-400"></span>
+          <span class="w-2.5 h-2.5 bg-slate-300 border border-slate-400"></span>
+          <span class="w-2.5 h-2.5 bg-slate-300 border border-slate-400"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Health Articles Grid Section (4-Card Photo Grid Matching Image 2) -->
+    <section id="articles" class="py-12 bg-white border-b border-slate-300">
+      <div class="max-w-7xl mx-auto px-4 sm:px-8">
+        <div class="text-center mb-8">
+          <h2 class="text-xl font-black uppercase tracking-wider text-slate-950">
+            Health Articles
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div
+            v-for="article in healthArticles"
+            :key="article.title"
+            class="bg-white border border-slate-200 hover:border-brand-600 transition-all cursor-pointer group flex flex-col justify-between"
+            @click="openBookingModal"
+          >
+            <div class="aspect-[16/10] bg-slate-100 overflow-hidden border-b border-slate-200">
+              <img
+                :src="article.image"
+                :alt="article.title"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div class="p-4 flex-1 flex flex-col justify-between">
+              <h4 class="font-bold text-xs text-brand-700 group-hover:text-brand-800 group-hover:underline leading-snug">
+                {{ article.title }}
+              </h4>
+              <span class="text-[11px] text-slate-400 font-mono mt-3 block">
+                {{ article.readTime }} &bull; Clinical Review
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- View All Button -->
+        <div class="text-center mt-10">
+          <button
+            @click="openBookingModal"
+            class="px-8 py-2.5 border-2 border-brand-700 text-brand-700 hover:bg-brand-700 hover:text-white font-bold text-xs uppercase tracking-wider transition-colors"
+          >
+            View All
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Health Specialties Section (Matching Image 2 Section Header) -->
+    <section id="specialties" class="py-12 bg-slate-50 border-b border-slate-300">
+      <div class="max-w-7xl mx-auto px-4 sm:px-8">
+        <div class="text-center mb-8">
+          <h2 class="text-xl font-black uppercase tracking-wider text-slate-950">
+            Health Specialties
+          </h2>
+          <p class="text-xs text-slate-600 mt-1">Board-certified clinical departments providing comprehensive healthcare</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <div
             v-for="spec in specialtiesList"
             :key="spec.name"
             @click="selectSpecialtyAndBook(spec.name)"
-            class="p-4 bg-white border border-slate-300 hover:border-brand-600 hover:bg-slate-50 cursor-pointer transition-all flex flex-col justify-between"
+            class="p-4 bg-white border border-slate-300 hover:border-brand-600 cursor-pointer transition-colors flex flex-col justify-between"
           >
             <div>
               <div class="w-8 h-8 bg-slate-100 text-brand-600 flex items-center justify-center mb-3 border border-slate-200">
@@ -234,11 +334,11 @@
                 {{ spec.name }}
               </h4>
               <span class="text-[11px] font-mono text-slate-500 mt-1 block">
-                {{ spec.doctorCount }} Licensed Staff
+                {{ spec.doctorCount }} Licensed Doctors
               </span>
             </div>
             <div class="mt-4 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-brand-600 font-bold uppercase">
-              <span>Book Dept</span>
+              <span>Schedule</span>
               <span>&rarr;</span>
             </div>
           </div>
@@ -246,158 +346,53 @@
       </div>
     </section>
 
-    <!-- Section 3: Operating Directives & Protocols -->
-    <section id="procedures" class="py-12 bg-slate-50 border-b border-slate-300">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8">
-        <div class="mb-8 pb-4 border-b border-slate-200">
-          <span class="text-xs font-mono font-bold uppercase tracking-wider text-brand-600">Section 02 // Protocol</span>
-          <h2 class="text-2xl font-black text-slate-950 uppercase tracking-tight mt-0.5">
-            Standard Patient Encounter Workflow
-          </h2>
-          <p class="text-xs text-slate-600 mt-1">Four-stage formal process for telemedicine consultation and medical record formulation</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div
-            v-for="(step, idx) in steps"
-            :key="step.title"
-            class="bg-white border border-slate-300 p-5 space-y-3"
-          >
-            <div class="flex items-center justify-between border-b border-slate-200 pb-2">
-              <span class="font-mono text-xs font-bold text-brand-600 uppercase">Stage 0{{ idx + 1 }}</span>
-              <component :is="step.icon" class="w-4 h-4 text-slate-500" />
-            </div>
-
-            <div>
-              <h4 class="font-bold text-sm text-slate-900 uppercase">{{ step.title }}</h4>
-              <p class="text-xs text-slate-600 mt-2 leading-relaxed">
-                {{ step.description }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section 4: Clinical Standards & Assurances -->
-    <section id="standards" class="py-12 bg-white border-b border-slate-300">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div class="lg:col-span-5 space-y-4">
-            <span class="text-xs font-mono font-bold uppercase tracking-wider text-brand-600">Section 03 // Specifications</span>
-            <h2 class="text-2xl font-black text-slate-950 uppercase tracking-tight">
-              Hospital-Grade Telemedicine Infrastructure
-            </h2>
-            <p class="text-xs text-slate-700 leading-relaxed">
-              Medicon complies with all state and federal telehealth standards, providing secure browser-based WebRTC video links, structured ICD-10 diagnostic coding, and automated appointment notification workflows.
-            </p>
-            <div class="pt-2">
-              <button
-                @click="openBookingModal"
-                class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider border border-slate-950 flex items-center space-x-2"
-              >
-                <span>Initiate Consultation Request</span>
-                <ArrowRight class="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Standard 1 -->
-            <div class="p-4 bg-slate-50 border border-slate-300 space-y-2">
-              <div class="flex items-center space-x-2 text-brand-600 font-bold text-xs uppercase">
-                <Video class="w-4 h-4" />
-                <span>Virtual Clinical Encounters</span>
-              </div>
-              <p class="text-xs text-slate-600 leading-relaxed">
-                Direct peer-to-peer encrypted WebRTC video rooms requiring zero third-party software installation.
-              </p>
-            </div>
-
-            <!-- Standard 2 -->
-            <div class="p-4 bg-slate-50 border border-slate-300 space-y-2">
-              <div class="flex items-center space-x-2 text-brand-600 font-bold text-xs uppercase">
-                <CreditCard class="w-4 h-4" />
-                <span>Transparent Fee Schedules</span>
-              </div>
-              <p class="text-xs text-slate-600 leading-relaxed">
-                Standardized consultation rates with automated digital invoicing and itemized clinical receipts.
-              </p>
-            </div>
-
-            <!-- Standard 3 -->
-            <div class="p-4 bg-slate-50 border border-slate-300 space-y-2">
-              <div class="flex items-center space-x-2 text-brand-600 font-bold text-xs uppercase">
-                <FileText class="w-4 h-4" />
-                <span>AES-256 Encrypted EHR</span>
-              </div>
-              <p class="text-xs text-slate-600 leading-relaxed">
-                Vital signs, clinical examination notes, and diagnoses encrypted at rest with forensic audit trails.
-              </p>
-            </div>
-
-            <!-- Standard 4 -->
-            <div class="p-4 bg-slate-50 border border-slate-300 space-y-2">
-              <div class="flex items-center space-x-2 text-brand-600 font-bold text-xs uppercase">
-                <BellRing class="w-4 h-4" />
-                <span>Automated Notification Pipeline</span>
-              </div>
-              <p class="text-xs text-slate-600 leading-relaxed">
-                Automated SMS and email reminders prior to visits to ensure continuous patient care delivery.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Institutional Footer -->
-    <footer id="security" class="bg-slate-900 text-white py-12 border-t-4 border-brand-600">
+    <!-- Hospital Institutional Footer -->
+    <footer id="contact" class="bg-slate-900 text-white py-12 border-t-4 border-brand-600">
       <div class="max-w-7xl mx-auto px-4 sm:px-8 space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-xs font-mono">
-          <!-- Col 1 -->
+          <!-- Col 1: Hospital Mission -->
           <div class="md:col-span-2 space-y-3">
             <div class="font-bold text-sm text-white uppercase tracking-wider">
-              Medicon Clinical Healthcare Network
+              Medicon Medical Center Network
             </div>
             <p class="text-slate-400 font-sans text-xs max-w-md leading-relaxed">
-              Official enterprise telehealth and patient encounter management platform providing secure virtual consultations, encrypted EHR records, and automated scheduling services.
+              Official healthcare portal facilitating board-certified telehealth consultations, encrypted electronic medical records (EHR), automated appointment dispatching, and comprehensive clinical services.
             </p>
             <div class="text-[11px] text-emerald-400 flex items-center space-x-2 font-mono">
               <ShieldCheck class="w-4 h-4" />
-              <span>HIPAA CERTIFIED &bull; AES-256 COMPLIANT &bull; NIST STANDARDS</span>
+              <span>HIPAA CERTIFIED &bull; ISO-9001 ACCREDITATION &bull; JCI STANDARDS</span>
             </div>
           </div>
 
-          <!-- Col 2: Workspace Direct Portals -->
+          <!-- Col 2: Online Portals -->
           <div class="space-y-2">
             <div class="font-bold uppercase tracking-wider text-slate-300 border-b border-slate-800 pb-1">
-              Authorized Portals
+              Online Portals
             </div>
             <ul class="space-y-1.5 text-slate-400">
               <li><router-link to="/patient/dashboard" class="hover:text-white">&bull; Patient Portal</router-link></li>
               <li><router-link to="/doctor/dashboard" class="hover:text-white">&bull; Physician Workspace</router-link></li>
               <li><router-link to="/admin/dashboard" class="hover:text-white">&bull; Admin Operations</router-link></li>
-              <li><router-link to="/login" class="hover:text-white">&bull; Account Authentication</router-link></li>
+              <li><router-link to="/login" class="hover:text-white">&bull; Portal Sign-In</router-link></li>
             </ul>
           </div>
 
-          <!-- Col 3: Medical Services -->
+          <!-- Col 3: Direct Inquiries -->
           <div class="space-y-2">
             <div class="font-bold uppercase tracking-wider text-slate-300 border-b border-slate-800 pb-1">
-              Departments
+              Clinical Hotlines
             </div>
             <ul class="space-y-1.5 text-slate-400">
-              <li><a href="#directory" class="hover:text-white">&bull; Cardiovascular Clinic</a></li>
-              <li><a href="#directory" class="hover:text-white">&bull; Neurological Services</a></li>
-              <li><a href="#directory" class="hover:text-white">&bull; Orthopedic Surgery</a></li>
-              <li><a href="#directory" class="hover:text-white">&bull; Primary & Urgent Care</a></li>
+              <li>Quezon City: +63-2-8723-0101</li>
+              <li>Global City: +63-2-8789-7700</li>
+              <li>Emergency Triage: +63-2-8521-0020</li>
+              <li>Email: info@medicon.health</li>
             </ul>
           </div>
         </div>
 
         <div class="pt-6 border-t border-slate-800 text-center text-[11px] text-slate-500 font-mono">
-          CONFIDENTIAL &amp; PROPRIETARY &bull; MEDICON HEALTHCARE INFORMATION SYSTEMS &bull; ALL RIGHTS RESERVED
+          CONFIDENTIAL &bull; MEDICON MEDICAL CENTER &bull; ALL RIGHTS RESERVED
         </div>
       </div>
     </footer>
@@ -417,28 +412,25 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import BookAppointmentModal from '@/components/patient/BookAppointmentModal.vue'
 import {
-  Calendar,
-  ArrowRight,
+  Search,
+  ChevronLeft,
+  ChevronRight,
   ShieldCheck,
-  LayoutDashboard,
-  Video,
-  FileText,
-  CreditCard,
-  BellRing,
   HeartPulse,
   Activity,
   Shield,
   Sparkles,
   Stethoscope,
   Smile,
-  Search,
 } from 'lucide-vue-next'
 
 const auth = useAuthStore()
 const router = useRouter()
 
 const showBookingModal = ref(false)
-const selectedMode = ref('Telehealth Video')
+const searchQuery = ref('')
+const currentHeroIndex = ref(0)
+const eventsIndex = ref(0)
 
 const dashboardRoute = computed(() => {
   if (auth.isAdmin) return '/admin/dashboard'
@@ -446,6 +438,115 @@ const dashboardRoute = computed(() => {
   return '/patient/dashboard'
 })
 
+// Hero Carousel Slides matching Image 1
+const heroSlides = [
+  {
+    category: 'CLINICAL INNOVATION & DIAGNOSTICS',
+    title: 'Medicon – Global Medical Center Enters Futuristic Era with Next-Gen Photon-Counting CT Scanner',
+    description: 'Providing unprecedented spatial resolution and reduced radiation dosage for cardiovascular, neurological, and oncological diagnostic imaging.',
+    image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&auto=format&fit=crop&q=80',
+  },
+  {
+    category: 'CARDIOVASCULAR MEDICINE',
+    title: 'State-of-the-Art Electrophysiology & Catheterization Laboratories Open for Patient Encounters',
+    description: 'Advanced minimally invasive diagnostic suites operating with 24/7 emergency response protocols and board-certified cardiologists.',
+    image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80',
+  },
+  {
+    category: 'TELEHEALTH ENCOUNTERS',
+    title: 'Encrypted Telemedicine Network Connects Patients Worldwide with Board-Certified Specialists',
+    description: 'Instant HD WebRTC virtual visits, synchronized digital diagnostic notes, and automated electronic prescriptions delivered to your portal.',
+    image: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=800&auto=format&fit=crop&q=80',
+  },
+]
+
+const prevHero = () => {
+  currentHeroIndex.value = (currentHeroIndex.value - 1 + heroSlides.length) % heroSlides.length
+}
+
+const nextHero = () => {
+  currentHeroIndex.value = (currentHeroIndex.value + 1) % heroSlides.length
+}
+
+// Latest News List matching Image 1
+const latestNews = [
+  {
+    title: 'Key Steps to Keep Your Lungs Healthy and Disease-Free',
+    date: 'Aug 14, 2026',
+  },
+  {
+    title: 'Advanced Mole Mapping and Hair Trichoscopy for Early Skin Cancer Detection',
+    date: 'Aug 11, 2026',
+  },
+  {
+    title: 'Targeting Stubborn Pigmentation: How Q-Switched Precision Laser Restores Skin Health',
+    date: 'Aug 06, 2026',
+  },
+  {
+    title: 'A New Era for Your Heart: How Photon-Counting CT is Revolutionizing Cardiovascular Care',
+    date: 'Aug 05, 2026',
+  },
+]
+
+// Events List matching Image 2
+const allEvents = [
+  {
+    title: 'National Maternal & Infant Wellness Workshop: One Latch, One Love',
+    date: 'AUG 28, 2026',
+    image: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=500&auto=format&fit=crop&q=80',
+  },
+  {
+    title: 'Compassionate Palliative Care: Patient-Centered Support Protocols',
+    date: 'SEP 04, 2026',
+    image: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=500&auto=format&fit=crop&q=80',
+  },
+  {
+    title: 'Pediatric Immunization & Preventative Healthcare Summit 2026',
+    date: 'SEP 12, 2026',
+    image: 'https://images.unsplash.com/photo-1584515933487-779824d29309?w=500&auto=format&fit=crop&q=80',
+  },
+  {
+    title: 'Golden Vision, Golden Years: Senior Ophthalmology & Glaucoma Screenings',
+    date: 'SEP 20, 2026',
+    image: 'https://images.unsplash.com/photo-1579684453423-f84349ef60b0?w=500&auto=format&fit=crop&q=80',
+  },
+]
+
+const visibleEvents = computed(() => allEvents)
+
+const prevEvents = () => {
+  eventsIndex.value = (eventsIndex.value - 1 + allEvents.length) % allEvents.length
+}
+
+const nextEvents = () => {
+  eventsIndex.value = (eventsIndex.value + 1) % allEvents.length
+}
+
+// Health Articles List matching Image 2
+const healthArticles = [
+  {
+    title: 'Shielding Your Skin: Understanding Early Skin Cancer Detection and Precision Mohs Micrographic Surgery',
+    readTime: '5 min read',
+    image: 'https://images.unsplash.com/photo-1512290900672-1f02e6b0f023?w=500&auto=format&fit=crop&q=80',
+  },
+  {
+    title: 'Beyond Burnout: Recognizing Clinical Exhaustion and When to Begin Neurological and Mental Health Recovery',
+    readTime: '7 min read',
+    image: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=500&auto=format&fit=crop&q=80',
+  },
+  {
+    title: 'Weight Management and Metabolic Health: Eating Smarter, Not Less for Long-Term Cardiovascular Longevity',
+    readTime: '4 min read',
+    image: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=500&auto=format&fit=crop&q=80',
+  },
+  {
+    title: 'Rediscover Life’s Rhythm: Advanced Percutaneous Coronary Angioplasty at Medicon Heart Center',
+    readTime: '6 min read',
+    image: 'https://images.unsplash.com/photo-1551076805-e1869033e561?w=500&auto=format&fit=crop&q=80',
+  },
+]
+
+// Specialties
 const specialtiesList = [
   { name: 'Cardiology', doctorCount: 24, icon: HeartPulse },
   { name: 'Neurology', doctorCount: 18, icon: Activity },
@@ -453,29 +554,6 @@ const specialtiesList = [
   { name: 'Pediatrics', doctorCount: 19, icon: Smile },
   { name: 'Dermatology', doctorCount: 15, icon: Sparkles },
   { name: 'General Practice', doctorCount: 35, icon: Stethoscope },
-]
-
-const steps = [
-  {
-    title: 'Select Clinical Department',
-    description: 'Browse certified state medical departments and licensed staff by specialty and consultation rates.',
-    icon: Search,
-  },
-  {
-    title: 'Submit Schedule Request',
-    description: 'Allocate an authorized 30-minute consultation slot and select virtual or in-clinic visit mode.',
-    icon: Calendar,
-  },
-  {
-    title: 'Virtual Consultation Encounter',
-    description: 'Connect directly through encrypted WebRTC telehealth rooms with verified attending physician.',
-    icon: Video,
-  },
-  {
-    title: 'EHR & Prescription Formulation',
-    description: 'Obtain encrypted diagnostic medical summary, physiological vitals assessment, and e-prescription.',
-    icon: FileText,
-  },
 ]
 
 const openBookingModal = () => {
