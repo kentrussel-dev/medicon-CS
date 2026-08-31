@@ -349,7 +349,52 @@ const handleMockRoute = (config) => {
     let answer = ''
     let isCached = false
 
-    if (role === 'doctor') {
+    // General "What is this website about?" across all roles
+    if (prompt.includes('website') || prompt.includes('about') || prompt.includes('what is medicon') || prompt.includes('purpose')) {
+      if (role === 'admin') {
+        answer = "**Medicon Clinical Operations Platform**\n\n" +
+          "Medicon is an enterprise hospital management and telehealth platform. As an **Operations Administrator**, your portal allows you to:\n\n" +
+          "1. **Monitor Clinical Utilization:** Track hospital-wide encounters, doctor workload, and department capacity.\n" +
+          "2. **Attendance Risk Triage:** Review appointments flagged by our ML attendance prediction model to prevent clinic no-shows.\n" +
+          "3. **HIPAA Compliance Audit Trail:** Inspect immutable audit logs of all user actions and medical record access.\n" +
+          "4. **User & RBAC Management:** Manage patient, doctor, and staff roles and access permissions."
+      } else if (role === 'doctor') {
+        answer = "**Medicon Clinical Portal**\n\n" +
+          "Medicon is an integrated telehealth and practice management system for medical providers. In your **Physician Portal**, you can:\n\n" +
+          "1. **Manage Clinical Schedule:** Configure weekly consultation hours and appointment slots.\n" +
+          "2. **Conduct Encounters:** Launch encrypted HD telehealth video visits with scheduled patients.\n" +
+          "3. **Document EHR Records:** Record diagnostic notes, ICD-10 codes, and vital signs.\n" +
+          "4. **Issue Prescriptions:** Prescribe and manage electronic medication courses with automatic refills."
+      } else {
+        answer = "**Medicon Healthcare & Patient Portal**\n\n" +
+          "Medicon is a modern telehealth and patient care platform. In your **Patient Portal**, you can:\n\n" +
+          "1. **Book Consultations:** Schedule in-person or virtual HD video appointments with certified specialists.\n" +
+          "2. **Encrypted Medical Records:** View your post-consultation diagnoses, doctor notes, and vitals history.\n" +
+          "3. **Active Prescriptions:** Review prescribed medications, dosages, frequency, and refills remaining.\n" +
+          "4. **Clinical AI Assistant:** Ask questions about clinic hours, appointment preparation, and medications."
+      }
+      isCached = true
+    } else if (role === 'admin') {
+      // Specific Admin queries
+      if (prompt.includes('risk') || prompt.includes('attendance') || prompt.includes('no-show') || prompt.includes('ml')) {
+        answer = "**Attendance Risk Stratification (ML Model)**\n\n" +
+          "- **Function:** Predicts the probability of patient missed visits based on lead time, prior history, and scheduling parameters.\n" +
+          "- **Tiers:** Low (<35%), Moderate (35%-64%), and High (≥65%).\n" +
+          "- **Action:** High-risk appointments appear in the Active Triage Queue for targeted reminder confirmations."
+      } else if (prompt.includes('hipaa') || prompt.includes('audit') || prompt.includes('compliance') || prompt.includes('log')) {
+        answer = "**HIPAA Audit Compliance**\n\n" +
+          "- **Audit Standard:** All patient record access, downloads, role modifications, and AI queries are permanently logged.\n" +
+          "- **Storage:** Immutable records stored with actor ID, IP address, user agent, and ISO-8601 timestamps with 7-year retention."
+      } else if (prompt.includes('utilization') || prompt.includes('doctor') || prompt.includes('metric')) {
+        answer = "**Physician Utilization Registry**\n\n" +
+          "- Active attending physicians: 28 licensed specialists.\n" +
+          "- System-wide consultation completion rate: 88.8%.\n" +
+          "- Real-time workload and rating distributions are tracked on your Executive Dashboard."
+      } else {
+        answer = `Hello, ${user?.name || 'Administrator'}! I am your Medicon Hospital Operations Assistant. I can help analyze clinical attendance metrics, doctor utilization, and HIPAA compliance policies.`
+      }
+    } else if (role === 'doctor') {
+      // Doctor scope
       if (prompt.includes('soap') || prompt.includes('draft') || prompt.includes('note')) {
         answer = "**Draft SOAP Clinical Encounter Note**\n\n" +
           "**S (Subjective):** Patient presents for routine cardiology follow-up. Reports strict adherence to Lisinopril 10mg. Denies chest pain, palpitations, or lightheadedness.\n" +
@@ -361,22 +406,58 @@ const handleMockRoute = (config) => {
           "- **NSAIDs Interaction:** Co-administration may diminish the antihypertensive effect of ACE inhibitors and increase the risk of acute renal functional deterioration.\n" +
           "- **Potassium Interaction:** ACE inhibitors reduce aldosterone secretion. Concomitant potassium-sparing agents or potassium supplements elevate hyperkalemia risks.\n" +
           "- **Clinical Guidance:** Monitor serum potassium and renal function (BUN/Creatinine) periodically."
+      } else if (prompt.includes('patient') || prompt.includes('history') || prompt.includes('summary')) {
+        answer = "**Patient Clinical Summary**\n\n" +
+          "- **Patient:** Jane Doe (Age: 31, Blood Group: O+)\n" +
+          "- **Recorded Allergies:** Penicillin, Sulfa\n" +
+          "- **Active Diagnoses:** Essential Hypertension (ICD-10 I10), Contact Dermatitis (ICD-10 L23.9)\n" +
+          "- **Active Medication:** Lisinopril 10mg PO QD (Refills: 3)"
       } else {
         answer = `Hello Dr. ${user?.name || 'Physician'}! I can help draft structured SOAP notes, check pharmacology drug interactions, or summarize patient histories before an appointment.`
       }
     } else {
       // Patient scope
-      if (prompt.includes('hour') || prompt.includes('open') || prompt.includes('time')) {
+      const prescriptions = getStoredPrescriptions()
+      const appointments = getStoredAppointments()
+      const records = getStoredRecords()
+
+      if (prompt.includes('name') || prompt.includes('who am i') || prompt.includes('my account') || prompt.includes('my profile') || prompt.includes('email')) {
+        answer = `**Your Patient Profile**\n\n` +
+          `- **Name:** ${user?.name || 'Jane Doe'}\n` +
+          `- **Email:** ${user?.email || 'patient@medicon.health'}\n` +
+          `- **Blood Group:** ${user?.patient?.blood_type || 'O+'}\n` +
+          `- **Known Allergies:** ${user?.patient?.allergies || 'Penicillin, Sulfa'}\n` +
+          `- **Active Portal Role:** PATIENT`
+      } else if (prompt.includes('prescription') || prompt.includes('medication') || prompt.includes('drug') || prompt.includes('meds')) {
+        if (prescriptions.length === 0) {
+          answer = "You have no active prescriptions recorded in your medical profile."
+        } else {
+          answer = `**Your Active Prescriptions (${prescriptions.length} on record)**\n\n` +
+            prescriptions.map((rx, i) => `${i + 1}. **${rx.medication_name} ${rx.dosage}**\n   - Instructions: ${rx.instructions}\n   - Frequency: ${rx.frequency} (${rx.duration})\n   - Refills Remaining: ${rx.refills_remaining}\n   - Status: [${rx.status}]`).join('\n\n')
+        }
+      } else if (prompt.includes('appointment') || prompt.includes('schedule') || prompt.includes('visit') || prompt.includes('next')) {
+        if (appointments.length === 0) {
+          answer = "You have no upcoming consultations scheduled. You can book an appointment using the **'Book Consultation'** button on your dashboard."
+        } else {
+          answer = `**Your Medical Appointments (${appointments.length} on file)**\n\n` +
+            appointments.map((a, i) => `${i + 1}. **${a.doctor_name}** (${a.doctor_specialty})\n   - Time: ${new Date(a.scheduled_start).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}\n   - Type: ${a.type} | Status: [${a.status}]\n   - Reason: ${a.reason}`).join('\n\n')
+        }
+      } else if (prompt.includes('record') || prompt.includes('diagnos') || prompt.includes('ehr') || prompt.includes('vital') || prompt.includes('history')) {
+        if (records.length === 0) {
+          answer = "No clinical encounter notes have been filed for your record yet."
+        } else {
+          answer = `**Your Encrypted Medical Records**\n\n` +
+            records.map((r, i) => `${i + 1}. **${r.diagnosis}**\n   - Doctor: ${r.doctor_name} (${r.doctor_specialty})\n   - Date: ${new Date(r.created_at).toLocaleDateString()}\n   - Vital Signs: BP ${r.vital_signs?.blood_pressure || '120/80'}, HR ${r.vital_signs?.heart_rate || '72 bpm'}\n   - Clinical Summary: ${r.clinical_notes}`).join('\n\n')
+        }
+      } else if (prompt.includes('allergy') || prompt.includes('allergies')) {
+        answer = `Your medical record indicates the following documented allergies: **${user?.patient?.allergies || 'Penicillin, Sulfa'}**. All prescribing doctors will be alerted before issuing new medication orders.`
+      } else if (prompt.includes('hour') || prompt.includes('open') || prompt.includes('time')) {
         answer = "Medicon Outpatient Clinics are open **Monday through Friday, 8:00 AM to 5:00 PM**. Emergency and Telehealth video services are available 24/7."
         isCached = true
-      } else if (prompt.includes('prescription') || prompt.includes('medication') || prompt.includes('lisinopril')) {
-        answer = "You have an active prescription for **Lisinopril 10mg** (take once daily in the morning). It is prescribed to help maintain healthy blood pressure. You have 3 refills remaining."
-      } else if (prompt.includes('appointment') || prompt.includes('next') || prompt.includes('schedule')) {
-        answer = "Your next scheduled consultation is with **Dr. Sarah Jenkins, MD** (Cardiology) via Telehealth Video. You can join the room directly from your dashboard when your slot begins."
       } else if (prompt.includes('blood test') || prompt.includes('prepare') || prompt.includes('fasting')) {
         answer = "For routine fasting blood glucose and lipid panels, please avoid eating or drinking (water is permitted) for **8 to 12 hours** prior to your lab draw. Take your routine medications unless instructed otherwise."
         isCached = true
-      } else if (prompt.includes('symptom') || prompt.includes('pain') || prompt.includes('diagnos') || prompt.includes('sick')) {
+      } else if (prompt.includes('symptom') || prompt.includes('pain') || prompt.includes('sick')) {
         answer = "⚠️ **Clinical Safety Notice:** I am an AI assistant and cannot provide a medical diagnosis. If you are experiencing severe pain, difficulty breathing, chest tightness, or other acute symptoms, please call emergency services (911) or contact our urgent clinic triage desk immediately."
       } else {
         answer = `Hello, ${user?.name || 'Patient'}! I am your Medicon Healthcare Assistant. I can help explain your active prescriptions, upcoming appointments, or general clinic procedures.`

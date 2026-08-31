@@ -303,6 +303,32 @@ class GeminiChatService
         $lower = strtolower($message);
         $role = $user->role?->value ?? 'patient';
 
+        // General "What is this website about?" across all roles
+        if (str_contains($lower, 'website') || str_contains($lower, 'about') || str_contains($lower, 'what is medicon') || str_contains($lower, 'purpose')) {
+            if ($role === 'admin') {
+                return "**Medicon Clinical Operations Platform**\n\n"
+                    . "Medicon is an enterprise hospital management and telehealth platform. As an **Operations Administrator**, you can monitor clinical utilization, attendance risk triage, user permissions, and HIPAA audit trails.";
+            } elseif ($role === 'doctor') {
+                return "**Medicon Clinical Portal**\n\n"
+                    . "Medicon is an integrated telehealth and practice management system for medical providers to manage availability schedules, conduct HD video encounters, and issue e-prescriptions.";
+            } else {
+                return "**Medicon Healthcare & Patient Portal**\n\n"
+                    . "Medicon is a modern telehealth and patient care platform. In your portal, you can schedule appointments with specialists, access encrypted medical records, and review active prescriptions.";
+            }
+        }
+
+        if ($role === 'admin') {
+            if (str_contains($lower, 'risk') || str_contains($lower, 'attendance') || str_contains($lower, 'no-show')) {
+                return "**Attendance Risk Stratification (ML Model)**\n\n"
+                    . "Predicts the probability of patient missed visits to optimize hospital schedule density and proactive confirmations.";
+            }
+            if (str_contains($lower, 'hipaa') || str_contains($lower, 'audit') || str_contains($lower, 'compliance')) {
+                return "**HIPAA Audit Compliance**\n\n"
+                    . "All medical record views, exports, and role updates are permanently recorded in the immutable audit trail with 7-year retention.";
+            }
+            return "Hello, {$user->name}! I am your Medicon Hospital Operations Assistant. I can help analyze clinical attendance metrics, doctor utilization, and HIPAA compliance policies.";
+        }
+
         if ($role === 'doctor') {
             if (str_contains($lower, 'soap') || str_contains($lower, 'draft') || str_contains($lower, 'note')) {
                 return "**Draft SOAP Encounter Note Template**\n\n"
