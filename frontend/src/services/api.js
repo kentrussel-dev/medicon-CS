@@ -49,25 +49,54 @@ const handleMockRoute = (config) => {
       name: 'Jane Doe',
       email: email || 'patient@medicon.health',
       role: 'patient',
-      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      patient: { id: 1, allergies: 'Penicillin, Sulfa', blood_type: 'O+' },
+      avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+      patient: {
+        id: 1,
+        allergies: 'Penicillin, Sulfa Drugs',
+        blood_type: 'O+',
+        emergency_contact_name: 'Mark Doe (Spouse)',
+        emergency_contact_phone: '+1 (555) 019-9831',
+      },
     }
-    if (email.includes('admin')) {
+    if (email.includes('admin') || email.includes('eleanor') || email.includes('vance')) {
       user = {
         id: 3,
-        name: 'Operations Administrator',
-        email: email,
+        name: 'Dr. Eleanor Vance, MD (CMO)',
+        email: email || 'admin@medicon.health',
         role: 'admin',
-        avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
+        avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
       }
     } else if (email.includes('doctor') || email.includes('jenkins') || email.includes('sarah')) {
       user = {
         id: 2,
         name: 'Dr. Sarah Jenkins, MD, FACC',
-        email: email,
+        email: email || 'sarah.jenkins@medicon.health',
         role: 'doctor',
-        avatar_url: 'https://images.unsplash.com/photo-1594824813593-9c8df6cbeeb0?w=150&auto=format&fit=crop&q=80',
-        doctor: { id: 1, specialty: 'Cardiology', license_number: 'MD-99281-STATE', consultation_fee: 90, rating: 4.95 },
+        avatar_url: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&auto=format&fit=crop&q=80',
+        doctor: {
+          id: 1,
+          specialty: 'Cardiology',
+          license_number: 'MD-CAR-88210',
+          consultation_fee: 120,
+          rating: 4.96,
+          years_of_experience: 14,
+        },
+      }
+    } else if (email.includes('chen') || email.includes('marcus')) {
+      user = {
+        id: 4,
+        name: 'Dr. Marcus Chen, MD, PhD',
+        email: email || 'marcus.chen@medicon.health',
+        role: 'doctor',
+        avatar_url: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&auto=format&fit=crop&q=80',
+        doctor: {
+          id: 2,
+          specialty: 'Neurology',
+          license_number: 'MD-NEU-41903',
+          consultation_fee: 115,
+          rating: 4.91,
+          years_of_experience: 10,
+        },
       }
     }
     return { status: 200, data: { user, token: 'mock_jwt_token_' + Date.now() } }
@@ -86,6 +115,8 @@ const handleMockRoute = (config) => {
         gender: body.gender || 'F',
         allergies: body.allergies || 'None recorded',
         blood_type: 'O+',
+        emergency_contact_name: 'Primary Contact',
+        emergency_contact_phone: '+1 (555) 019-9999',
       },
     }
     return { status: 201, data: { user, token: 'mock_jwt_token_' + Date.now() } }
@@ -109,13 +140,15 @@ const handleMockRoute = (config) => {
           total_patients: 1240,
           total_doctors: 28,
           total_appointments: 3410,
-          no_show_rate: 11.2,
+          no_show_rate: 8.4,
         },
         doctor_utilization: [
-          { doctor_id: 1, name: 'Dr. Sarah Jenkins', specialty: 'Cardiology', total_appointments: 48, rating: 4.95 },
-          { doctor_id: 2, name: 'Dr. Marcus Chen', specialty: 'Neurology', total_appointments: 36, rating: 4.88 },
-          { doctor_id: 3, name: 'Dr. Elena Rostova', specialty: 'Dermatology', total_appointments: 42, rating: 4.92 },
-          { doctor_id: 4, name: 'Dr. James Wilson', specialty: 'General Practice', total_appointments: 64, rating: 4.90 },
+          { doctor_id: 1, name: 'Dr. Sarah Jenkins, MD, FACC', specialty: 'Cardiology', total_appointments: 48, rating: 4.96 },
+          { doctor_id: 2, name: 'Dr. Marcus Chen, MD, PhD', specialty: 'Neurology', total_appointments: 36, rating: 4.91 },
+          { doctor_id: 3, name: 'Dr. Elena Rostova, MD', specialty: 'Dermatology', total_appointments: 42, rating: 4.93 },
+          { doctor_id: 4, name: 'Dr. James Wilson, MD', specialty: 'General Practice', total_appointments: 64, rating: 4.89 },
+          { doctor_id: 5, name: 'Dr. Aisha Patel, MD', specialty: 'Psychiatry', total_appointments: 31, rating: 4.98 },
+          { doctor_id: 6, name: 'Dr. Robert Taylor, MD', specialty: 'Orthopedics', total_appointments: 29, rating: 4.92 },
         ],
       },
     }
@@ -132,9 +165,12 @@ const handleMockRoute = (config) => {
       data: {
         data: [
           { id: 1, name: 'Jane Doe', email: 'patient@medicon.health', role: 'patient', is_active: true, created_at: '2026-01-15' },
-          { id: 2, name: 'Dr. Sarah Jenkins', email: 'sarah.jenkins@medicon.health', role: 'doctor', is_active: true, created_at: '2025-11-20' },
-          { id: 3, name: 'Operations Administrator', email: 'admin@medicon.health', role: 'admin', is_active: true, created_at: '2025-08-01' },
-          { id: 4, name: 'Dr. Marcus Chen', email: 'marcus.chen@medicon.health', role: 'doctor', is_active: true, created_at: '2025-10-05' },
+          { id: 2, name: 'Dr. Sarah Jenkins, MD, FACC', email: 'sarah.jenkins@medicon.health', role: 'doctor', is_active: true, created_at: '2025-11-20' },
+          { id: 3, name: 'Dr. Eleanor Vance, MD (CMO)', email: 'admin@medicon.health', role: 'admin', is_active: true, created_at: '2025-08-01' },
+          { id: 4, name: 'Dr. Marcus Chen, MD, PhD', email: 'marcus.chen@medicon.health', role: 'doctor', is_active: true, created_at: '2025-10-05' },
+          { id: 5, name: 'Dr. Elena Rostova, MD', email: 'elena.rostova@medicon.health', role: 'doctor', is_active: true, created_at: '2025-12-01' },
+          { id: 6, name: 'John Miller', email: 'john.miller@medicon.health', role: 'patient', is_active: true, created_at: '2026-02-10' },
+          { id: 7, name: 'Emily Clark', email: 'emily.clark@medicon.health', role: 'patient', is_active: true, created_at: '2026-02-18' },
         ],
       },
     }

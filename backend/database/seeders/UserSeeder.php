@@ -11,11 +11,11 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // System Administrator
-        User::firstOrCreate(
+        // System Administrator (Chief Medical Officer)
+        User::updateOrCreate(
             ['email' => 'admin@medicon.health'],
             [
-                'name' => 'Dr. Eleanor Vance (Chief Medical Officer)',
+                'name' => 'Dr. Eleanor Vance, MD (CMO)',
                 'password' => Hash::make('Secret123!'),
                 'role' => UserRole::ADMIN,
                 'phone' => '+1 (555) 010-0099',
