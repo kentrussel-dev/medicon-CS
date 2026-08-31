@@ -22,9 +22,9 @@
         </button>
         <button
           @click="showCreateRxModal = true"
-          class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider border border-slate-950 transition-colors flex items-center space-x-1.5"
+          class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold uppercase tracking-wider border border-slate-300 transition-colors flex items-center space-x-1.5"
         >
-          <Pill class="w-3.5 h-3.5" />
+          <Pill class="w-3.5 h-3.5 text-brand-700" />
           <span>Issue Prescription</span>
         </button>
       </div>

@@ -14,7 +14,7 @@
       <div class="flex items-center space-x-2">
         <router-link
           to="/admin/audit-logs"
-          class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold uppercase tracking-wider border border-slate-950 transition-colors flex items-center space-x-1.5"
+          class="px-3.5 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-mono font-bold uppercase tracking-wider border border-brand-800 transition-colors flex items-center space-x-1.5"
         >
           <History class="w-3.5 h-3.5" />
           <span>Audit Log Trail</span>

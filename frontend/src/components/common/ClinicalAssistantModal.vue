@@ -4,13 +4,13 @@
     <div class="fixed bottom-6 right-6 z-40">
       <button
         @click="isOpen = !isOpen"
-        class="px-4 py-3 bg-slate-900 hover:bg-slate-800 text-white border-2 border-brand-600 shadow-xl flex items-center space-x-2.5 transition-all active:scale-98 font-mono text-xs font-bold uppercase tracking-wider"
+        class="px-4 py-3 bg-brand-700 hover:bg-brand-800 text-white border-2 border-brand-800 shadow-xl flex items-center space-x-2.5 transition-all active:scale-98 font-mono text-xs font-bold uppercase tracking-wider"
       >
         <span class="relative flex h-2.5 w-2.5">
-          <span class="animate-ping absolute inline-flex h-full w-full bg-emerald-400 opacity-75"></span>
-          <span class="relative inline-flex h-2.5 w-2.5 bg-emerald-500"></span>
+          <span class="animate-ping absolute inline-flex h-full w-full bg-emerald-300 opacity-75"></span>
+          <span class="relative inline-flex h-2.5 w-2.5 bg-emerald-400"></span>
         </span>
-        <Bot class="w-4 h-4 text-brand-400" />
+        <Bot class="w-4 h-4 text-white" />
         <span class="hidden sm:inline">Clinical AI Assistant</span>
         <span class="sm:hidden">AI Assistant</span>
       </button>
@@ -19,16 +19,16 @@
     <!-- Assistant Chat Modal Window -->
     <div
       v-if="isOpen"
-      class="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[460px] h-[580px] max-h-[85vh] bg-white border-2 border-slate-900 shadow-2xl flex flex-col font-sans"
+      class="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[460px] h-[580px] max-h-[85vh] bg-white border-2 border-slate-300 shadow-2xl flex flex-col font-sans"
     >
       <!-- Top Title Bar -->
-      <div class="bg-slate-900 text-white px-4 py-3 border-b-2 border-brand-600 flex items-center justify-between">
+      <div class="bg-white text-slate-950 px-4 py-3 border-b-2 border-slate-200 flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          <div class="w-6 h-6 bg-brand-600 text-white flex items-center justify-center font-bold text-xs border border-brand-500">
+          <div class="w-6 h-6 bg-brand-700 text-white flex items-center justify-center font-bold text-xs border border-brand-800">
             M
           </div>
           <div>
-            <div class="font-bold text-xs uppercase tracking-wider leading-none">
+            <div class="font-bold text-xs uppercase tracking-wider leading-none text-slate-950">
               Clinical Assistant
             </div>
           </div>
@@ -38,13 +38,13 @@
           <button
             @click="clearChat"
             title="Clear Chat History"
-            class="p-1 text-slate-400 hover:text-white transition-colors"
+            class="p-1 text-slate-400 hover:text-slate-900 transition-colors"
           >
             <RotateCcw class="w-3.5 h-3.5" />
           </button>
           <button
             @click="isOpen = false"
-            class="p-1 text-slate-400 hover:text-white transition-colors"
+            class="p-1 text-slate-400 hover:text-slate-900 transition-colors"
           >
             <X class="w-4 h-4" />
           </button>
@@ -80,7 +80,7 @@
             class="p-3.5 max-w-[90%] leading-relaxed"
             :class="
               msg.role === 'user'
-                ? 'bg-slate-900 text-white border border-slate-800'
+                ? 'bg-brand-700 text-white border border-brand-800 shadow-xs'
                 : 'bg-white text-slate-900 border border-slate-300 shadow-xs'
             "
           >
@@ -104,26 +104,26 @@
         <!-- Typing Loading Indicator -->
         <div v-if="loading" class="flex items-start space-x-2">
           <div class="bg-white border border-slate-300 p-3 flex items-center space-x-2 text-xs font-mono text-slate-500">
-            <span class="inline-block w-1.5 h-1.5 bg-brand-600 animate-ping"></span>
+            <span class="inline-block w-1.5 h-1.5 bg-brand-700 animate-ping"></span>
             <span>Consulting clinical reference...</span>
           </div>
         </div>
       </div>
 
       <!-- Bottom Chat Input Bar -->
-      <form @submit.prevent="sendMessage" class="p-2.5 bg-white border-t-2 border-slate-300 flex items-center space-x-2">
+      <form @submit.prevent="sendMessage" class="p-2.5 bg-white border-t-2 border-slate-200 flex items-center space-x-2">
         <input
           type="text"
           v-model="inputQuery"
           :placeholder="inputPlaceholder"
           :disabled="loading"
-          class="flex-1 px-3 py-2 border border-slate-300 text-xs focus:border-slate-900 focus:outline-none bg-white rounded-none font-sans"
+          class="flex-1 px-3 py-2 border border-slate-300 text-xs focus:border-brand-700 focus:outline-none bg-white rounded-none font-sans"
         />
 
         <button
           type="submit"
           :disabled="loading || !inputQuery.trim()"
-          class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider border border-slate-950 transition-colors disabled:opacity-40 flex items-center space-x-1"
+          class="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs uppercase tracking-wider border border-brand-800 transition-colors disabled:opacity-40 flex items-center space-x-1"
         >
           <Send class="w-3.5 h-3.5" />
           <span class="hidden sm:inline">Send</span>

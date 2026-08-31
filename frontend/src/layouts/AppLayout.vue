@@ -1,15 +1,15 @@
 <template>
-  <div class="min-h-screen bg-slate-100 flex flex-col font-sans">
+  <div class="min-h-screen bg-slate-50 flex flex-col font-sans">
     <!-- Top System Strip -->
-    <div class="bg-slate-900 text-slate-300 text-[11px] font-mono px-4 sm:px-6 py-1 border-b border-slate-800 flex items-center justify-between z-40">
+    <div class="bg-white text-slate-600 text-[11px] font-mono px-4 sm:px-6 py-1 border-b border-slate-200 flex items-center justify-between z-40">
       <div class="flex items-center space-x-2">
-        <span class="inline-block w-1.5 h-1.5 bg-emerald-500"></span>
-        <span class="font-bold uppercase tracking-wider text-slate-200">Medicon Clinical Healthcare Platform</span>
-        <span class="text-slate-600">|</span>
-        <span class="text-slate-400">HIPAA &bull; AES-256 Encrypted</span>
+        <span class="inline-block w-1.5 h-1.5 bg-emerald-600"></span>
+        <span class="font-bold uppercase tracking-wider text-slate-900">Medicon Clinical Healthcare Platform</span>
+        <span class="text-slate-300">|</span>
+        <span class="text-slate-500">HIPAA &bull; AES-256 Encrypted</span>
       </div>
       <div class="flex items-center space-x-3">
-        <span class="text-slate-400 text-[10px] uppercase font-bold">Role: <span class="text-white">{{ auth.role }}</span></span>
+        <span class="text-slate-500 text-[10px] uppercase font-bold">Role: <span class="text-brand-800 font-extrabold">{{ auth.role?.toUpperCase() }}</span></span>
       </div>
     </div>
 

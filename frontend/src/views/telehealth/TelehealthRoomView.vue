@@ -1,21 +1,21 @@
 <template>
-  <div class="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
+  <div class="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans select-none">
     <!-- Top Telehealth Clinical Header -->
-    <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between z-30">
+    <header class="bg-white border-b-2 border-slate-200 px-4 py-3 flex items-center justify-between z-30 shadow-xs">
       <div class="flex items-center space-x-3">
-        <div class="w-8 h-8 bg-brand-700 text-white flex items-center justify-center font-bold text-sm border border-brand-600">
+        <div class="w-8 h-8 bg-brand-700 text-white flex items-center justify-center font-bold text-sm border border-brand-800">
           M
         </div>
         <div>
           <div class="flex items-center space-x-2 text-[11px] font-mono">
-            <span class="text-brand-400 font-bold uppercase">Medicon Telehealth</span>
-            <span class="text-slate-600">/</span>
-            <span class="text-slate-300 font-bold uppercase">Room #{{ appointmentId }}</span>
-            <span class="px-1.5 py-0.2 bg-emerald-950 text-emerald-400 border border-emerald-800 text-[9px] uppercase font-bold">
+            <span class="text-brand-800 font-bold uppercase">Medicon Telehealth</span>
+            <span class="text-slate-300">/</span>
+            <span class="text-slate-600 font-bold uppercase">Room #{{ appointmentId }}</span>
+            <span class="px-1.5 py-0.2 bg-emerald-50 text-emerald-800 border border-emerald-300 text-[9px] uppercase font-bold">
               ENCRYPTED WEBRTC HD
             </span>
           </div>
-          <h1 class="text-sm font-bold uppercase text-white mt-0.5 tracking-tight">
+          <h1 class="text-sm font-bold uppercase text-slate-950 mt-0.5 tracking-tight">
             {{ appointment?.reason || 'Multi-Party Clinical Consultation' }}
           </h1>
         </div>
@@ -23,21 +23,21 @@
 
       <div class="flex items-center space-x-3 font-mono text-xs">
         <!-- Reconnecting Banner Alert -->
-        <div v-if="connectionState === 'reconnecting'" class="flex items-center space-x-1.5 px-3 py-1 bg-amber-950 border border-amber-600 text-amber-300 text-[11px] animate-pulse">
-          <RefreshCw class="w-3.5 h-3.5 animate-spin" />
-          <span>RECONNECTING MEDIA GATEWAY...</span>
+        <div v-if="connectionState === 'reconnecting'" class="flex items-center space-x-1.5 px-3 py-1 bg-amber-50 border border-amber-300 text-amber-800 text-[11px] animate-pulse">
+          <RefreshCw class="w-3.5 h-3.5 animate-spin text-amber-600" />
+          <span class="font-bold">RECONNECTING MEDIA GATEWAY...</span>
         </div>
 
-        <div v-else class="flex items-center space-x-1.5 text-emerald-400 text-[11px]">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-          <span class="font-bold">LIVE ({{ participants.length }} Active)</span>
+        <div v-else class="flex items-center space-x-1.5 text-emerald-700 text-[11px]">
+          <span class="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span>
+          <span class="font-bold uppercase">LIVE ({{ participants.length }} Active)</span>
         </div>
 
         <button
           @click="showSidebar = !showSidebar"
-          class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs flex items-center space-x-1"
+          class="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold uppercase flex items-center space-x-1"
         >
-          <Users class="w-3.5 h-3.5" />
+          <Users class="w-3.5 h-3.5 text-slate-500" />
           <span class="hidden sm:inline">Roster ({{ participants.length }})</span>
         </button>
       </div>
@@ -46,16 +46,16 @@
     <!-- Main Workspace (Video Grid + Optional Side Info Panel) -->
     <div class="flex-1 flex overflow-hidden relative">
       <!-- Video Grid Area -->
-      <main class="flex-1 p-3 sm:p-5 flex items-center justify-center overflow-y-auto">
+      <main class="flex-1 p-3 sm:p-5 flex items-center justify-center overflow-y-auto bg-slate-100/70">
         <!-- Reconnection Overlay -->
         <div
           v-if="connectionState === 'reconnecting'"
-          class="absolute inset-0 z-40 bg-slate-950/80 backdrop-blur-xs flex flex-col items-center justify-center p-6 text-center"
+          class="absolute inset-0 z-40 bg-white/80 backdrop-blur-xs flex flex-col items-center justify-center p-6 text-center"
         >
-          <div class="bg-slate-900 border-2 border-amber-500 p-6 max-w-md w-full space-y-3 font-mono">
-            <RefreshCw class="w-8 h-8 text-amber-400 animate-spin mx-auto" />
-            <h3 class="font-bold text-sm text-white uppercase">Reconnecting to Consultation Room</h3>
-            <p class="text-xs text-slate-400 font-sans">
+          <div class="bg-white border-2 border-amber-500 p-6 max-w-md w-full space-y-3 font-mono shadow-xl">
+            <RefreshCw class="w-8 h-8 text-amber-600 animate-spin mx-auto" />
+            <h3 class="font-bold text-sm text-slate-950 uppercase">Reconnecting to Consultation Room</h3>
+            <p class="text-xs text-slate-600 font-sans">
               A temporary network fluctuation occurred. Re-negotiating secure WebRTC media stream without disconnecting your session...
             </p>
           </div>
@@ -73,10 +73,10 @@
           <div
             v-for="p in participants"
             :key="p.id"
-            class="relative bg-slate-900 border-2 border-slate-800 flex flex-col justify-between overflow-hidden shadow-lg group aspect-video sm:aspect-auto sm:min-h-[260px]"
+            class="relative bg-white border-2 border-slate-300 flex flex-col justify-between overflow-hidden shadow-sm aspect-video sm:aspect-auto sm:min-h-[260px]"
           >
             <!-- Participant Video Canvas / Stream -->
-            <div class="absolute inset-0 flex items-center justify-center bg-slate-950">
+            <div class="absolute inset-0 flex items-center justify-center bg-slate-100">
               <video
                 v-if="p.isLocal && cameraOn"
                 ref="localVideoEl"
@@ -88,18 +88,18 @@
 
               <div
                 v-else
-                class="w-full h-full flex flex-col items-center justify-center bg-radial from-slate-900 to-slate-950 p-4 text-center"
+                class="w-full h-full flex flex-col items-center justify-center bg-slate-100 p-4 text-center"
               >
-                <div class="w-16 h-16 bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xl uppercase text-slate-300 mb-2">
+                <div class="w-16 h-16 bg-white border-2 border-slate-300 flex items-center justify-center font-bold text-xl uppercase text-slate-800 mb-2 shadow-xs">
                   {{ p.name.charAt(0) }}
                 </div>
-                <span class="text-xs font-bold text-slate-300 uppercase">{{ p.name }}</span>
-                <span class="text-[10px] font-mono text-slate-500 mt-0.5">Camera Muted</span>
+                <span class="text-xs font-bold text-slate-900 uppercase">{{ p.name }}</span>
+                <span class="text-[10px] font-mono text-slate-500 mt-0.5">Camera Off</span>
               </div>
             </div>
 
             <!-- Top Tile Tag -->
-            <div class="relative z-10 p-2.5 flex items-center justify-between bg-gradient-to-b from-slate-950/90 to-transparent">
+            <div class="relative z-10 p-2.5 flex items-center justify-between bg-white/90 backdrop-blur-xs border-b border-slate-200">
               <div class="flex items-center space-x-1.5">
                 <span
                   class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider border"
@@ -107,23 +107,23 @@
                 >
                   {{ p.role }}
                 </span>
-                <span v-if="p.isLocal" class="text-[10px] font-mono text-slate-400 uppercase font-bold">(You)</span>
+                <span v-if="p.isLocal" class="text-[10px] font-mono text-slate-500 uppercase font-bold">(You)</span>
               </div>
 
               <!-- Audio Status Icon -->
-              <div class="flex items-center space-x-1 bg-slate-950/80 px-2 py-0.5 border border-slate-800">
+              <div class="flex items-center space-x-1 bg-white px-2 py-0.5 border border-slate-300 shadow-2xs">
                 <component
                   :is="(p.isLocal ? micOn : p.audioActive) ? Mic : MicOff"
                   class="w-3 h-3"
-                  :class="(p.isLocal ? micOn : p.audioActive) ? 'text-emerald-400' : 'text-rose-400'"
+                  :class="(p.isLocal ? micOn : p.audioActive) ? 'text-emerald-600' : 'text-rose-600'"
                 />
               </div>
             </div>
 
             <!-- Bottom Tile Participant Name -->
-            <div class="relative z-10 p-2.5 bg-gradient-to-t from-slate-950/90 to-transparent flex items-center justify-between text-xs font-mono">
-              <span class="font-bold text-white uppercase truncate">{{ p.name }}</span>
-              <span class="text-[10px] text-slate-400 font-mono">HD 1080p</span>
+            <div class="relative z-10 p-2.5 bg-white/90 backdrop-blur-xs border-t border-slate-200 flex items-center justify-between text-xs font-mono">
+              <span class="font-bold text-slate-950 uppercase truncate">{{ p.name }}</span>
+              <span class="text-[10px] text-slate-500 font-mono font-bold">HD 1080p</span>
             </div>
           </div>
         </div>
@@ -132,12 +132,12 @@
       <!-- Right Clinical Roster & Consultation Details Sidebar -->
       <aside
         v-if="showSidebar"
-        class="w-80 bg-slate-900 border-l border-slate-800 flex flex-col justify-between p-4 space-y-4 z-30"
+        class="w-80 bg-white border-l-2 border-slate-200 flex flex-col justify-between p-4 space-y-4 z-30"
       >
         <div class="space-y-4 overflow-y-auto text-xs font-mono">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-            <span class="font-bold text-slate-200 uppercase">Consultation Participants</span>
-            <button @click="showSidebar = false" class="text-slate-400 hover:text-white">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <span class="font-bold text-slate-950 uppercase">Consultation Participants</span>
+            <button @click="showSidebar = false" class="text-slate-400 hover:text-slate-900">
               <X class="w-4 h-4" />
             </button>
           </div>
@@ -147,32 +147,32 @@
             <div
               v-for="p in participants"
               :key="p.id"
-              class="p-2.5 bg-slate-950 border border-slate-800 flex items-center justify-between"
+              class="p-2.5 bg-slate-50 border border-slate-200 flex items-center justify-between"
             >
               <div>
-                <div class="font-bold text-slate-100 uppercase">{{ p.name }}</div>
-                <div class="text-[10px] text-slate-400">{{ p.role }}</div>
+                <div class="font-bold text-slate-950 uppercase">{{ p.name }}</div>
+                <div class="text-[10px] text-slate-500">{{ p.role }}</div>
               </div>
-              <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-600"></span>
             </div>
           </div>
 
           <!-- Clinical Case Context -->
-          <div class="pt-2 border-t border-slate-800 space-y-2">
-            <span class="text-[10px] font-bold text-slate-400 uppercase block">Patient Case Context</span>
-            <div class="p-2.5 bg-slate-950 border border-slate-800 space-y-1.5 text-[11px]">
-              <div><span class="text-slate-500">Patient:</span> <strong class="text-slate-200">Jane Doe (31 yrs)</strong></div>
-              <div><span class="text-slate-500">Allergies:</span> <strong class="text-rose-400">Penicillin, Sulfa</strong></div>
-              <div><span class="text-slate-500">Blood Group:</span> <strong class="text-slate-200">O+</strong></div>
-              <div><span class="text-slate-500">Scheduled:</span> <strong class="text-slate-200">Cardiology Telehealth</strong></div>
+          <div class="pt-2 border-t border-slate-200 space-y-2">
+            <span class="text-[10px] font-bold text-slate-500 uppercase block">Patient Case Context</span>
+            <div class="p-2.5 bg-slate-50 border border-slate-200 space-y-1.5 text-[11px]">
+              <div><span class="text-slate-500">Patient:</span> <strong class="text-slate-900">Jane Doe (31 yrs)</strong></div>
+              <div><span class="text-slate-500">Allergies:</span> <strong class="text-rose-600">Penicillin, Sulfa</strong></div>
+              <div><span class="text-slate-500">Blood Group:</span> <strong class="text-slate-900">O+</strong></div>
+              <div><span class="text-slate-500">Scheduled:</span> <strong class="text-slate-900">Cardiology Telehealth</strong></div>
             </div>
           </div>
         </div>
 
-        <div v-if="canAddParticipants" class="pt-2 border-t border-slate-800">
+        <div v-if="canAddParticipants" class="pt-2 border-t border-slate-200">
           <button
             @click="showAddParticipantModal = true"
-            class="w-full py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs uppercase border border-brand-600 flex items-center justify-center space-x-1.5 transition-colors"
+            class="w-full py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs uppercase border border-brand-800 flex items-center justify-center space-x-1.5 transition-colors"
           >
             <UserPlus class="w-3.5 h-3.5" />
             <span>Invite Specialist / Translator</span>
@@ -182,10 +182,10 @@
     </div>
 
     <!-- Bottom Control Console -->
-    <footer class="bg-slate-900 border-t border-slate-800 px-4 py-3 flex items-center justify-between z-30">
-      <div class="hidden sm:flex items-center space-x-2 text-xs font-mono text-slate-400">
-        <ShieldCheck class="w-4 h-4 text-emerald-400" />
-        <span>HIPAA AES-256 ENCRYPTED MEDIA STREAM</span>
+    <footer class="bg-white border-t-2 border-slate-200 px-4 py-3 flex items-center justify-between z-30 shadow-xs">
+      <div class="hidden sm:flex items-center space-x-2 text-xs font-mono text-slate-500">
+        <ShieldCheck class="w-4 h-4 text-emerald-600" />
+        <span class="font-bold">HIPAA AES-256 ENCRYPTED MEDIA STREAM</span>
       </div>
 
       <!-- Centered Media Control Buttons -->
@@ -193,8 +193,8 @@
         <!-- Mic Toggle -->
         <button
           @click="toggleMic"
-          class="p-3 border font-bold text-xs uppercase flex items-center space-x-2 transition-colors"
-          :class="micOn ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-white' : 'bg-rose-950 border-rose-600 text-rose-300'"
+          class="px-3.5 py-2.5 border font-bold text-xs uppercase flex items-center space-x-2 transition-colors"
+          :class="micOn ? 'bg-white hover:bg-slate-50 border-slate-300 text-slate-800' : 'bg-rose-50 border-rose-300 text-rose-800'"
         >
           <component :is="micOn ? Mic : MicOff" class="w-4 h-4" />
           <span class="hidden md:inline">{{ micOn ? 'Mute Mic' : 'Unmute Mic' }}</span>
@@ -203,8 +203,8 @@
         <!-- Camera Toggle -->
         <button
           @click="toggleCamera"
-          class="p-3 border font-bold text-xs uppercase flex items-center space-x-2 transition-colors"
-          :class="cameraOn ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-white' : 'bg-rose-950 border-rose-600 text-rose-300'"
+          class="px-3.5 py-2.5 border font-bold text-xs uppercase flex items-center space-x-2 transition-colors"
+          :class="cameraOn ? 'bg-white hover:bg-slate-50 border-slate-300 text-slate-800' : 'bg-rose-50 border-rose-300 text-rose-800'"
         >
           <component :is="cameraOn ? Video : VideoOff" class="w-4 h-4" />
           <span class="hidden md:inline">{{ cameraOn ? 'Stop Camera' : 'Start Camera' }}</span>
@@ -214,23 +214,23 @@
         <button
           v-if="canAddParticipants"
           @click="showAddParticipantModal = true"
-          class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs uppercase flex items-center space-x-2 transition-colors"
+          class="px-3.5 py-2.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold text-xs uppercase flex items-center space-x-2 transition-colors"
         >
-          <UserPlus class="w-4 h-4 text-brand-400" />
+          <UserPlus class="w-4 h-4 text-brand-700" />
           <span class="hidden md:inline">Add Participant</span>
         </button>
 
         <!-- Leave Call Button -->
         <button
           @click="leaveCall"
-          class="px-5 py-3 bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs uppercase tracking-wider border border-rose-600 flex items-center space-x-2 transition-colors shadow-md"
+          class="px-5 py-2.5 bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs uppercase tracking-wider border border-rose-800 flex items-center space-x-2 transition-colors shadow-xs"
         >
           <PhoneOff class="w-4 h-4" />
           <span>Leave Room</span>
         </button>
       </div>
 
-      <div class="hidden lg:flex items-center space-x-2 font-mono text-xs text-slate-400">
+      <div class="hidden lg:flex items-center space-x-2 font-mono text-xs text-slate-500">
         <span>Session ID: LK-{{ appointmentId }}-SEC</span>
       </div>
     </footer>
@@ -308,18 +308,18 @@ const participants = ref([
 const getRoleBadgeClass = (role) => {
   const r = (role || '').toUpperCase()
   if (r.includes('DOCTOR') || r.includes('PHYSICIAN')) {
-    return 'bg-brand-950 text-brand-300 border-brand-700'
+    return 'bg-brand-50 text-brand-900 border-brand-300 font-bold'
   }
   if (r.includes('PATIENT')) {
-    return 'bg-emerald-950 text-emerald-300 border-emerald-700'
+    return 'bg-emerald-50 text-emerald-900 border-emerald-300 font-bold'
   }
   if (r.includes('SPECIALIST')) {
-    return 'bg-indigo-950 text-indigo-300 border-indigo-700'
+    return 'bg-indigo-50 text-indigo-900 border-indigo-300 font-bold'
   }
   if (r.includes('TRANSLATOR') || r.includes('INTERPRETER')) {
-    return 'bg-amber-950 text-amber-300 border-amber-700'
+    return 'bg-amber-50 text-amber-900 border-amber-300 font-bold'
   }
-  return 'bg-slate-800 text-slate-300 border-slate-700'
+  return 'bg-slate-100 text-slate-800 border-slate-300 font-bold'
 }
 
 const startLocalMedia = async () => {
