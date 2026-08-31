@@ -1,53 +1,144 @@
-# Operating System
-.DS_Store
-Thumbs.db
+# ==============================================================================
+# Medicon Telehealth & Clinical Portal - Git Ignore Policy
+# Strictly prevents committing secrets, tokens, private keys, environment files,
+# build artifacts, vendor dependencies, and machine learning runtime checkpoints.
+# ==============================================================================
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
-*.so
-.Python
-.pytest_cache/
-.coverage
-htmlcov/
-*.joblib
-!ml-service/models/noshow_model_v1.joblib
-
-# Node
-node_modules/
-dist/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# PHP / Composer
-/backend/vendor/
-/backend/bootstrap/cache/*
-!/backend/bootstrap/cache/.gitignore
-/backend/storage/*.key
-/backend/storage/framework/cache/*
-!/backend/storage/framework/cache/.gitignore
-/backend/storage/framework/sessions/*
-!/backend/storage/framework/sessions/.gitignore
-/backend/storage/framework/views/*
-!/backend/storage/framework/views/.gitignore
-/backend/storage/logs/*
-!/backend/storage/logs/.gitignore
-/backend/.phpunit.result.cache
-
-# Environment
+# ------------------------------------------------------------------------------
+# 1. Sensitive Credentials, Keys, & Environment Variables (STRICT)
+# ------------------------------------------------------------------------------
 .env
-.env.backup
-.env.production
-backend/.env
-frontend/.env
-ml-service/.env
+.env.*
+!.env.example
+!.env.*.example
+*.env
+*.local
+*.key
+*.pem
+*.crt
+*.p8
+*.p12
+*.pfx
+*.cert
+*.secret
+*.token
+oauth-*.key
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+jwt_secret*
 
-# IDE
+# Subdirectory environments
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+ml-service/.env
+ml-service/.env.*
+!ml-service/.env.example
+
+# ------------------------------------------------------------------------------
+# 2. Operating System & Editor Files
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# IDEs and Editors
 .idea/
 .vscode/
 *.swp
 *.swo
+*~
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+
+# ------------------------------------------------------------------------------
+# 3. Node & Frontend Build Artifacts
+# ------------------------------------------------------------------------------
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+build/
+.nuxt/
+.output/
+.vuepress/dist/
+.serverless/
+.temp/
+.docusaurus/
+
+# Logs & Debugging
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+.vite/
+
+# ------------------------------------------------------------------------------
+# 4. PHP / Laravel Framework Artifacts & Logs
+# ------------------------------------------------------------------------------
+vendor/
+backend/vendor/
+backend/bootstrap/cache/*
+!backend/bootstrap/cache/.gitignore
+backend/storage/*.key
+backend/storage/framework/cache/*
+!backend/storage/framework/cache/.gitignore
+backend/storage/framework/sessions/*
+!backend/storage/framework/sessions/.gitignore
+backend/storage/framework/views/*
+!backend/storage/framework/views/.gitignore
+backend/storage/framework/testing/*
+!backend/storage/framework/testing/.gitignore
+backend/storage/logs/*
+!backend/storage/logs/.gitignore
+backend/.phpunit.result.cache
+.phpunit.result.cache
+
+# ------------------------------------------------------------------------------
+# 5. Python & Machine Learning Runtime Artifacts
+# ------------------------------------------------------------------------------
+__pycache__/
+ml-service/__pycache__/
+ml-service/**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+ml-service/venv/
+ml-service/.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+*.pkl
+*.joblib
+!ml-service/models/noshow_model_v1.joblib
+
+# ------------------------------------------------------------------------------
+# 6. Temporary & Agentic Scratch Files
+# ------------------------------------------------------------------------------
+.system_generated/
+scratch/
+*.tmp
+*.temp
+*.bak

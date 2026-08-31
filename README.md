@@ -1,123 +1,196 @@
-# Medicon &mdash; Telehealth & Clinical Patient Management Platform
+# Medicon &mdash; Production Telehealth & Clinical Patient Management Platform
 
-[![CI Pipeline](https://github.com/medicon/medicon/actions/workflows/ci.yml/badge.svg)](https://github.com/medicon/medicon/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![PHP: 8.2](https://img.shields.io/badge/PHP-8.2-blue.svg)](https://php.net)
+[![Laravel: 11](https://img.shields.io/badge/Laravel-11-red.svg)](https://laravel.com)
 [![Vue: 3.5](https://img.shields.io/badge/Vue-3.5-brightgreen.svg)](https://vuejs.org)
 [![FastAPI: 0.115](https://img.shields.io/badge/FastAPI-0.115-teal.svg)](https://fastapi.tiangolo.com)
-[![HIPAA Compliant](https://img.shields.io/badge/HIPAA-AES--256-blueviolet.svg)](docs/ARCHITECTURE.md)
+[![Tailwind CSS: 3.4](https://img.shields.io/badge/Tailwind-3.4-38bdf8.svg)](https://tailwindcss.com)
+[![WebRTC: Realtime HD](https://img.shields.io/badge/WebRTC-1080p--HD-indigo.svg)](docs/ARCHITECTURE.md)
+[![HIPAA Compliance](https://img.shields.io/badge/HIPAA-AES--256--Encrypted-blueviolet.svg)](docs/ARCHITECTURE.md)
 
-**Medicon** is a production-grade telehealth and clinical encounter management platform engineered for medical providers, multi-specialty clinics, and healthcare systems.
-
-Built with a modern multi-tier microservices architecture:
-- **Frontend**: Vue.js 3, Pinia 2, Vue Router 4, TailwindCSS, and Lucide Icons.
-- **Backend API**: Laravel 11, Laravel Sanctum, PHP 8.2 FPM, Eloquent Encrypted Casts, Form Requests, and Queued Background Jobs.
-- **Machine Learning Microservice**: Python 3.11, FastAPI, and Scikit-Learn `GradientBoostingClassifier` predicting appointment no-show probabilities with dynamic risk factors.
-- **Data & Storage**: MySQL 8.0 (Primary DB), Redis 7.2 (Cache/Queues), and MinIO/S3 (Encrypted Medical Object Storage).
-- **Deployment**: Docker & Docker Compose with multi-stage production builds and hardened Nginx reverse proxy.
+**Medicon** is a modern, production-grade clinical encounter and telehealth platform designed for medical centers, hospitals, and outpatient clinics. It unifies electronic health records (EHR), multi-party WebRTC video consultations, automated electronic prescribing, machine learning appointment attendance triage, and HIPAA audit forensics into a crisp, accessible clinical interface.
 
 ---
 
-## 🌟 Core Features & Workflows
+## 🌟 Key Features
 
-### 1. Granular Role-Based Access Control (RBAC)
-- **Patient Portal**:
-  - User registration and authenticated session management.
-  - Interactive physician directory filtering by medical specialty, experience, and fee.
-  - Real-time appointment scheduling with conflict prevention and slot duration management.
-  - In-browser telemedicine video call integration.
-  - Encrypted personal clinical encounters, diagnostic notes, and lab attachment downloads.
-  - Active and historical electronic prescription management.
-- **Doctor Portal**:
-  - Weekly schedule and slot length customizer (15, 30, 45, 60 minutes).
-  - Patient encounter management: Start visit, update clinical status, and track attendance.
-  - Clinical documentation tool: Primary diagnosis, ICD-10 coding, vital signs matrix (BP, HR, SpO2, Temp, Weight), and encrypted examination notes.
-  - Multi-item electronic prescription formulation (dosages, frequencies, durations, and instructions).
-  - Patient clinical history and timeline explorer.
-- **Administrator Portal**:
-  - Executive operations dashboard: Active patients, on-duty physicians, no-show rates, and revenue.
-  - Machine Learning Attendance Triage: High-risk patient absence monitoring ($\ge 65\%$) with key contributing factors and intervention protocols.
-  - Physician utilization and productivity metrics.
-  - Staff and user management with one-click activation/deactivation.
-  - Immutable HIPAA forensic audit trail inspecting data access and modification diffs.
+### 1. 🎥 Google Meet-Style Telehealth Suite
+- **Pre-Join Green Room / Waiting Lobby**:
+  - Live 16:9 video mirror with self-check preview before entering.
+  - Audio and video device toggles (Microphone starts muted & Camera starts closed by default for patient privacy).
+  - Real-time in-room attendance preview showing which physicians or specialists are already in the call.
+  - Clinical case summary and 1-click **Join Now** transition.
+- **Widescreen 16:9 Multi-Party Video Grid**:
+  - Strict 16:9 (`aspect-video`) card layout adapting seamlessly across 1, 2, 3 (2 top + 1 centered bottom), and 4+ participant conferences without vertical scrolling.
+  - High-definition WebRTC video pipeline with dynamic `:ref` binding and simulated 30 FPS clinical sandbox stream fallback.
+- **Screen Sharing / Spotlight Presentation Mode**:
+  - Native browser `getDisplayMedia()` screen capture for presenting diagnostic scans, laboratory results, or medical records.
+  - Automatic transition to an 80% spotlight stage alongside a vertical participant video strip.
+- **Encrypted In-Call Consultation Chat**:
+  - Integrated drawer for exchanging real-time clinical notes, dosage instructions, and links with unread counter badges.
+- **Unique Random Room Codes (`k9x-yqp2-481`)**:
+  - Google Meet-style 3-part alphanumeric identifiers generated per appointment and instant session.
+  - 1-click URL copying and Instant Meeting creation from doctor and patient dashboards.
+- **Ephemeral Data Purge on Session End**:
+  - Closing a consultation automatically wipes in-room chat messages and media tokens from the database to enforce strict HIPAA compliance.
+
+### 2. 🏥 Comprehensive Clinical Encounter & SOAP Workflow
+- **Medical Documentation**: Structured Subjective, Objective, Assessment, and Plan (SOAP) clinical encounter builder.
+- **ICD-10 Diagnostic Coding**: Direct standardized diagnostic categorization with severity classification.
+- **Vital Signs Matrix**: Live recording for Blood Pressure, Heart Rate, Respiratory Rate, Oxygen Saturation (SpO2), Body Temperature, and Weight.
+- **Electronic Prescriptions (e-Rx)**: Multi-drug formulation engine with automated dosage, frequency, route, and refill instructions.
+
+### 3. 🤖 Machine Learning No-Show Risk Engine
+- **FastAPI Microservice**: Powered by a trained Scikit-Learn `GradientBoostingClassifier`.
+- **Predictive Scoring**: Computes real-time no-show probability upon appointment booking based on lead time, historical attendance, demographics, time-of-day, and engagement flags.
+- **Clinical Intervention Triage**: Automatically flags high-risk appointments ($\ge 65\%$) for administrative staff intervention (SMS confirmations, telemedicine re-routing, telephone reminders).
+- **Deterministic Heuristic Fallback**: Ensures uninterrupted booking resilience even during microservice maintenance.
+
+### 4. 🔒 Role-Based Access Control (RBAC) & Security
+- **Dr. Eleanor Vance, MD (Chief Medical Officer / Admin)**: Executive operations dashboard, system-wide physician utilization analytics, ML risk triage center, user directory management, and immutable HIPAA forensic audit logs.
+- **Attending Physicians & Specialists**: Cardiology, Neurology, Dermatology, Primary Care, Psychiatry, and Orthopedics portals with custom availability slots (15/30/45/60 min), patient records, and instant room launcher.
+- **Patients**: Self-service appointment scheduling, instant telehealth room access, encrypted diagnostic records, and prescription management.
+- **Data Protection**: `AES-256-CBC` database field encryption for clinical notes, immutable audit logging with mutation blocking, and soft deletes.
 
 ---
 
-## 🔒 Security, Compliance & Data Protection
-1. **Encrypted Casts at Rest**: Sensitive diagnostic fields (`allergies`, `medical_notes`, `diagnosis`, `clinical_notes`, `treatment_plan`, `vital_signs`) are encrypted using `AES-256-CBC` in the database.
-2. **Immutable Audit Trail**: The `audit_logs` table records every `VIEW`, `CREATE`, `UPDATE`, `DELETE`, and `DOWNLOAD` event. The Eloquent model enforces mutation blocks preventing tampering or deletion.
-3. **Soft Deletes**: Patient records and clinical histories use soft deletes to prevent permanent data loss.
-4. **Time-Bounded Signed URLs**: Lab documents and medical attachments stored in S3/MinIO are strictly accessible through short-lived signed URLs.
-5. **Resilient ML Fallback**: The backend connects to the Python ML microservice with a 2.5s timeout. If unavailable, it executes a deterministic heuristic fallback to ensure uninterrupted appointment booking.
+## 🏛️ System Architecture
 
----
-
-## 🚀 Quick Start with Docker
-
-### Prerequisites
-- [Docker Engine 24+](https://docs.docker.com/engine/install/)
-- [Docker Compose v2+](https://docs.docker.com/compose/)
-
-### 1. Clone & Configure Environment
-```bash
-git clone https://github.com/medicon/medicon.git
-cd medicon
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
+```
+                                  ┌───────────────────────────────┐
+                                  │      Client Web Browser       │
+                                  │   Vue 3 SPA + Tailwind CSS    │
+                                  └──────────────┬────────────────┘
+                                                 │
+                                ┌────────────────┴────────────────┐
+                                │                                 │
+                     REST / Sanctum Auth                     WebRTC Media
+                                │                                 │
+                                ▼                                 ▼
+                     ┌──────────────────────┐        ┌─────────────────────────┐
+                     │   Laravel 11 API     │        │ WebRTC Live Gateway     │
+                     │  (PHP 8.2 / FPM)     │        │ 1080p Screen & Audio    │
+                     └──────────┬───────────┘        └─────────────────────────┘
+                                │
+          ┌─────────────────────┼─────────────────────┐
+          │                     │                     │
+          ▼                     ▼                     ▼
+┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+│   MySQL 8.0 DB   │  │   Redis 7.2      │  │  FastAPI ML Svc  │
+│  Encrypted Casts │  │  Cache & Queues  │  │ Scikit-Learn GBC │
+└──────────────────┘  └──────────────────┘  └──────────────────┘
 ```
 
-### 2. Launch Multi-Container Stack
+---
+
+## 👥 Seeded Clinical Accounts & Credentials
+
+The application is pre-seeded with clean, realistic clinical datasets across all roles:
+
+| Role | Name / Title | Specialty / Focus | Email | Password |
+|---|---|---|---|---|
+| **Admin** | Dr. Eleanor Vance, MD | Chief Medical Officer | `admin@medicon.health` | `Secret123!` |
+| **Doctor** | Dr. Sarah Jenkins, MD, FACC | Cardiology | `sarah.jenkins@medicon.health` | `Secret123!` |
+| **Doctor** | Dr. Marcus Chen, MD, PhD | Neurology | `marcus.chen@medicon.health` | `Secret123!` |
+| **Doctor** | Dr. Elena Rostova, MD | Dermatology | `elena.rostova@medicon.health` | `Secret123!` |
+| **Doctor** | Dr. James Wilson, MD | General Practice | `james.wilson@medicon.health` | `Secret123!` |
+| **Doctor** | Dr. Aisha Patel, MD | Psychiatry | `aisha.patel@medicon.health` | `Secret123!` |
+| **Doctor** | Dr. Robert Taylor, MD | Orthopedics | `robert.taylor@medicon.health` | `Secret123!` |
+| **Patient** | Jane Doe | Hypertension / Wellness | `patient@medicon.health` | `Secret123!` |
+
+---
+
+## 🚀 Quick Start Guide
+
+### Prerequisites
+- **Node.js**: v18.0 or higher (`npm` v9+)
+- **PHP**: v8.2+ with `pdo_mysql`, `mbstring`, `openssl`, `bcmath`
+- **Python**: v3.10+ (for ML microservice)
+- **Composer**: v2+
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/kentrussel-dev/medicon-CS.git
+cd medicon-CS
+```
+
+### 2. Configure Environment Files
+Copy the template files (sensitive variables are ignored from git):
+```bash
+# Backend Environment
+cp backend/.env.example backend/.env
+
+# Frontend Environment
+cp frontend/.env.example frontend/.env
+
+# ML Service Environment
+cp ml-service/.env.example ml-service/.env
+```
+
+### 3. Setup Backend (Laravel)
+```bash
+cd backend
+composer install
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve --port=8080
+```
+
+### 4. Setup Machine Learning Microservice (FastAPI)
+```bash
+cd ml-service
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On Linux/macOS:
+# source venv/bin/activate
+pip install -r requirements.txt
+python train.py
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+### 5. Setup Frontend Application (Vue 3 + Vite)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The portal will be live at: **`http://localhost:5173`**
+
+---
+
+## 🐳 Docker Deployment
+
+To launch the complete containerized multi-service stack with a single command:
+
 ```bash
 docker compose up -d --build
 ```
 
-### 3. Initialize Database & Seed Demo Data
-```bash
-docker compose exec backend php artisan migrate --seed
-```
-
-### 4. Access Services
-- **Web Application (SPA)**: `http://localhost:5173`
+- **Frontend SPA**: `http://localhost:5173`
 - **REST API Gateway**: `http://localhost:8080/api`
-- **FastAPI ML Microservice**: `http://localhost:8000` (Docs at `/docs`)
-- **MinIO Object Storage Console**: `http://localhost:9001` (User: `minioadmin` / Pass: `minioadmin`)
+- **FastAPI ML Service & Swagger Docs**: `http://localhost:8000/docs`
+- **MinIO Storage Console**: `http://localhost:9001`
 
 ---
 
-## 👥 Instant Demo Login Credentials
+## 🧪 Testing & Quality Assurance
 
-The login screen provides one-click demo role auto-fill buttons:
-
-| Role | Email | Password | Primary Capabilities |
-|---|---|---|---|
-| **Patient** | `patient@medicon.health` | `Secret123!` | Book visits, view encrypted records & prescriptions |
-| **Doctor** | `sarah.jenkins@medicon.health` | `Secret123!` | Manage availability, document encounters, issue Rx |
-| **Admin** | `admin@medicon.health` | `Secret123!` | ML risk triage, utilization analytics, audit logs |
-
----
-
-## 🧪 Testing Suite
-
-### 1. Run Backend Tests (PHPUnit)
+### Run Backend Feature & Unit Tests (PHPUnit)
 ```bash
 cd backend
 php artisan test
 ```
-Covers:
-- `AppointmentBookingConflictTest`: Slot collision prevention and operating hours validation.
-- `RoleBasedAccessControlTest`: Policy enforcement across patient, doctor, and admin endpoints.
-- `EncryptedMedicalRecordTest`: Ciphertext persistence in raw DB and transparent decryption.
-- `ImmutableAuditLogTest`: Append-only compliance and mutation blocking.
-- `NoShowPredictionServiceTest`: Microservice client communication and heuristic scoring.
 
-### 2. Run Machine Learning Tests (Pytest)
+### Run Machine Learning Model Tests (Pytest)
 ```bash
 cd ml-service
-python -m pytest tests/ -v
+pytest tests/ -v
 ```
-Verifies model inference, high-risk triage thresholds, and FastAPI endpoints (`/predict`, `/batch-predict`, `/health`, `/model-info`).
 
-### 3. Build Frontend SPA (Vite)
+### Build & Validate Frontend SPA (Vite)
 ```bash
 cd frontend
 npm run build
@@ -125,46 +198,44 @@ npm run build
 
 ---
 
-## 📂 Project Architecture
+## 📂 Project Structure
 
 ```
 medicon/
 ├── backend/                  # Laravel 11 REST API
 │   ├── app/
-│   │   ├── Enums/            # PHP 8.2 Enums (UserRole, RiskLevel, etc.)
-│   │   ├── Http/Controllers/ # REST API Resource Controllers
-│   │   ├── Http/Requests/    # Form Request Validations
-│   │   ├── Http/Resources/   # JSON Output Mappings
-│   │   ├── Jobs/             # Queued Asynchronous Jobs
+│   │   ├── Enums/            # PHP 8.2 Enumerations (Roles, Statuses)
+│   │   ├── Http/Controllers/ # Controllers (Telehealth, Appointments, Records)
 │   │   ├── Models/           # Eloquent Models with Encrypted Casts
-│   │   ├── Policies/         # RBAC Authorization Policies
-│   │   └── Services/         # Domain Services (Audit, ML Client, S3 Storage)
-│   ├── database/migrations/  # 13 Database Migrations
-│   ├── database/seeders/     # Clinical & Demographic Seeders
-│   └── tests/                # PHPUnit Feature and Unit Tests
+│   │   ├── Policies/         # HIPAA & RBAC Authorization Policies
+│   │   └── Services/         # ML Client, Audit Service, Storage Services
+│   ├── database/migrations/  # Database Schema & Telehealth Rooms
+│   ├── database/seeders/     # Clinical Demo Datasets
+│   └── tests/                # PHPUnit Test Suite
 │
-├── frontend/                 # Vue 3 Single Page Application
+├── frontend/                 # Vue 3 SPA (Vite + Tailwind CSS + Pinia)
 │   ├── src/
-│   │   ├── components/       # Common, Patient, Doctor, & Admin Components
-│   │   ├── layouts/          # AppLayout & AuthLayout
-│   │   ├── router/           # Vue Router with RBAC Guards
-│   │   ├── stores/           # Pinia Stores (Auth, Appointments, Admin, etc.)
-│   │   └── views/            # Responsive Role-Specific Views
+│   │   ├── components/       # UI Modals, Badges, Header & Navigation
+│   │   ├── layouts/          # Responsive App & Auth Layouts
+│   │   ├── router/           # Navigation Guards & Role Protection
+│   │   ├── stores/           # Pinia State Management Stores
+│   │   ├── views/            # TelehealthRoomView, Doctor, Patient, & Admin Views
+│   │   └── services/         # API Client & Mock Clinical Adapter
 │   └── vite.config.js
 │
 ├── ml-service/               # Python 3.11 FastAPI Microservice
-│   ├── app/                  # FastAPI Application & Pydantic Schemas
-│   ├── models/               # Trained Scikit-Learn Model & Metrics
+│   ├── app/                  # REST Predictors & Pydantic Validation
+│   ├── models/               # Serialized GradientBoosting Classifier
 │   ├── tests/                # Pytest Test Suite
-│   └── train.py              # Model Training & Evaluation Pipeline
+│   └── train.py              # ML Training & Evaluation Pipeline
 │
-├── docker/                   # Nginx & PHP Configuration Files
-├── docs/                     # Architecture & OpenAPI Specifications
-├── .github/workflows/        # Automated CI/CD Pipelines
-└── docker-compose.yml        # Development Orchestration
+├── docker/                   # Hardened Nginx & PHP Container Configs
+├── docs/                     # Architecture Specifications
+└── docker-compose.yml        # Development Stack Orchestration
 ```
 
 ---
 
 ## 📄 License
-This project is open-source under the [MIT License](LICENSE).
+
+This software is released under the **MIT License**. See [`LICENSE`](LICENSE) for complete details.
